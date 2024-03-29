@@ -1,80 +1,231 @@
 ---
-title: "Title of your work"
-author: "Your Name"
+title: "Sign and zero restrictions on optimism shock in Australia"
+author: "Xiaolei (Adam) Wang"
 
 execute:
   echo: false
-  
+
 bibliography: references.bib
 ---
 
 > **Abstract.** This is a suggested formatting for your abstract. This **quarto** document is a template for your report. It includes some basic ways of working with such documents. You are invited to learn more about developing online reports with this technology. 
 >
-> **Keywords.** bsvars, impulse responses, quarto, R, tax shocks
+> **Keywords.** bsvars, sign restriction, zero restriction, optimism shocks
 
-# Introduction
+[Replication Package](https://www.econometricsociety.org/publications/econometrica/2018/03/01/inference-based-structural-vector-autoregressions-identified)
 
-This is a template repository for the Research Report for **Macroeconometrics**. Learn more about about developing online reports with **quarto** at [quarto.org](https://quarto.org/).
+# Objective
 
-## A Simple Example
+# Data
 
-This is a Quarto document in which we can cite the **bsvars** package by @wozniakBsvarsBayesianEstimation2022. Look for more info at [package CRAN website](https://cran.r-project.org/package=bsvars).
+<!-- load data -->
 
-Simply load the package by running
-```{r package load}
-library(bsvars)
+```{r include=FALSE}
+devtools::install_github("bsvars/bsvarSIGNs")
+library(readrba)
+library(readabs)
+library(tidyquant)
+library(tseries)
+library(tidyverse)
+library(bsvarSIGNs)
+
+consumer_price_index = read_rba(series_id = 'GCPIAG')
+
+productivity         = read_rba(series_id = 'GNFPROSQI')
+
+asx200               = tq_get('^AXJO', from = '1990-01-01', to = '2023-12-31')
+# stock_prices       = asx200 / consumer_price_index
+
+retail_turnover      = read_abs(series_id = 'A3348585R')
+# consumption        = retail_turnover / consumer_price_index
+
+cash_rate            = read_rba(series_id = 'FIRMMCRI')
+inflation            = read_rba(series_id = 'GCPIAGSAQP')
+# real_interest_rate = cash_rate - inflation
+
+hours_worked         = read_abs(series_id = 'A85389461V')
 ```
 
-The code below performs simple computations for sampling posterior draws of the impulse responses. The first line uploads the data from the package,another sets the seed for reproducible computations, and then the pipe `|>` is used to streamline the model specification, estimation including the first burn-in run to obtain convergence and finally, the computed impulse responses are saved in object `irf`.
-```{r estimate irf}
-#| message: false
-#| echo: true
+<!-- concat datasets -->
 
-data(us_fiscal_lsuw)
-set.seed(123)
-us_fiscal_lsuw |>
-  specify_bsvar$new(p = 1) |>
-  estimate(S = 1000, show_progress = FALSE) |> 
-  estimate(S = 2000, show_progress = FALSE) |> 
-  compute_impulse_responses(horizon = 20) -> irf
+```{r include=FALSE}
+df_consumer_price_index = consumer_price_index |> 
+  select(date, value) |>
+  rename(consumer_price_index = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_productivity = productivity |> 
+  select(date, value) |>
+  rename(productivity = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_asx200 = asx200 |> 
+  rename(asx200 = close) |> 
+  na.locf(fromLast = TRUE) |> 
+  mutate(ym = as.yearmon(date)) |> 
+  slice_max(date, by = ym) |> 
+  select(date, asx200) |> 
+  mutate(date = as.yearmon(date))
+
+df_retail_turnover = retail_turnover |>
+  select(date, value) |>
+  rename(retail_turnover = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_cash_rate = cash_rate |>
+  select(date, value) |>
+  rename(cash_rate = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_inflation = inflation |>
+  select(date, value) |>
+  rename(inflation = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_hours_worked = hours_worked |>
+  select(date, value) |>
+  rename(hours_worked = value) |> 
+  mutate(date = as.yearmon(date))
+
+df = merge(df_consumer_price_index, df_productivity, by = 'date') |>
+  merge(df_asx200, by = 'date') |>
+  merge(df_retail_turnover, by = 'date') |>
+  merge(df_cash_rate, by = 'date') |>
+  merge(df_inflation, by = 'date') |>
+  merge(df_hours_worked, by = 'date')
 ```
 
-The code above is visible as the **R** chunk contains the setting `#| echo: true`.
+Following Arias et al. (2024), we select the following five variables for our analysis
 
-@tbl-irf reports the posterior means of the gross domestic product response to an unanticipated tax increase by 1 pp.
+- Productivity: non-farm labour productivity per hour index (source: RBA, series ID GNFPROSQI), log;
+- Stock prices: ASX 200 index (source: Yahoo Finance, ticker symbol ^AXJO), deflated with consumer price index, log;
+- Consumption: retail turnover (source: ABS, series ID A3348585R), deflated with consumer price index, log;
+- Real interest rate: cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP), percentage;
+- Hours worked: total hours worked (source: ABS, series ID A85389611R), log.
+
+The data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. The sample period covers 1994Q3 to 2023Q4. A preview of first 6 rows of the concatenated dataset is shown below.
+
 ```{r}
-#| label: tbl-irf
-#| tbl-cap: Impulse response of gdp to unanticipated tax increase by 1 pp. within two years
+df = df |> 
+  mutate(productivity       = log(productivity),
+         stock_prices       = log(asx200 / consumer_price_index),
+         consumption        = log(retail_turnover / consumer_price_index),
+         real_interest_rate = cash_rate - inflation,
+         hours_worked       = log(hours_worked)
+         ) |> 
+  select(date, productivity, stock_prices, consumption, real_interest_rate, hours_worked)
 
-irf_gdp_tax = matrix(apply(irf[3,1,1:9,],1, mean), nrow = 1)
-rownames(irf_gdp_tax) = "change in gdp [%]"
-colnames(irf_gdp_tax) = 0:8
-knitr::kable(irf_gdp_tax, digits = 3)
+head(df)
 ```
 
-@fig-irf presents the same reaction over the horizon of five years.
+## Visualization
+
+### Time series plot
+
 ```{r}
-#| label: fig-irf
-#| fig-cap: Impulse response of gdp to unanticipated tax increase by 1 pp. within five years
+library(ggplot2)
 
-irf_median    = apply(irf[3,1,,],1, median)
-irf_hdi       = apply(irf[3,1,,],1, HDInterval::hdi, credMass = .68)
-plot(x = 0:20, y = irf_median, type = "l", bty = "n", 
-     xlab = "horizon", ylab = "change in gdp [%]",
-     ylim = range(irf_hdi))
-polygon(x = c(0:20, 20:0), y = c(irf_hdi[1,], irf_hdi[2,21:1]), col = "deepskyblue1", border = "deepskyblue1")
-lines(x = 0:20, y = irf_median, lwd = 2, col = "deepskyblue3")
+df |> 
+  pivot_longer(cols = -date, names_to = 'variable', values_to = 'value') |> 
+  ggplot(aes(x = date, y = value, color = variable)) +
+  geom_line() +
+  theme_bw()
 ```
 
-## Some Hints
+### ACF plot
 
-Have a look at how to work with **RStudio** and **GitHub** at: [How to use git and GitHub with R](https://rfortherestofus.com/2021/02/how-to-use-git-github-with-r/). 
+```{r}
+Y = df |> 
+  select(-date) |> 
+  ts(start = c(year(min(df$date)), quarter(min(df$date))), frequency = 4)
 
-These are many different ways of how to work with references in **RStudio**: [Preview Citations](https://posit.co/blog/rstudio-1-4-preview-citations/).
+N = ncol(Y)
 
-To make all the **R** code visible on the website change the settings in the preabmble of this document to:
+par(mfrow = c(2, N - 2))
+for (i in 1:ncol(Y)) {
+  acf(Y[, i], main = colnames(Y)[i])
+}
 ```
-execute:
-  echo: true
+
+### PACF plot
+
+```{r}
+par(mfrow = c(2, N - 2))
+for (i in 1:ncol(Y)) {
+  pacf(Y[, i], main = colnames(Y)[i])
+}
 ```
-## References {.unnumbered}
+
+### Augmented Dickey-Fuller test
+
+All five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.
+
+```{r}
+p_value   = sapply(1:N, \(i) adf.test(Y[, i])$p.value)
+variable  = colnames(Y)
+
+adf       = cbind(variable, p_value) |> 
+  data.frame() |> 
+  mutate(p_value = round(as.numeric(p_value), 4)) |> 
+  mutate(non_stationary = p_value > 0.05)
+
+adf
+```
+
+Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one or $I(1)$.
+
+```{r}
+Y_diff    = diff(Y)
+p_value   = sapply(1:N, \(i) adf.test(Y_diff[, i])$p.value)
+variable  = colnames(Y)
+
+cbind(variable, p_value) |> 
+  data.frame() |> 
+  mutate(p_value = round(as.numeric(p_value), 4)) |> 
+  mutate(non_stationary = p_value > 0.05)
+```
+
+# Model
+
+## Specification
+
+A Reduced-form Vector Autoregression (VAR) model has the following specification.
+
+$$
+\begin{align*}
+y_t &= \mu_0 + A_1 y_{t-1} + \cdots + A_p y_{t-p} + \epsilon_t \\
+\epsilon | Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{MN}(\mathbf{0}_N, \mathbf{\Sigma})
+\end{align*}
+$$
+
+The corresponding Structural Vector Autoregression (SVAR) model has the following specification.
+
+$$
+\begin{align*}
+y_t &= \mu_0 + A_1 y_{t-1} + \cdots + A_p y_{t-p} + B u_t \\
+u_t | Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{MN}(\mathbf{0}_N, \mathbf{I}_N)
+\end{align*}
+$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
