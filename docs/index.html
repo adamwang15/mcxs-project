@@ -8,7 +8,7 @@
 
 <meta name="author" content="Xiaolei (Adam) Wang">
 
-<title>Macroeconometrics Research Report - Sign and zero restrictions on optimism shock in Australia</title>
+<title>Macroeconometrics Research Report - Sign and zero restrictions: optimism shock on the Australian business cycle</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,7 +21,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -92,20 +111,18 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#objective" id="toc-objective" class="nav-link active" data-scroll-target="#objective">Objective</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
   <ul class="collapse">
-  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization">Visualization</a>
-  <ul class="collapse">
   <li><a href="#time-series-plot" id="toc-time-series-plot" class="nav-link" data-scroll-target="#time-series-plot">Time series plot</a></li>
-  <li><a href="#acf-plot" id="toc-acf-plot" class="nav-link" data-scroll-target="#acf-plot">ACF plot</a></li>
-  <li><a href="#pacf-plot" id="toc-pacf-plot" class="nav-link" data-scroll-target="#pacf-plot">PACF plot</a></li>
+  <li><a href="#acf-and-pacf-plot" id="toc-acf-and-pacf-plot" class="nav-link" data-scroll-target="#acf-and-pacf-plot">ACF and PACF plot</a></li>
   <li><a href="#augmented-dickey-fuller-test" id="toc-augmented-dickey-fuller-test" class="nav-link" data-scroll-target="#augmented-dickey-fuller-test">Augmented Dickey-Fuller test</a></li>
-  </ul></li>
   </ul></li>
   <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a>
   <ul class="collapse">
   <li><a href="#specification" id="toc-specification" class="nav-link" data-scroll-target="#specification">Specification</a></li>
+  <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -115,7 +132,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Sign and zero restrictions on optimism shock in Australia</h1>
+<h1 class="title">Sign and zero restrictions: optimism shock on the Australian business cycle</h1>
 </div>
 
 
@@ -137,106 +154,210 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 <blockquote class="blockquote">
-<p><strong>Abstract.</strong> This is a suggested formatting for your abstract. This <strong>quarto</strong> document is a template for your report. It includes some basic ways of working with such documents. You are invited to learn more about developing online reports with this technology.</p>
-<p><strong>Keywords.</strong> bsvars, sign restriction, zero restriction, optimism shocks</p>
+<p><strong>Abstract.</strong> This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">(<a href="#ref-arias2018inference" role="doc-biblioref">Arias, Rubio-Ramı́rez, and Waggoner 2018</a>)</span> to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.</p>
+<p><strong>Keywords.</strong> Bayesian Structural VAR, sign restrictions, zero restrictions, optimism shock</p>
 </blockquote>
-<p><a href="https://www.econometricsociety.org/publications/econometrica/2018/03/01/inference-based-structural-vector-autoregressions-identified">Replication Package</a></p>
-<section id="objective" class="level1">
-<h1>Objective</h1>
+<!-- [Replication Package](https://www.econometricsociety.org/publications/econometrica/2018/03/01/inference-based-structural-vector-autoregressions-identified) -->
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p><strong>Objective</strong>: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">(<a href="#ref-arias2018inference" role="doc-biblioref">Arias, Rubio-Ramı́rez, and Waggoner 2018</a>)</span>, and apply it to analyse the optimism shock in Australia economy.</p>
+<p><strong>Question</strong>: Does optimism shocks drive the business cycles in Australian economy?</p>
+<p><strong>Motivation</strong>: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), <span class="citation" data-cites="beaudry2011mood">(<a href="#ref-beaudry2011mood" role="doc-biblioref">Beaudry, Nam, and Wang 2011</a>)</span> finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while <span class="citation" data-cites="arias2018inference">(<a href="#ref-arias2018inference" role="doc-biblioref">Arias, Rubio-Ramı́rez, and Waggoner 2018</a>)</span> argue that PFA imposes additional restrictions and they find less significant results using a importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.</p>
 </section>
 <section id="data" class="level1">
 <h1>Data</h1>
 <!-- load data -->
 <!-- concat datasets -->
-<p>Following Arias et al.&nbsp;(2024), we select the following five variables for our analysis</p>
-<ul>
-<li>Productivity: non-farm labour productivity per hour index (source: RBA, series ID GNFPROSQI), log;</li>
-<li>Stock prices: ASX 200 index (source: Yahoo Finance, ticker symbol ^AXJO), deflated with consumer price index, log;</li>
-<li>Consumption: retail turnover (source: ABS, series ID A3348585R), deflated with consumer price index, log;</li>
-<li>Real interest rate: cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP), percentage;</li>
-<li>Hours worked: total hours worked (source: ABS, series ID A85389611R), log.</li>
-</ul>
-<p>The data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. The sample period covers 1994Q3 to 2023Q4. A preview of first 6 rows of the concatenated dataset is shown below.</p>
+<p>All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. Following <span class="citation" data-cites="beaudry2011mood">(<a href="#ref-beaudry2011mood" role="doc-biblioref">Beaudry, Nam, and Wang 2011</a>)</span>, we select the following five variables for our analysis</p>
+<p><strong>Productivity</strong>: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).</p>
+<p><strong>Stock prices</strong>: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol ^AXJO), divided by the consumer price index.</p>
+<p><strong>Consumption</strong>: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.</p>
+<p><strong>Real interest rate</strong>: over-night cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP).</p>
+<p><strong>Hours worked</strong>: total hours worked (source: ABS, series ID A85389611R).</p>
+<p>The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.</p>
+<p>To capture multiplicative relationships in macroeconomic time series and percentage change interpretation, all variables are log transformed (except for real interest rate). A preview of first 6 rows of the concatenated dataset is shown below.</p>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>      date productivity stock_prices consumption real_interest_rate
-1 Sep 1994     4.229749     3.452659    4.927847              4.842
-2 Dec 1994     4.238445     3.386978    4.919051              5.961
-3 Mar 1995     4.228293     3.376389    4.931538              5.892
-4 Jun 1995     4.213608     3.421596    4.948650              6.209
-5 Sep 1995     4.232656     3.463491    4.950004              6.293
-6 Dec 1995     4.229749     3.496783    4.960957              6.708
-  hours_worked
-1     6.022197
-2     6.014278
-3     6.017093
-4     6.021970
-5     6.019908
-6     6.016419</code></pre>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 15%">
+<col style="width: 24%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">date</th>
+<th style="text-align: right;">productivity</th>
+<th style="text-align: right;">stock_prices</th>
+<th style="text-align: right;">consumption</th>
+<th style="text-align: right;">real_interest_rate</th>
+<th style="text-align: right;">hours_worked</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sep 1994</td>
+<td style="text-align: right;">4.2297</td>
+<td style="text-align: right;">3.4527</td>
+<td style="text-align: right;">4.9278</td>
+<td style="text-align: right;">4.842</td>
+<td style="text-align: right;">6.0222</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dec 1994</td>
+<td style="text-align: right;">4.2384</td>
+<td style="text-align: right;">3.3870</td>
+<td style="text-align: right;">4.9191</td>
+<td style="text-align: right;">5.961</td>
+<td style="text-align: right;">6.0143</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mar 1995</td>
+<td style="text-align: right;">4.2283</td>
+<td style="text-align: right;">3.3764</td>
+<td style="text-align: right;">4.9315</td>
+<td style="text-align: right;">5.892</td>
+<td style="text-align: right;">6.0171</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jun 1995</td>
+<td style="text-align: right;">4.2136</td>
+<td style="text-align: right;">3.4216</td>
+<td style="text-align: right;">4.9487</td>
+<td style="text-align: right;">6.209</td>
+<td style="text-align: right;">6.0220</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sep 1995</td>
+<td style="text-align: right;">4.2327</td>
+<td style="text-align: right;">3.4635</td>
+<td style="text-align: right;">4.9500</td>
+<td style="text-align: right;">6.293</td>
+<td style="text-align: right;">6.0199</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dec 1995</td>
+<td style="text-align: right;">4.2297</td>
+<td style="text-align: right;">3.4968</td>
+<td style="text-align: right;">4.9610</td>
+<td style="text-align: right;">6.708</td>
+<td style="text-align: right;">6.0164</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<section id="visualization" class="level2">
-<h2 class="anchored" data-anchor-id="visualization">Visualization</h2>
-<section id="time-series-plot" class="level3">
-<h3 class="anchored" data-anchor-id="time-series-plot">Time series plot</h3>
+<section id="time-series-plot" class="level2">
+<h2 class="anchored" data-anchor-id="time-series-plot">Time series plot</h2>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="quarto-discovered-preview-image img-fluid" width="672"></p>
 </div>
 </div>
+<p>The sample period covers 1994Q3 to 2023Q4.</p>
 </section>
-<section id="acf-plot" class="level3">
-<h3 class="anchored" data-anchor-id="acf-plot">ACF plot</h3>
+<section id="acf-and-pacf-plot" class="level2">
+<h2 class="anchored" data-anchor-id="acf-and-pacf-plot">ACF and PACF plot</h2>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="pacf-plot" class="level3">
-<h3 class="anchored" data-anchor-id="pacf-plot">PACF plot</h3>
+<p>The autocorrelation function (ACF) plot shows all variables have a consistent pattern of autocorrelation, this suggests that the time series are non-stationary. Stationarity is formally tested using the Augmented Dickey-Fuller test in the next section.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>The partial autocorrelation function (PACF) plot shows that the partial autocorrelation of all variables is significant at lag 1, real interest rate is also significant at lag 2. Therefore, choosing a lag length for the VAR model greater than or equal to 2 is reasonable, following convention for quarterly data, we will adopt a lag length of 4 for the VAR model.</p>
 </section>
-<section id="augmented-dickey-fuller-test" class="level3">
-<h3 class="anchored" data-anchor-id="augmented-dickey-fuller-test">Augmented Dickey-Fuller test</h3>
+<section id="augmented-dickey-fuller-test" class="level2">
+<h2 class="anchored" data-anchor-id="augmented-dickey-fuller-test">Augmented Dickey-Fuller test</h2>
 <p>All five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.</p>
 <div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>            variable p_value non_stationary
-1       productivity  0.8372           TRUE
-2       stock_prices  0.1728           TRUE
-3        consumption  0.6170           TRUE
-4 real_interest_rate  0.3678           TRUE
-5       hours_worked  0.0657           TRUE</code></pre>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">p_value</th>
+<th style="text-align: right;">non_stationary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">productivity</td>
+<td style="text-align: right;">0.8372</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stock_prices</td>
+<td style="text-align: right;">0.1728</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">consumption</td>
+<td style="text-align: right;">0.6170</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">real_interest_rate</td>
+<td style="text-align: right;">0.3678</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hours_worked</td>
+<td style="text-align: right;">0.0657</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<p>Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one or <span class="math inline">\(I(1)\)</span>.</p>
+<p>Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one <span class="math inline">\(I(1)\)</span> and it is reasonable to put them in a VAR system without further transformation.</p>
 <div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in adf.test(Y_diff[, i]): p-value smaller than printed p-value
-
-Warning in adf.test(Y_diff[, i]): p-value smaller than printed p-value
-
-Warning in adf.test(Y_diff[, i]): p-value smaller than printed p-value
-
-Warning in adf.test(Y_diff[, i]): p-value smaller than printed p-value
-
-Warning in adf.test(Y_diff[, i]): p-value smaller than printed p-value</code></pre>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">p_value</th>
+<th style="text-align: right;">non_stationary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">productivity</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stock_prices</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">consumption</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">real_interest_rate</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hours_worked</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>            variable p_value non_stationary
-1       productivity    0.01          FALSE
-2       stock_prices    0.01          FALSE
-3        consumption    0.01          FALSE
-4 real_interest_rate    0.01          FALSE
-5       hours_worked    0.01          FALSE</code></pre>
 </div>
-</div>
-</section>
 </section>
 </section>
 <section id="model" class="level1">
@@ -257,12 +378,65 @@ y_t &amp;= \mu_0 + A_1 y_{t-1} + \cdots + A_p y_{t-p} + B u_t \\
 u_t | Y_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{MN}(\mathbf{0}_N, \mathbf{I}_N)
 \end{align*}
 \]</span></p>
+<p>Where <span class="math inline">\(y_t\)</span> is a <span class="math inline">\(N \times 1\)</span> vector of endogenous variables</p>
+<p><span class="math display">\[
+y_t = [\text{productivity}_t,\ \text{stock prices}_t,\ \text{consumption}_t,\ \text{real interest rate}_t,\ \text{hours worked}_t]'
+\]</span></p>
+<p><span class="math inline">\(A_i\)</span>’s are <span class="math inline">\(N \times N\)</span> coefficient matrices, <span class="math inline">\(\mu_0\)</span> is a <span class="math inline">\(N \times 1\)</span> vector of constants, <span class="math inline">\(\epsilon_t\)</span> is a <span class="math inline">\(N \times 1\)</span> vector of reduced-form forecast errors, <span class="math inline">\(u_t\)</span> is a <span class="math inline">\(N \times 1\)</span> vector of structural shocks, their relation is captured by the <span class="math inline">\(N \times N\)</span> contemporaneous impulse response matrix <span class="math inline">\(B\)</span>:</p>
+<p><span class="math display">\[
+\epsilon_t = B u_t
+\]</span></p>
+</section>
+<section id="identification" class="level2">
+<h2 class="anchored" data-anchor-id="identification">Identification</h2>
+<p>After estimating the reduced-form VAR model, we plan to impose the following restrictions on the impulse response matrix <span class="math inline">\(B\)</span> to identify optimism shock.</p>
+<table class="table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 18%">
+<col style="width: 17%">
+<col style="width: 26%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Productivity</th>
+<th>Stock prices</th>
+<th>Consumption</th>
+<th>Real interest rate</th>
+<th>Hours worked</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>Positive</td>
+<td>Unrestricted</td>
+<td>Unrestricted</td>
+<td>Unrestricted</td>
+</tr>
+</tbody>
+</table>
+<p>The identification strategy is based on the assumption that the optimism shock positively affects stock prices, and has no contemporaneous effect on productivity.</p>
+</section>
+<section id="interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
+<p>The impulse response function (IRF) of the SVAR model is used to interpret the effect of the optimism shock on the endogenous variables. Specifically, we are interested in whether a positive optimism shock leads to a simultaneous boom in consumption and hours worked (as in the United States).</p>
+<p>The forecast error variance decomposition (FEVD) is used to quantify the relative importance of the optimism shock in explaining the variability of a <span class="math inline">\(h\)</span>-step ahead forecast of a particular variable. For example, we will examine the proportion of the variability of consumption and hours worked explained by the optimism shock.</p>
+
 
 
 </section>
 </section>
 
-</main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-arias2018inference" class="csl-entry" role="listitem">
+Arias, Jonas E, Juan F Rubio-Ramı́rez, and Daniel F Waggoner. 2018. <span>“Inference Based on Structural Vector Autoregressions Identified with Sign and Zero Restrictions: Theory and Applications.”</span> <em>Econometrica</em> 86 (2): 685–720.
+</div>
+<div id="ref-beaudry2011mood" class="csl-entry" role="listitem">
+Beaudry, Paul, Deokwoo Nam, and Jian Wang. 2011. <span>“Do Mood Swings Drive Business Cycles and Is It Rational?”</span> National Bureau of Economic Research.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

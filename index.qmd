@@ -1,5 +1,5 @@
 ---
-title: "Sign and zero restrictions on optimism shock in Australia"
+title: "Sign and zero restrictions: optimism shock on the Australian business cycle"
 author: "Xiaolei (Adam) Wang"
 
 execute:
@@ -8,25 +8,38 @@ execute:
 bibliography: references.bib
 ---
 
-> **Abstract.** This is a suggested formatting for your abstract. This **quarto** document is a template for your report. It includes some basic ways of working with such documents. You are invited to learn more about developing online reports with this technology. 
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+# knitr::opts_chunk$set(eval = FALSE)
+```
+
+> **Abstract.** This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by [@arias2018inference] to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.
 >
-> **Keywords.** bsvars, sign restriction, zero restriction, optimism shocks
+> **Keywords.** Bayesian Structural VAR, sign restrictions, zero restrictions, optimism shock
 
-[Replication Package](https://www.econometricsociety.org/publications/econometrica/2018/03/01/inference-based-structural-vector-autoregressions-identified)
+<!-- [Replication Package](https://www.econometricsociety.org/publications/econometrica/2018/03/01/inference-based-structural-vector-autoregressions-identified) -->
 
-# Objective
+# Introduction
+
+**Objective**: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by [@arias2018inference], and apply it to analyse the optimism shock in Australia economy.
+
+**Question**: Does optimism shocks drive the business cycles in Australian economy?
+
+**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), [@beaudry2011mood] finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while [@arias2018inference] argue that PFA imposes additional restrictions and they find less significant results using a importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
 
 # Data
 
 <!-- load data -->
 
 ```{r include=FALSE}
-devtools::install_github("bsvars/bsvarSIGNs")
 library(readrba)
 library(readabs)
 library(tidyquant)
 library(tseries)
 library(tidyverse)
+library(knitr)
+
+devtools::install_github("bsvars/bsvarSIGNs")
 library(bsvarSIGNs)
 
 consumer_price_index = read_rba(series_id = 'GCPIAG')
@@ -92,21 +105,7 @@ df = merge(df_consumer_price_index, df_productivity, by = 'date') |>
   merge(df_retail_turnover, by = 'date') |>
   merge(df_cash_rate, by = 'date') |>
   merge(df_inflation, by = 'date') |>
-  merge(df_hours_worked, by = 'date')
-```
-
-Following Arias et al. (2024), we select the following five variables for our analysis
-
-- Productivity: non-farm labour productivity per hour index (source: RBA, series ID GNFPROSQI), log;
-- Stock prices: ASX 200 index (source: Yahoo Finance, ticker symbol ^AXJO), deflated with consumer price index, log;
-- Consumption: retail turnover (source: ABS, series ID A3348585R), deflated with consumer price index, log;
-- Real interest rate: cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP), percentage;
-- Hours worked: total hours worked (source: ABS, series ID A85389611R), log.
-
-The data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. The sample period covers 1994Q3 to 2023Q4. A preview of first 6 rows of the concatenated dataset is shown below.
-
-```{r}
-df = df |> 
+  merge(df_hours_worked, by = 'date') |> 
   mutate(productivity       = log(productivity),
          stock_prices       = log(asx200 / consumer_price_index),
          consumption        = log(retail_turnover / consumer_price_index),
@@ -114,13 +113,29 @@ df = df |>
          hours_worked       = log(hours_worked)
          ) |> 
   select(date, productivity, stock_prices, consumption, real_interest_rate, hours_worked)
-
-head(df)
 ```
 
-## Visualization
+All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. Following [@beaudry2011mood], we select the following five variables for our analysis
 
-### Time series plot
+**Productivity**: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).
+
+**Stock prices**: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol \^AXJO), divided by the consumer price index.
+
+**Consumption**: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.
+
+**Real interest rate**: over-night cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP).
+
+**Hours worked**: total hours worked (source: ABS, series ID A85389611R).
+
+The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.
+
+To capture multiplicative relationships in macroeconomic time series and percentage change interpretation, all variables are log transformed (except for real interest rate). A preview of first 6 rows of the concatenated dataset is shown below.
+
+```{r}
+kable(head(df), digits = 4)
+```
+
+## Time series plot
 
 ```{r}
 library(ggplot2)
@@ -132,7 +147,9 @@ df |>
   theme_bw()
 ```
 
-### ACF plot
+The sample period covers 1994Q3 to 2023Q4.
+
+## ACF and PACF plot
 
 ```{r}
 Y = df |> 
@@ -147,7 +164,7 @@ for (i in 1:ncol(Y)) {
 }
 ```
 
-### PACF plot
+The autocorrelation function (ACF) plot shows all variables have a consistent pattern of autocorrelation, this suggests that the time series are non-stationary. Stationarity is formally tested using the Augmented Dickey-Fuller test in the next section.
 
 ```{r}
 par(mfrow = c(2, N - 2))
@@ -156,7 +173,9 @@ for (i in 1:ncol(Y)) {
 }
 ```
 
-### Augmented Dickey-Fuller test
+The partial autocorrelation function (PACF) plot shows that the partial autocorrelation of all variables is significant at lag 1, real interest rate is also significant at lag 2. Therefore, choosing a lag length for the VAR model greater than or equal to 2 is reasonable, following convention for quarterly data, we will adopt a lag length of 4 for the VAR model.
+
+## Augmented Dickey-Fuller test
 
 All five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.
 
@@ -167,12 +186,12 @@ variable  = colnames(Y)
 adf       = cbind(variable, p_value) |> 
   data.frame() |> 
   mutate(p_value = round(as.numeric(p_value), 4)) |> 
-  mutate(non_stationary = p_value > 0.05)
+  mutate(non_stationary = as.numeric(p_value > 0.05))
 
-adf
+kable(adf, digits = 4)
 ```
 
-Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one or $I(1)$.
+Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one $I(1)$ and it is reasonable to put them in a VAR system without further transformation.
 
 ```{r}
 Y_diff    = diff(Y)
@@ -182,7 +201,8 @@ variable  = colnames(Y)
 cbind(variable, p_value) |> 
   data.frame() |> 
   mutate(p_value = round(as.numeric(p_value), 4)) |> 
-  mutate(non_stationary = p_value > 0.05)
+  mutate(non_stationary = as.numeric(p_value > 0.05)) |> 
+  kable(digits = 4)
 ```
 
 # Model
@@ -207,16 +227,33 @@ u_t | Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{MN}(\mathbf{0}_N, \mathbf{I}_
 \end{align*}
 $$
 
+Where $y_t$ is a $N \times 1$ vector of endogenous variables
 
+$$
+y_t = [\text{productivity}_t,\ \text{stock prices}_t,\ \text{consumption}_t,\ \text{real interest rate}_t,\ \text{hours worked}_t]'
+$$
 
+$A_i$'s are $N \times N$ coefficient matrices, $\mu_0$ is a $N \times 1$ vector of constants, $\epsilon_t$ is a $N \times 1$ vector of reduced-form forecast errors, $u_t$ is a $N \times 1$ vector of structural shocks, their relation is captured by the $N \times N$ contemporaneous impulse response matrix $B$:
 
+$$
+\epsilon_t = B u_t
+$$
 
+## Identification
 
+After estimating the reduced-form VAR model, we plan to impose the following restrictions on the impulse response matrix $B$ to identify optimism shock.
 
+| Productivity | Stock prices | Consumption | Real interest rate | Hours worked |
+|--------------|--------------|-------------|--------------------|--------------|
+| 0            | Positive     | Unrestricted| Unrestricted       | Unrestricted |
 
+The identification strategy is based on the assumption that the optimism shock positively affects stock prices, and has no contemporaneous effect on productivity.
 
+## Interpretation
 
+The impulse response function (IRF) of the SVAR model is used to interpret the effect of the optimism shock on the endogenous variables. Specifically, we are interested in whether a positive optimism shock leads to a simultaneous boom in consumption and hours worked (as in the United States).
 
+The forecast error variance decomposition (FEVD) is used to quantify the relative importance of the optimism shock in explaining the variability of a $h$-step ahead forecast of a particular variable. For example, we will examine the proportion of the variability of consumption and hours worked explained by the optimism shock.
 
 
 

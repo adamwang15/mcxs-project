@@ -2,22 +2,50 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Sign and zero restrictions on optimism shock in Australia",
+    "title": "Sign and zero restrictions: optimism shock on the Australian business cycle",
     "section": "",
-    "text": "Abstract. This is a suggested formatting for your abstract. This quarto document is a template for your report. It includes some basic ways of working with such documents. You are invited to learn more about developing online reports with this technology.\nKeywords. bsvars, sign restriction, zero restriction, optimism shocks\nReplication Package"
+    "text": "Abstract. This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by (Arias, Rubio-Ramı́rez, and Waggoner 2018) to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.\nKeywords. Bayesian Structural VAR, sign restrictions, zero restrictions, optimism shock"
   },
   {
-    "objectID": "index.html#visualization",
-    "href": "index.html#visualization",
-    "title": "Sign and zero restrictions on optimism shock in Australia",
-    "section": "Visualization",
-    "text": "Visualization\n\nTime series plot\n\n\n\n\n\n\n\nACF plot\n\n\n\n\n\n\n\nPACF plot\n\n\n\n\n\n\n\nAugmented Dickey-Fuller test\nAll five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.\n\n\n            variable p_value non_stationary\n1       productivity  0.8372           TRUE\n2       stock_prices  0.1728           TRUE\n3        consumption  0.6170           TRUE\n4 real_interest_rate  0.3678           TRUE\n5       hours_worked  0.0657           TRUE\n\n\nApplying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one or \\(I(1)\\).\n\n\nWarning in adf.test(Y_diff[, i]): p-value smaller than printed p-value\n\nWarning in adf.test(Y_diff[, i]): p-value smaller than printed p-value\n\nWarning in adf.test(Y_diff[, i]): p-value smaller than printed p-value\n\nWarning in adf.test(Y_diff[, i]): p-value smaller than printed p-value\n\nWarning in adf.test(Y_diff[, i]): p-value smaller than printed p-value\n\n\n            variable p_value non_stationary\n1       productivity    0.01          FALSE\n2       stock_prices    0.01          FALSE\n3        consumption    0.01          FALSE\n4 real_interest_rate    0.01          FALSE\n5       hours_worked    0.01          FALSE"
+    "objectID": "index.html#time-series-plot",
+    "href": "index.html#time-series-plot",
+    "title": "Sign and zero restrictions: optimism shock on the Australian business cycle",
+    "section": "Time series plot",
+    "text": "Time series plot\n\n\n\n\n\nThe sample period covers 1994Q3 to 2023Q4."
+  },
+  {
+    "objectID": "index.html#acf-and-pacf-plot",
+    "href": "index.html#acf-and-pacf-plot",
+    "title": "Sign and zero restrictions: optimism shock on the Australian business cycle",
+    "section": "ACF and PACF plot",
+    "text": "ACF and PACF plot\n\n\n\n\n\nThe autocorrelation function (ACF) plot shows all variables have a consistent pattern of autocorrelation, this suggests that the time series are non-stationary. Stationarity is formally tested using the Augmented Dickey-Fuller test in the next section.\n\n\n\n\n\nThe partial autocorrelation function (PACF) plot shows that the partial autocorrelation of all variables is significant at lag 1, real interest rate is also significant at lag 2. Therefore, choosing a lag length for the VAR model greater than or equal to 2 is reasonable, following convention for quarterly data, we will adopt a lag length of 4 for the VAR model."
+  },
+  {
+    "objectID": "index.html#augmented-dickey-fuller-test",
+    "href": "index.html#augmented-dickey-fuller-test",
+    "title": "Sign and zero restrictions: optimism shock on the Australian business cycle",
+    "section": "Augmented Dickey-Fuller test",
+    "text": "Augmented Dickey-Fuller test\nAll five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.\n\n\n\n\n\nvariable\np_value\nnon_stationary\n\n\n\n\nproductivity\n0.8372\n1\n\n\nstock_prices\n0.1728\n1\n\n\nconsumption\n0.6170\n1\n\n\nreal_interest_rate\n0.3678\n1\n\n\nhours_worked\n0.0657\n1\n\n\n\n\n\nApplying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one \\(I(1)\\) and it is reasonable to put them in a VAR system without further transformation.\n\n\n\n\n\nvariable\np_value\nnon_stationary\n\n\n\n\nproductivity\n0.01\n0\n\n\nstock_prices\n0.01\n0\n\n\nconsumption\n0.01\n0\n\n\nreal_interest_rate\n0.01\n0\n\n\nhours_worked\n0.01\n0"
   },
   {
     "objectID": "index.html#specification",
     "href": "index.html#specification",
-    "title": "Sign and zero restrictions on optimism shock in Australia",
+    "title": "Sign and zero restrictions: optimism shock on the Australian business cycle",
     "section": "Specification",
-    "text": "Specification\nA Reduced-form Vector Autoregression (VAR) model has the following specification.\n\\[\n\\begin{align*}\ny_t &= \\mu_0 + A_1 y_{t-1} + \\cdots + A_p y_{t-p} + \\epsilon_t \\\\\n\\epsilon | Y_{t-1} &\\overset{\\text{iid}}{\\sim} \\mathcal{MN}(\\mathbf{0}_N, \\mathbf{\\Sigma})\n\\end{align*}\n\\]\nThe corresponding Structural Vector Autoregression (SVAR) model has the following specification.\n\\[\n\\begin{align*}\ny_t &= \\mu_0 + A_1 y_{t-1} + \\cdots + A_p y_{t-p} + B u_t \\\\\nu_t | Y_{t-1} &\\overset{\\text{iid}}{\\sim} \\mathcal{MN}(\\mathbf{0}_N, \\mathbf{I}_N)\n\\end{align*}\n\\]"
+    "text": "Specification\nA Reduced-form Vector Autoregression (VAR) model has the following specification.\n\\[\n\\begin{align*}\ny_t &= \\mu_0 + A_1 y_{t-1} + \\cdots + A_p y_{t-p} + \\epsilon_t \\\\\n\\epsilon | Y_{t-1} &\\overset{\\text{iid}}{\\sim} \\mathcal{MN}(\\mathbf{0}_N, \\mathbf{\\Sigma})\n\\end{align*}\n\\]\nThe corresponding Structural Vector Autoregression (SVAR) model has the following specification.\n\\[\n\\begin{align*}\ny_t &= \\mu_0 + A_1 y_{t-1} + \\cdots + A_p y_{t-p} + B u_t \\\\\nu_t | Y_{t-1} &\\overset{\\text{iid}}{\\sim} \\mathcal{MN}(\\mathbf{0}_N, \\mathbf{I}_N)\n\\end{align*}\n\\]\nWhere \\(y_t\\) is a \\(N \\times 1\\) vector of endogenous variables\n\\[\ny_t = [\\text{productivity}_t,\\ \\text{stock prices}_t,\\ \\text{consumption}_t,\\ \\text{real interest rate}_t,\\ \\text{hours worked}_t]'\n\\]\n\\(A_i\\)’s are \\(N \\times N\\) coefficient matrices, \\(\\mu_0\\) is a \\(N \\times 1\\) vector of constants, \\(\\epsilon_t\\) is a \\(N \\times 1\\) vector of reduced-form forecast errors, \\(u_t\\) is a \\(N \\times 1\\) vector of structural shocks, their relation is captured by the \\(N \\times N\\) contemporaneous impulse response matrix \\(B\\):\n\\[\n\\epsilon_t = B u_t\n\\]"
+  },
+  {
+    "objectID": "index.html#identification",
+    "href": "index.html#identification",
+    "title": "Sign and zero restrictions: optimism shock on the Australian business cycle",
+    "section": "Identification",
+    "text": "Identification\nAfter estimating the reduced-form VAR model, we plan to impose the following restrictions on the impulse response matrix \\(B\\) to identify optimism shock.\n\n\n\n\n\n\n\n\n\n\nProductivity\nStock prices\nConsumption\nReal interest rate\nHours worked\n\n\n\n\n0\nPositive\nUnrestricted\nUnrestricted\nUnrestricted\n\n\n\nThe identification strategy is based on the assumption that the optimism shock positively affects stock prices, and has no contemporaneous effect on productivity."
+  },
+  {
+    "objectID": "index.html#interpretation",
+    "href": "index.html#interpretation",
+    "title": "Sign and zero restrictions: optimism shock on the Australian business cycle",
+    "section": "Interpretation",
+    "text": "Interpretation\nThe impulse response function (IRF) of the SVAR model is used to interpret the effect of the optimism shock on the endogenous variables. Specifically, we are interested in whether a positive optimism shock leads to a simultaneous boom in consumption and hours worked (as in the United States).\nThe forecast error variance decomposition (FEVD) is used to quantify the relative importance of the optimism shock in explaining the variability of a \\(h\\)-step ahead forecast of a particular variable. For example, we will examine the proportion of the variability of consumption and hours worked explained by the optimism shock."
   }
 ]
