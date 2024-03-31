@@ -8,12 +8,15 @@ execute:
 bibliography: references.bib
 ---
 
+\def\*#1{\mathbf{#1}}
+\def\e{\boldsymbol{\varepsilon}}
+
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 # knitr::opts_chunk$set(eval = FALSE)
 ```
 
-> **Abstract.** This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by [@arias2018inference] to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.
+> **Abstract.** This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by @arias2018inference to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.
 >
 > **Keywords.** Bayesian Structural VAR, sign restrictions, zero restrictions, optimism shock
 
@@ -21,11 +24,11 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Introduction
 
-**Objective**: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by [@arias2018inference], and apply it to analyse the optimism shock in Australia economy.
+**Objective**: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by @arias2018inference, and apply it to analyse the optimism shock in Australia economy.
 
 **Question**: Does optimism shocks drive the business cycles in Australian economy?
 
-**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), [@beaudry2011mood] finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while [@arias2018inference] argue that PFA imposes additional restrictions and they find less significant results using a importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
+**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while @arias2018inference argue that PFA imposes additional restrictions and they find less significant results using a importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
 
 # Data
 
@@ -115,7 +118,7 @@ df = merge(df_consumer_price_index, df_productivity, by = 'date') |>
   select(date, productivity, stock_prices, consumption, real_interest_rate, hours_worked)
 ```
 
-All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. Following [@beaudry2011mood], we select the following five variables for our analysis
+All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. Following @beaudry2011mood, we select the following five variables for our analysis
 
 **Productivity**: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).
 
@@ -209,35 +212,91 @@ cbind(variable, p_value) |>
 
 ## Specification
 
-A Reduced-form Vector Autoregression (VAR) model has the following specification.
+Adopting notations from @rubio2010structural, the SVAR model is specified as follows.
+
+### Structural form
 
 $$
 \begin{align*}
-y_t &= \mu_0 + A_1 y_{t-1} + \cdots + A_p y_{t-p} + \epsilon_t \\
-\epsilon | Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{MN}(\mathbf{0}_N, \mathbf{\Sigma})
+\*y_t' \*A_0 &= \sum_{l=1}^{p} \*y_{t-l}'\*A_l + \*c + \e_t' \\
+\e_t | \*Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{N}_n(\*0, \*I)
 \end{align*}
 $$
 
-The corresponding Structural Vector Autoregression (SVAR) model has the following specification.
+where $\*y_t$ is an $n\times1$ vector of endogenous variables, $\e_t$ is an $n\times1$ vector of exogenous structural shocks, $\*A_l$ is an $n\times n$ matrix of parameters with $\*A_0$ invertible, $\*c$ is an $1\times n$ vector of parameters, and $p$ is the lag length, and $T$ is the sample size. This can be compactly written as
 
 $$
 \begin{align*}
-y_t &= \mu_0 + A_1 y_{t-1} + \cdots + A_p y_{t-p} + B u_t \\
-u_t | Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{MN}(\mathbf{0}_N, \mathbf{I}_N)
+\*y_t' \*A_0 &= \*x_t' \*A_+ + \e_t'
 \end{align*}
 $$
 
-Where $y_t$ is a $N \times 1$ vector of endogenous variables
+where $\*A_+ = [\*A_1'\ \cdots\ \*A_p'\ \*c']$ and $\*x_t = [\*y_{t-1}'\ \cdots\ \*y_{t-p}'\ 1]$. The dimension of $\*A_+$ is $m\times n$ where $m=np+1$.
+
+In matrix form,
 
 $$
-y_t = [\text{productivity}_t,\ \text{stock prices}_t,\ \text{consumption}_t,\ \text{real interest rate}_t,\ \text{hours worked}_t]'
+\begin{align*}
+\*Y \*A_0 &= \*X \*A_+ + \e \\
+\e | \* X &\sim \mathcal{MN}_{T\times n}(\*0, \*I_n, \*I_T)
+\end{align*}
 $$
 
-$A_i$'s are $N \times N$ coefficient matrices, $\mu_0$ is a $N \times 1$ vector of constants, $\epsilon_t$ is a $N \times 1$ vector of reduced-form forecast errors, $u_t$ is a $N \times 1$ vector of structural shocks, their relation is captured by the $N \times N$ contemporaneous impulse response matrix $B$:
+where $\*Y = [\*y_1\ \cdots\ \*y_T]'$,\ $\*X = [\*x_1\ \cdots\ \*x_T]'$, and $\e = [\e_1\ \cdots\ \e_T]'$.
+
+The matrices $\*A_0$ and $\*A_+$ are structural parameters.
+
+### Reduced form
 
 $$
-\epsilon_t = B u_t
+\begin{align*}
+\*y_t' &= \*x_t' \*B + \*u_t' \\
+u_t | \*Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{N}_n(\*0, \*\Sigma)
+\end{align*}
 $$
+
+where $\*B = \*A_ + \*A_0^{-1},\ \*u_t' = \e_t' \*A_0^{-1}$, and
+
+$$
+\*\Sigma = \mathbb{E}[\*u_t\*u_t'] = (\*A_0^{-1})' (\*A_0^{-1}) = (\*A_0 \*A_0')^{-1}
+$$
+
+In matrix form,
+
+$$
+\begin{align*}
+\*Y &= \*X \*B + \*u \\
+\*u | \* X &\sim \mathcal{MN}_{T\times n}(\*0, \*\Sigma, \*I_T)
+\end{align*}
+$$
+
+where $\*u = [\*u_1\ \cdots\ \*u_T]'$.
+
+The matrices $\*B$ and $\*\Sigma$ are reduced-form parameters.
+
+### Notation relations
+
+In matrix form, notations from the lectures are
+
+$$
+\begin{align*}
+\*Y &= \*X A + E \\
+\*Y B_0' &= \*X B_+' + U \\
+E | \*X &\sim \mathcal{MN}_{T\times n}(\*0, \*\Sigma, \*I_T) \\
+U | \*X &\sim \mathcal{MN}_{T\times n}(\*0, \*I_n, \*I_T) \\
+\end{align*}
+$$
+
+Their equivalence relation is summarized in the following table.
+
+| @rubio2010structural | Lecture     |
+|----------------------|-------------|
+| $\*B$                | $A$         |
+| $\*\Sigma$           | $\*\Sigma$  |
+| $\*A_0$              | $B_0'$      |
+| $\*A_+$              | $B_+'$      |
+
+In the following, we will use the first set of notations.
 
 ## Identification
 

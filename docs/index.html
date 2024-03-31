@@ -120,7 +120,12 @@ div.csl-indent {
   </ul></li>
   <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a>
   <ul class="collapse">
-  <li><a href="#specification" id="toc-specification" class="nav-link" data-scroll-target="#specification">Specification</a></li>
+  <li><a href="#specification" id="toc-specification" class="nav-link" data-scroll-target="#specification">Specification</a>
+  <ul class="collapse">
+  <li><a href="#structural-form" id="toc-structural-form" class="nav-link" data-scroll-target="#structural-form">Structural form</a></li>
+  <li><a href="#reduced-form" id="toc-reduced-form" class="nav-link" data-scroll-target="#reduced-form">Reduced form</a></li>
+  <li><a href="#notation-relations" id="toc-notation-relations" class="nav-link" data-scroll-target="#notation-relations">Notation relations</a></li>
+  </ul></li>
   <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
   </ul></li>
@@ -154,21 +159,21 @@ div.csl-indent {
 </header>
 
 <blockquote class="blockquote">
-<p><strong>Abstract.</strong> This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">(<a href="#ref-arias2018inference" role="doc-biblioref">Arias, Rubio-Ramı́rez, and Waggoner 2018</a>)</span> to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.</p>
+<p><strong>Abstract.</strong> This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.</p>
 <p><strong>Keywords.</strong> Bayesian Structural VAR, sign restrictions, zero restrictions, optimism shock</p>
 </blockquote>
 <!-- [Replication Package](https://www.econometricsociety.org/publications/econometrica/2018/03/01/inference-based-structural-vector-autoregressions-identified) -->
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p><strong>Objective</strong>: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">(<a href="#ref-arias2018inference" role="doc-biblioref">Arias, Rubio-Ramı́rez, and Waggoner 2018</a>)</span>, and apply it to analyse the optimism shock in Australia economy.</p>
+<p><strong>Objective</strong>: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>, and apply it to analyse the optimism shock in Australia economy.</p>
 <p><strong>Question</strong>: Does optimism shocks drive the business cycles in Australian economy?</p>
-<p><strong>Motivation</strong>: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), <span class="citation" data-cites="beaudry2011mood">(<a href="#ref-beaudry2011mood" role="doc-biblioref">Beaudry, Nam, and Wang 2011</a>)</span> finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while <span class="citation" data-cites="arias2018inference">(<a href="#ref-arias2018inference" role="doc-biblioref">Arias, Rubio-Ramı́rez, and Waggoner 2018</a>)</span> argue that PFA imposes additional restrictions and they find less significant results using a importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.</p>
+<p><strong>Motivation</strong>: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), <span class="citation" data-cites="beaudry2011mood">Beaudry, Nam, and Wang (<a href="#ref-beaudry2011mood" role="doc-biblioref">2011</a>)</span> finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> argue that PFA imposes additional restrictions and they find less significant results using a importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.</p>
 </section>
 <section id="data" class="level1">
 <h1>Data</h1>
 <!-- load data -->
 <!-- concat datasets -->
-<p>All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. Following <span class="citation" data-cites="beaudry2011mood">(<a href="#ref-beaudry2011mood" role="doc-biblioref">Beaudry, Nam, and Wang 2011</a>)</span>, we select the following five variables for our analysis</p>
+<p>All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. Following <span class="citation" data-cites="beaudry2011mood">Beaudry, Nam, and Wang (<a href="#ref-beaudry2011mood" role="doc-biblioref">2011</a>)</span>, we select the following five variables for our analysis</p>
 <p><strong>Productivity</strong>: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).</p>
 <p><strong>Stock prices</strong>: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol ^AXJO), divided by the consumer price index.</p>
 <p><strong>Consumption</strong>: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.</p>
@@ -364,28 +369,94 @@ div.csl-indent {
 <h1>Model</h1>
 <section id="specification" class="level2">
 <h2 class="anchored" data-anchor-id="specification">Specification</h2>
-<p>A Reduced-form Vector Autoregression (VAR) model has the following specification.</p>
+<p>Adopting notations from <span class="citation" data-cites="rubio2010structural">Rubio-Ramirez, Waggoner, and Zha (<a href="#ref-rubio2010structural" role="doc-biblioref">2010</a>)</span>, the SVAR model is specified as follows.</p>
+<section id="structural-form" class="level3">
+<h3 class="anchored" data-anchor-id="structural-form">Structural form</h3>
 <p><span class="math display">\[
 \begin{align*}
-y_t &amp;= \mu_0 + A_1 y_{t-1} + \cdots + A_p y_{t-p} + \epsilon_t \\
-\epsilon | Y_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{MN}(\mathbf{0}_N, \mathbf{\Sigma})
+\mathbf{y}_t' \mathbf{A}_0 &amp;= \sum_{l=1}^{p} \mathbf{y}_{t-l}'\mathbf{A}_l + \mathbf{c} + \boldsymbol{\varepsilon}_t' \\
+\boldsymbol{\varepsilon}_t | \mathbf{Y}_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{N}_n(\mathbf{0}, \mathbf{I})
 \end{align*}
 \]</span></p>
-<p>The corresponding Structural Vector Autoregression (SVAR) model has the following specification.</p>
+<p>where <span class="math inline">\(\mathbf{y}_t\)</span> is an <span class="math inline">\(n\times1\)</span> vector of endogenous variables, <span class="math inline">\(\boldsymbol{\varepsilon}_t\)</span> is an <span class="math inline">\(n\times1\)</span> vector of exogenous structural shocks, <span class="math inline">\(\mathbf{A}_l\)</span> is an <span class="math inline">\(n\times n\)</span> matrix of parameters with <span class="math inline">\(\mathbf{A}_0\)</span> invertible, <span class="math inline">\(\mathbf{c}\)</span> is an <span class="math inline">\(1\times n\)</span> vector of parameters, and <span class="math inline">\(p\)</span> is the lag length, and <span class="math inline">\(T\)</span> is the sample size. This can be compactly written as</p>
 <p><span class="math display">\[
 \begin{align*}
-y_t &amp;= \mu_0 + A_1 y_{t-1} + \cdots + A_p y_{t-p} + B u_t \\
-u_t | Y_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{MN}(\mathbf{0}_N, \mathbf{I}_N)
+\mathbf{y}_t' \mathbf{A}_0 &amp;= \mathbf{x}_t' \mathbf{A}_+ + \boldsymbol{\varepsilon}_t'
 \end{align*}
 \]</span></p>
-<p>Where <span class="math inline">\(y_t\)</span> is a <span class="math inline">\(N \times 1\)</span> vector of endogenous variables</p>
+<p>where <span class="math inline">\(\mathbf{A}_+ = [\mathbf{A}_1'\ \cdots\ \mathbf{A}_p'\ \mathbf{c}']\)</span> and <span class="math inline">\(\mathbf{x}_t = [\mathbf{y}_{t-1}'\ \cdots\ \mathbf{y}_{t-p}'\ 1]\)</span>. The dimension of <span class="math inline">\(\mathbf{A}_+\)</span> is <span class="math inline">\(m\times n\)</span> where <span class="math inline">\(m=np+1\)</span>.</p>
+<p>In matrix form,</p>
 <p><span class="math display">\[
-y_t = [\text{productivity}_t,\ \text{stock prices}_t,\ \text{consumption}_t,\ \text{real interest rate}_t,\ \text{hours worked}_t]'
+\begin{align*}
+\mathbf{Y} \mathbf{A}_0 &amp;= \mathbf{X} \mathbf{A}_+ + \boldsymbol{\varepsilon}\\
+\boldsymbol{\varepsilon}| \mathbf{X} &amp;\sim \mathcal{MN}_{T\times n}(\mathbf{0}, \mathbf{I}_n, \mathbf{I}_T)
+\end{align*}
 \]</span></p>
-<p><span class="math inline">\(A_i\)</span>’s are <span class="math inline">\(N \times N\)</span> coefficient matrices, <span class="math inline">\(\mu_0\)</span> is a <span class="math inline">\(N \times 1\)</span> vector of constants, <span class="math inline">\(\epsilon_t\)</span> is a <span class="math inline">\(N \times 1\)</span> vector of reduced-form forecast errors, <span class="math inline">\(u_t\)</span> is a <span class="math inline">\(N \times 1\)</span> vector of structural shocks, their relation is captured by the <span class="math inline">\(N \times N\)</span> contemporaneous impulse response matrix <span class="math inline">\(B\)</span>:</p>
+<p>where <span class="math inline">\(\mathbf{Y} = [\mathbf{y}_1\ \cdots\ \mathbf{y}_T]'\)</span>,&nbsp;<span class="math inline">\(\mathbf{X} = [\mathbf{x}_1\ \cdots\ \mathbf{x}_T]'\)</span>, and <span class="math inline">\(\boldsymbol{\varepsilon}= [\boldsymbol{\varepsilon}_1\ \cdots\ \boldsymbol{\varepsilon}_T]'\)</span>.</p>
+<p>The matrices <span class="math inline">\(\mathbf{A}_0\)</span> and <span class="math inline">\(\mathbf{A}_+\)</span> are structural parameters.</p>
+</section>
+<section id="reduced-form" class="level3">
+<h3 class="anchored" data-anchor-id="reduced-form">Reduced form</h3>
 <p><span class="math display">\[
-\epsilon_t = B u_t
+\begin{align*}
+\mathbf{y}_t' &amp;= \mathbf{x}_t' \mathbf{B} + \mathbf{u}_t' \\
+u_t | \mathbf{Y}_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{N}_n(\mathbf{0}, \mathbf{\Sigma})
+\end{align*}
 \]</span></p>
+<p>where <span class="math inline">\(\mathbf{B} = \mathbf{A}_ + \mathbf{A}_0^{-1},\ \mathbf{u}_t' = \boldsymbol{\varepsilon}_t' \mathbf{A}_0^{-1}\)</span>, and</p>
+<p><span class="math display">\[
+\mathbf{\Sigma }= \mathbb{E}[\mathbf{u}_t\mathbf{u}_t'] = (\mathbf{A}_0^{-1})' (\mathbf{A}_0^{-1}) = (\mathbf{A}_0 \mathbf{A}_0')^{-1}
+\]</span></p>
+<p>In matrix form,</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbf{Y} &amp;= \mathbf{X} \mathbf{B} + \mathbf{u} \\
+\mathbf{u} | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times n}(\mathbf{0}, \mathbf{\Sigma}, \mathbf{I}_T)
+\end{align*}
+\]</span></p>
+<p>where <span class="math inline">\(\mathbf{u} = [\mathbf{u}_1\ \cdots\ \mathbf{u}_T]'\)</span>.</p>
+<p>The matrices <span class="math inline">\(\mathbf{B}\)</span> and <span class="math inline">\(\mathbf{\Sigma}\)</span> are reduced-form parameters.</p>
+</section>
+<section id="notation-relations" class="level3">
+<h3 class="anchored" data-anchor-id="notation-relations">Notation relations</h3>
+<p>In matrix form, notations from the lectures are</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbf{Y} &amp;= \mathbf{X} A + E \\
+\mathbf{Y} B_0' &amp;= \mathbf{X} B_+' + U \\
+E | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times n}(\mathbf{0}, \mathbf{\Sigma}, \mathbf{I}_T) \\
+U | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times n}(\mathbf{0}, \mathbf{I}_n, \mathbf{I}_T) \\
+\end{align*}
+\]</span></p>
+<p>Their equivalence relation is summarized in the following table.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th><span class="citation" data-cites="rubio2010structural">Rubio-Ramirez, Waggoner, and Zha (<a href="#ref-rubio2010structural" role="doc-biblioref">2010</a>)</span></th>
+<th>Lecture</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\mathbf{B}\)</span></td>
+<td><span class="math inline">\(A\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf{\Sigma}\)</span></td>
+<td><span class="math inline">\(\mathbf{\Sigma}\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\mathbf{A}_0\)</span></td>
+<td><span class="math inline">\(B_0'\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf{A}_+\)</span></td>
+<td><span class="math inline">\(B_+'\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>In the following, we will use the first set of notations.</p>
+</section>
 </section>
 <section id="identification" class="level2">
 <h2 class="anchored" data-anchor-id="identification">Identification</h2>
@@ -435,6 +506,9 @@ Arias, Jonas E, Juan F Rubio-Ramı́rez, and Daniel F Waggoner. 2018. <span>“I
 </div>
 <div id="ref-beaudry2011mood" class="csl-entry" role="listitem">
 Beaudry, Paul, Deokwoo Nam, and Jian Wang. 2011. <span>“Do Mood Swings Drive Business Cycles and Is It Rational?”</span> National Bureau of Economic Research.
+</div>
+<div id="ref-rubio2010structural" class="csl-entry" role="listitem">
+Rubio-Ramirez, Juan F, Daniel F Waggoner, and Tao Zha. 2010. <span>“Structural Vector Autoregressions: Theory of Identification and Algorithms for Inference.”</span> <em>The Review of Economic Studies</em> 77 (2): 665–96.
 </div>
 </div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
