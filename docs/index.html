@@ -116,7 +116,11 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#time-series-plot" id="toc-time-series-plot" class="nav-link" data-scroll-target="#time-series-plot">Time series plot</a></li>
   <li><a href="#acf-and-pacf-plot" id="toc-acf-and-pacf-plot" class="nav-link" data-scroll-target="#acf-and-pacf-plot">ACF and PACF plot</a></li>
-  <li><a href="#augmented-dickey-fuller-test" id="toc-augmented-dickey-fuller-test" class="nav-link" data-scroll-target="#augmented-dickey-fuller-test">Augmented Dickey-Fuller test</a></li>
+  <li><a href="#augmented-dickey-fuller-test" id="toc-augmented-dickey-fuller-test" class="nav-link" data-scroll-target="#augmented-dickey-fuller-test">Augmented Dickey-Fuller test</a>
+  <ul class="collapse">
+  <li><a href="#level" id="toc-level" class="nav-link" data-scroll-target="#level">Level</a></li>
+  <li><a href="#first-difference" id="toc-first-difference" class="nav-link" data-scroll-target="#first-difference">First difference</a></li>
+  </ul></li>
   </ul></li>
   <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a>
   <ul class="collapse">
@@ -125,7 +129,9 @@ div.csl-indent {
   <li><a href="#structural-form" id="toc-structural-form" class="nav-link" data-scroll-target="#structural-form">Structural form</a></li>
   <li><a href="#reduced-form" id="toc-reduced-form" class="nav-link" data-scroll-target="#reduced-form">Reduced form</a></li>
   <li><a href="#notation-relations" id="toc-notation-relations" class="nav-link" data-scroll-target="#notation-relations">Notation relations</a></li>
+  <li><a href="#orthogonal-reduced-form-parameterization" id="toc-orthogonal-reduced-form-parameterization" class="nav-link" data-scroll-target="#orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</a></li>
   </ul></li>
+  <li><a href="#algorithm-description" id="toc-algorithm-description" class="nav-link" data-scroll-target="#algorithm-description">Algorithm description</a></li>
   <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
   </ul></li>
@@ -158,6 +164,7 @@ div.csl-indent {
 
 </header>
 
+<!-- latex shortcuts -->
 <blockquote class="blockquote">
 <p><strong>Abstract.</strong> This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.</p>
 <p><strong>Keywords.</strong> Bayesian Structural VAR, sign restrictions, zero restrictions, optimism shock</p>
@@ -181,188 +188,25 @@ div.csl-indent {
 <p><strong>Hours worked</strong>: total hours worked (source: ABS, series ID A85389611R).</p>
 <p>The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.</p>
 <p>To capture multiplicative relationships in macroeconomic time series and percentage change interpretation, all variables are log transformed (except for real interest rate). A preview of first 6 rows of the concatenated dataset is shown below.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<colgroup>
-<col style="width: 11%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 15%">
-<col style="width: 24%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">date</th>
-<th style="text-align: right;">productivity</th>
-<th style="text-align: right;">stock_prices</th>
-<th style="text-align: right;">consumption</th>
-<th style="text-align: right;">real_interest_rate</th>
-<th style="text-align: right;">hours_worked</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Sep 1994</td>
-<td style="text-align: right;">4.2297</td>
-<td style="text-align: right;">3.4527</td>
-<td style="text-align: right;">4.9278</td>
-<td style="text-align: right;">4.842</td>
-<td style="text-align: right;">6.0222</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Dec 1994</td>
-<td style="text-align: right;">4.2384</td>
-<td style="text-align: right;">3.3870</td>
-<td style="text-align: right;">4.9191</td>
-<td style="text-align: right;">5.961</td>
-<td style="text-align: right;">6.0143</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Mar 1995</td>
-<td style="text-align: right;">4.2283</td>
-<td style="text-align: right;">3.3764</td>
-<td style="text-align: right;">4.9315</td>
-<td style="text-align: right;">5.892</td>
-<td style="text-align: right;">6.0171</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Jun 1995</td>
-<td style="text-align: right;">4.2136</td>
-<td style="text-align: right;">3.4216</td>
-<td style="text-align: right;">4.9487</td>
-<td style="text-align: right;">6.209</td>
-<td style="text-align: right;">6.0220</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Sep 1995</td>
-<td style="text-align: right;">4.2327</td>
-<td style="text-align: right;">3.4635</td>
-<td style="text-align: right;">4.9500</td>
-<td style="text-align: right;">6.293</td>
-<td style="text-align: right;">6.0199</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Dec 1995</td>
-<td style="text-align: right;">4.2297</td>
-<td style="text-align: right;">3.4968</td>
-<td style="text-align: right;">4.9610</td>
-<td style="text-align: right;">6.708</td>
-<td style="text-align: right;">6.0164</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <section id="time-series-plot" class="level2">
 <h2 class="anchored" data-anchor-id="time-series-plot">Time series plot</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="quarto-discovered-preview-image img-fluid" width="672"></p>
-</div>
-</div>
 <p>The sample period covers 1994Q3 to 2023Q4.</p>
 </section>
 <section id="acf-and-pacf-plot" class="level2">
 <h2 class="anchored" data-anchor-id="acf-and-pacf-plot">ACF and PACF plot</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
 <p>The autocorrelation function (ACF) plot shows all variables have a consistent pattern of autocorrelation, this suggests that the time series are non-stationary. Stationarity is formally tested using the Augmented Dickey-Fuller test in the next section.</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
 <p>The partial autocorrelation function (PACF) plot shows that the partial autocorrelation of all variables is significant at lag 1, real interest rate is also significant at lag 2. Therefore, choosing a lag length for the VAR model greater than or equal to 2 is reasonable, following convention for quarterly data, we will adopt a lag length of 4 for the VAR model.</p>
 </section>
 <section id="augmented-dickey-fuller-test" class="level2">
 <h2 class="anchored" data-anchor-id="augmented-dickey-fuller-test">Augmented Dickey-Fuller test</h2>
+<section id="level" class="level3">
+<h3 class="anchored" data-anchor-id="level">Level</h3>
 <p>All five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">variable</th>
-<th style="text-align: right;">p_value</th>
-<th style="text-align: right;">non_stationary</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">productivity</td>
-<td style="text-align: right;">0.8372</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">0.1728</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">consumption</td>
-<td style="text-align: right;">0.6170</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">0.3678</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">0.0657</td>
-<td style="text-align: right;">1</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+</section>
+<section id="first-difference" class="level3">
+<h3 class="anchored" data-anchor-id="first-difference">First difference</h3>
 <p>Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one <span class="math inline">\(I(1)\)</span> and it is reasonable to put them in a VAR system without further transformation.</p>
-<div class="cell">
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">variable</th>
-<th style="text-align: right;">p_value</th>
-<th style="text-align: right;">non_stationary</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">productivity</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">consumption</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">0</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+</section>
 </section>
 </section>
 <section id="model" class="level1">
@@ -375,21 +219,21 @@ div.csl-indent {
 <p><span class="math display">\[
 \begin{align*}
 \mathbf{y}_t' \mathbf{A}_0 &amp;= \sum_{l=1}^{p} \mathbf{y}_{t-l}'\mathbf{A}_l + \mathbf{c} + \boldsymbol{\varepsilon}_t' \\
-\boldsymbol{\varepsilon}_t | \mathbf{Y}_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{N}_n(\mathbf{0}, \mathbf{I})
+\boldsymbol{\varepsilon}_t | \mathbf{Y}_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{N}_N(\mathbf{0}, \mathbf{I})
 \end{align*}
 \]</span></p>
-<p>where <span class="math inline">\(\mathbf{y}_t\)</span> is an <span class="math inline">\(n\times1\)</span> vector of endogenous variables, <span class="math inline">\(\boldsymbol{\varepsilon}_t\)</span> is an <span class="math inline">\(n\times1\)</span> vector of exogenous structural shocks, <span class="math inline">\(\mathbf{A}_l\)</span> is an <span class="math inline">\(n\times n\)</span> matrix of parameters with <span class="math inline">\(\mathbf{A}_0\)</span> invertible, <span class="math inline">\(\mathbf{c}\)</span> is an <span class="math inline">\(1\times n\)</span> vector of parameters, and <span class="math inline">\(p\)</span> is the lag length, and <span class="math inline">\(T\)</span> is the sample size. This can be compactly written as</p>
+<p>where <span class="math inline">\(\mathbf{y}_t\)</span> is an <span class="math inline">\(N\times1\)</span> vector of endogenous variables, <span class="math inline">\(\boldsymbol{\varepsilon}_t\)</span> is an <span class="math inline">\(N\times1\)</span> vector of exogenous structural shocks, <span class="math inline">\(\mathbf{A}_l\)</span> is an <span class="math inline">\(N\times N\)</span> matrix of parameters with <span class="math inline">\(\mathbf{A}_0\)</span> invertible, <span class="math inline">\(\mathbf{c}\)</span> is an <span class="math inline">\(1\times N\)</span> vector of parameters, and <span class="math inline">\(p\)</span> is the lag length, and <span class="math inline">\(T\)</span> is the sample size. This can be compactly written as</p>
 <p><span class="math display">\[
 \begin{align*}
 \mathbf{y}_t' \mathbf{A}_0 &amp;= \mathbf{x}_t' \mathbf{A}_+ + \boldsymbol{\varepsilon}_t'
 \end{align*}
 \]</span></p>
-<p>where <span class="math inline">\(\mathbf{A}_+ = [\mathbf{A}_1'\ \cdots\ \mathbf{A}_p'\ \mathbf{c}']\)</span> and <span class="math inline">\(\mathbf{x}_t = [\mathbf{y}_{t-1}'\ \cdots\ \mathbf{y}_{t-p}'\ 1]\)</span>. The dimension of <span class="math inline">\(\mathbf{A}_+\)</span> is <span class="math inline">\(m\times n\)</span> where <span class="math inline">\(m=np+1\)</span>.</p>
+<p>where <span class="math inline">\(\mathbf{A}_+ = [\mathbf{A}_1'\ \cdots\ \mathbf{A}_p'\ \mathbf{c}']\)</span> and <span class="math inline">\(\mathbf{x}_t = [\mathbf{y}_{t-1}'\ \cdots\ \mathbf{y}_{t-p}'\ 1]\)</span>. The dimension of <span class="math inline">\(\mathbf{A}_+\)</span> is <span class="math inline">\(K\times N\)</span> where <span class="math inline">\(K=Np+1\)</span>.</p>
 <p>In matrix form,</p>
 <p><span class="math display">\[
 \begin{align*}
 \mathbf{Y} \mathbf{A}_0 &amp;= \mathbf{X} \mathbf{A}_+ + \boldsymbol{\varepsilon}\\
-\boldsymbol{\varepsilon}| \mathbf{X} &amp;\sim \mathcal{MN}_{T\times n}(\mathbf{0}, \mathbf{I}_n, \mathbf{I}_T)
+\boldsymbol{\varepsilon}| \mathbf{X} &amp;\sim \mathcal{MN}_{T\times N}(\mathbf{0}, \mathbf{I}_N, \mathbf{I}_T)
 \end{align*}
 \]</span></p>
 <p>where <span class="math inline">\(\mathbf{Y} = [\mathbf{y}_1\ \cdots\ \mathbf{y}_T]'\)</span>,&nbsp;<span class="math inline">\(\mathbf{X} = [\mathbf{x}_1\ \cdots\ \mathbf{x}_T]'\)</span>, and <span class="math inline">\(\boldsymbol{\varepsilon}= [\boldsymbol{\varepsilon}_1\ \cdots\ \boldsymbol{\varepsilon}_T]'\)</span>.</p>
@@ -400,7 +244,7 @@ div.csl-indent {
 <p><span class="math display">\[
 \begin{align*}
 \mathbf{y}_t' &amp;= \mathbf{x}_t' \mathbf{B} + \mathbf{u}_t' \\
-u_t | \mathbf{Y}_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{N}_n(\mathbf{0}, \mathbf{\Sigma})
+\mathbf{u}_t | \mathbf{Y}_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{N}_N(\mathbf{0}, \mathbf{\Sigma})
 \end{align*}
 \]</span></p>
 <p>where <span class="math inline">\(\mathbf{B} = \mathbf{A}_ + \mathbf{A}_0^{-1},\ \mathbf{u}_t' = \boldsymbol{\varepsilon}_t' \mathbf{A}_0^{-1}\)</span>, and</p>
@@ -424,8 +268,8 @@ u_t | \mathbf{Y}_{t-1} &amp;\overset{\text{iid}}{\sim} \mathcal{N}_n(\mathbf{0},
 \begin{align*}
 \mathbf{Y} &amp;= \mathbf{X} A + E \\
 \mathbf{Y} B_0' &amp;= \mathbf{X} B_+' + U \\
-E | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times n}(\mathbf{0}, \mathbf{\Sigma}, \mathbf{I}_T) \\
-U | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times n}(\mathbf{0}, \mathbf{I}_n, \mathbf{I}_T) \\
+E | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times N}(\mathbf{0}, \mathbf{\Sigma}, \mathbf{I}_T) \\
+U | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times N}(\mathbf{0}, \mathbf{I}_N, \mathbf{I}_T) \\
 \end{align*}
 \]</span></p>
 <p>Their equivalence relation is summarized in the following table.</p>
@@ -453,10 +297,55 @@ U | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times n}(\mathbf{0}, \mathbf{I}_n, \mat
 <td><span class="math inline">\(\mathbf{A}_+\)</span></td>
 <td><span class="math inline">\(B_+'\)</span></td>
 </tr>
+<tr class="odd">
+<td><span class="math inline">\(\boldsymbol{\varepsilon}\)</span></td>
+<td><span class="math inline">\(U\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathbf{u}\)</span></td>
+<td><span class="math inline">\(E\)</span></td>
+</tr>
 </tbody>
 </table>
+<p>(<span class="math inline">\(B_0=B\)</span> in <span class="citation" data-cites="wozniakBsvarsBayesianEstimation2022">Woźniak (<a href="#ref-wozniakBsvarsBayesianEstimation2022" role="doc-biblioref">2022</a>)</span>)</p>
 <p>In the following, we will use the first set of notations.</p>
 </section>
+<section id="orthogonal-reduced-form-parameterization" class="level3">
+<h3 class="anchored" data-anchor-id="orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</h3>
+<p>Since SVAR model are identified up to a rotation matrix <span class="math inline">\(\mathbf{Q}\)</span>, we can explicitly specified the reduced-form model as</p>
+<p><span class="math display">\[
+\mathbf{y}_t' = \mathbf{x}_t' \mathbf{B} + \boldsymbol{\varepsilon}_t' \mathbf{Q}' h(\mathbf{\Sigma})
+\]</span></p>
+<p>Where <span class="math inline">\(\mathbf{Q}'h(\mathbf{\Sigma}) = \mathbf{A}_0^{-1}\)</span> or <span class="math inline">\(\mathbf{Q}=h(\mathbf{\Sigma}) \mathbf{A}_0\)</span>, and <span class="math inline">\(h\)</span> is some differentiable decomposition, one specific choice is the upper triangular Cholesky decomposition.</p>
+<p>We can define a mapping <span class="math inline">\(f_h\)</span> between the reduced-form parameters <span class="math inline">\((\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span> and structural-form parameters <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+)\)</span> as</p>
+<p><span class="math display">\[
+\begin{align*}
+f_h(\mathbf{A}_0, \mathbf{A}_+) &amp;= (
+  \underbrace{\mathbf{A}_+ \mathbf{A}_0^{-1}}_\mathbf{B},
+  \underbrace{(\mathbf{A}_0 \mathbf{A}_0')^{-1}}_{\mathbf{\Sigma}},
+  \underbrace{h((\mathbf{A}_0 \mathbf{A}_0')^{-1}) \mathbf{A}_0}_\mathbf{Q}
+  ) \\
+f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q}) &amp;= (
+  \underbrace{h(\mathbf{\Sigma})^{-1} \mathbf{Q}}_{\mathbf{A}_0},
+  \underbrace{\mathbf{B} h(\mathbf{\Sigma})^{-1} \mathbf{Q}}_{\mathbf{A}_+}
+  )
+  )
+\end{align*}
+\]</span></p>
+</section>
+</section>
+<section id="algorithm-description" class="level2">
+<h2 class="anchored" data-anchor-id="algorithm-description">Algorithm description</h2>
+<p>The goal is to sample structural parameters (<span class="math inline">\(\mathbf{A}_0\)</span>, <span class="math inline">\(\mathbf{A}_+\)</span>) satisfying <strong>both</strong> the sign and zero restrictions, but the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters (<span class="math inline">\(\mathcal{P}(X=x)=0\)</span> for continuous <span class="math inline">\(X\)</span>). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.</p>
+<p>Here is a high level outline of the algorithm:</p>
+<ol type="1">
+<li>Sample reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>, <span class="math inline">\(\mathbf{Q}\)</span>) conditional on the zero restrictions.</li>
+<li>Set <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+) = f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span>.</li>
+<li>If the sign restrictions are satisfied, keep <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+)\)</span> and compute a importance weight, otherwise discard.</li>
+<li>Repeat steps 1-3 until the desired number of samples is obtained.</li>
+<li>Resample with replacement using the importance weights.</li>
+</ol>
+<p>The importance sampling step 5 is needed to manipulate the density induced by step 1 to the desired conjugate posterior density, if one is willing to accept the former density then step 5 is not needed but there are still other drawbacks <span class="citation" data-cites="arias2018inference">(<a href="#ref-arias2018inference" role="doc-biblioref">Arias, Rubio-Ramı́rez, and Waggoner 2018, 4.4</a>)</span>.</p>
 </section>
 <section id="identification" class="level2">
 <h2 class="anchored" data-anchor-id="identification">Identification</h2>
@@ -509,6 +398,9 @@ Beaudry, Paul, Deokwoo Nam, and Jian Wang. 2011. <span>“Do Mood Swings Drive B
 </div>
 <div id="ref-rubio2010structural" class="csl-entry" role="listitem">
 Rubio-Ramirez, Juan F, Daniel F Waggoner, and Tao Zha. 2010. <span>“Structural Vector Autoregressions: Theory of Identification and Algorithms for Inference.”</span> <em>The Review of Economic Studies</em> 77 (2): 665–96.
+</div>
+<div id="ref-wozniakBsvarsBayesianEstimation2022" class="csl-entry" role="listitem">
+Woźniak, Tomasz. 2022. <em>Bsvars: Bayesian Estimation of Structural Vector Autoregressive Models</em>. R Package. <a href="https://cran.r-project.org/package=bsvars">https://cran.r-project.org/package=bsvars</a>.
 </div>
 </div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

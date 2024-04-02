@@ -8,12 +8,14 @@ execute:
 bibliography: references.bib
 ---
 
+<!-- latex shortcuts -->
+
 \def\*#1{\mathbf{#1}}
 \def\e{\boldsymbol{\varepsilon}}
 
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-# knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
 > **Abstract.** This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by @arias2018inference to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.
@@ -180,6 +182,8 @@ The partial autocorrelation function (PACF) plot shows that the partial autocorr
 
 ## Augmented Dickey-Fuller test
 
+### Level
+
 All five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.
 
 ```{r}
@@ -193,6 +197,8 @@ adf       = cbind(variable, p_value) |>
 
 kable(adf, digits = 4)
 ```
+
+### First difference
 
 Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one $I(1)$ and it is reasonable to put them in a VAR system without further transformation.
 
@@ -219,11 +225,11 @@ Adopting notations from @rubio2010structural, the SVAR model is specified as fol
 $$
 \begin{align*}
 \*y_t' \*A_0 &= \sum_{l=1}^{p} \*y_{t-l}'\*A_l + \*c + \e_t' \\
-\e_t | \*Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{N}_n(\*0, \*I)
+\e_t | \*Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{N}_N(\*0, \*I)
 \end{align*}
 $$
 
-where $\*y_t$ is an $n\times1$ vector of endogenous variables, $\e_t$ is an $n\times1$ vector of exogenous structural shocks, $\*A_l$ is an $n\times n$ matrix of parameters with $\*A_0$ invertible, $\*c$ is an $1\times n$ vector of parameters, and $p$ is the lag length, and $T$ is the sample size. This can be compactly written as
+where $\*y_t$ is an $N\times1$ vector of endogenous variables, $\e_t$ is an $N\times1$ vector of exogenous structural shocks, $\*A_l$ is an $N\times N$ matrix of parameters with $\*A_0$ invertible, $\*c$ is an $1\times N$ vector of parameters, and $p$ is the lag length, and $T$ is the sample size. This can be compactly written as
 
 $$
 \begin{align*}
@@ -231,14 +237,14 @@ $$
 \end{align*}
 $$
 
-where $\*A_+ = [\*A_1'\ \cdots\ \*A_p'\ \*c']$ and $\*x_t = [\*y_{t-1}'\ \cdots\ \*y_{t-p}'\ 1]$. The dimension of $\*A_+$ is $m\times n$ where $m=np+1$.
+where $\*A_+ = [\*A_1'\ \cdots\ \*A_p'\ \*c']$ and $\*x_t = [\*y_{t-1}'\ \cdots\ \*y_{t-p}'\ 1]$. The dimension of $\*A_+$ is $K\times N$ where $K=Np+1$.
 
 In matrix form,
 
 $$
 \begin{align*}
 \*Y \*A_0 &= \*X \*A_+ + \e \\
-\e | \* X &\sim \mathcal{MN}_{T\times n}(\*0, \*I_n, \*I_T)
+\e | \* X &\sim \mathcal{MN}_{T\times N}(\*0, \*I_N, \*I_T)
 \end{align*}
 $$
 
@@ -251,7 +257,7 @@ The matrices $\*A_0$ and $\*A_+$ are structural parameters.
 $$
 \begin{align*}
 \*y_t' &= \*x_t' \*B + \*u_t' \\
-u_t | \*Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{N}_n(\*0, \*\Sigma)
+\*u_t | \*Y_{t-1} &\overset{\text{iid}}{\sim} \mathcal{N}_N(\*0, \*\Sigma)
 \end{align*}
 $$
 
@@ -282,8 +288,8 @@ $$
 \begin{align*}
 \*Y &= \*X A + E \\
 \*Y B_0' &= \*X B_+' + U \\
-E | \*X &\sim \mathcal{MN}_{T\times n}(\*0, \*\Sigma, \*I_T) \\
-U | \*X &\sim \mathcal{MN}_{T\times n}(\*0, \*I_n, \*I_T) \\
+E | \*X &\sim \mathcal{MN}_{T\times N}(\*0, \*\Sigma, \*I_T) \\
+U | \*X &\sim \mathcal{MN}_{T\times N}(\*0, \*I_N, \*I_T) \\
 \end{align*}
 $$
 
@@ -295,8 +301,53 @@ Their equivalence relation is summarized in the following table.
 | $\*\Sigma$           | $\*\Sigma$  |
 | $\*A_0$              | $B_0'$      |
 | $\*A_+$              | $B_+'$      |
+| $\e$                 | $U$         |
+| $\*u$                | $E$         |
+
+($B_0=B$ in @wozniakBsvarsBayesianEstimation2022)
 
 In the following, we will use the first set of notations.
+
+### Orthogonal reduced-form parameterization
+
+Since SVAR model are identified up to a rotation matrix $\*Q$, we can explicitly specified the reduced-form model as
+
+$$
+\*y_t' = \*x_t' \*B + \e_t' \*Q' h(\*\Sigma)
+$$
+
+Where $\*Q'h(\*\Sigma) = \*A_0^{-1}$ or $\*Q=h(\*\Sigma) \*A_0$, and $h$ is some differentiable decomposition, one specific choice is the upper triangular Cholesky decomposition. 
+
+We can define a mapping $f_h$ between the reduced-form parameters $(\*B, \*\Sigma, \*Q)$ and structural-form parameters $(\*A_0, \*A_+)$ as
+
+$$
+\begin{align*}
+f_h(\*A_0, \*A_+) &= (
+  \underbrace{\*A_+ \*A_0^{-1}}_\*B,
+  \underbrace{(\*A_0 \*A_0')^{-1}}_{\*\Sigma},
+  \underbrace{h((\*A_0 \*A_0')^{-1}) \*A_0}_\*Q
+  ) \\
+f_h^{-1}(\*B, \*\Sigma, \*Q) &= (
+  \underbrace{h(\*\Sigma)^{-1} \*Q}_{\*A_0},
+  \underbrace{\*B h(\*\Sigma)^{-1} \*Q}_{\*A_+}
+  )
+  )
+\end{align*}
+$$
+
+## Algorithm description
+
+The goal is to sample structural parameters ($\*A_0$, $\*A_+$) satisfying **both** the sign and zero restrictions, but the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters ($\mathcal{P}(X=x)=0$ for continuous $X$). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.
+
+Here is a high level outline of the algorithm:
+
+1. Sample reduced-form parameters ($\*B$, $\*\Sigma$, $\*Q$) conditional on the zero restrictions.
+2. Set $(\*A_0, \*A_+) = f_h^{-1}(\*B, \*\Sigma, \*Q)$.
+3. If the sign restrictions are satisfied, keep $(\*A_0, \*A_+)$ and compute a importance weight, otherwise discard.
+4. Repeat steps 1-3 until the desired number of samples is obtained.
+5. Resample with replacement using the importance weights.
+
+The importance sampling step 5 is needed to manipulate the density induced by step 1 to the desired conjugate posterior density, if one is willing to accept the former density then step 5 is not needed but there are still other drawbacks [@arias2018inference, 4.4].
 
 ## Identification
 
