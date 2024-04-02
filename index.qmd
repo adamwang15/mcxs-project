@@ -1,6 +1,6 @@
 ---
 title: "Sign and zero restrictions: optimism shock on the Australian business cycle"
-author: "Xiaolei (Adam) Wang"
+author: "Adam Wang"
 
 execute:
   echo: false
@@ -15,7 +15,7 @@ bibliography: references.bib
 
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-knitr::opts_chunk$set(eval = FALSE)
+# knitr::opts_chunk$set(eval = FALSE)
 ```
 
 > **Abstract.** This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by @arias2018inference to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.
@@ -318,7 +318,7 @@ $$
 
 Where $\*Q'h(\*\Sigma) = \*A_0^{-1}$ or $\*Q=h(\*\Sigma) \*A_0$, and $h$ is some differentiable decomposition, one specific choice is the upper triangular Cholesky decomposition. 
 
-We can define a mapping $f_h$ between the reduced-form parameters $(\*B, \*\Sigma, \*Q)$ and structural-form parameters $(\*A_0, \*A_+)$ as
+Then, we can define a mapping $f_h$ between the reduced-form parameters $(\*B, \*\Sigma, \*Q)$ and structural-form parameters $(\*A_0, \*A_+)$ as
 
 $$
 \begin{align*}
@@ -337,7 +337,7 @@ $$
 
 ## Algorithm description
 
-The goal is to sample structural parameters ($\*A_0$, $\*A_+$) satisfying **both** the sign and zero restrictions, but the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters ($\mathcal{P}(X=x)=0$ for continuous $X$). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.
+The goal is to sample structural parameters ($\*A_0$, $\*A_+$) satisfying **both** the sign and zero restrictions, but the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters ($\mathbb{P}(X=x)=0$ for continuous $X$). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.
 
 Here is a high level outline of the algorithm:
 
@@ -347,11 +347,11 @@ Here is a high level outline of the algorithm:
 4. Repeat steps 1-3 until the desired number of samples is obtained.
 5. Resample with replacement using the importance weights.
 
-The importance sampling step 5 is needed to manipulate the density induced by step 1 to the desired conjugate posterior density, if one is willing to accept the former density then step 5 is not needed but there are still other drawbacks [@arias2018inference, 4.4].
+The importance sampling step 5 is needed to manipulate the density induced by step 1 to the desired conjugate posterior density.
 
 ## Identification
 
-After estimating the reduced-form VAR model, we plan to impose the following restrictions on the impulse response matrix $B$ to identify optimism shock.
+After estimating the reduced-form VAR model, we plan to impose the following restrictions on the contemporaneous impulse response matrix $(\*A_0')^{-1}$ to identify optimism shock.
 
 | Productivity | Stock prices | Consumption | Real interest rate | Hours worked |
 |--------------|--------------|-------------|--------------------|--------------|
