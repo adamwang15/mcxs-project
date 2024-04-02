@@ -30,7 +30,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 **Question**: Does optimism shocks drive the business cycles in Australian economy?
 
-**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while @arias2018inference argue that PFA imposes additional restrictions and they find less significant results using a importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
+**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while @arias2018inference argue that PFA imposes additional restrictions and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
 
 # Data
 
@@ -335,7 +335,7 @@ f_h^{-1}(\*B, \*\Sigma, \*Q) &= (
 \end{align*}
 $$
 
-## Algorithm description
+## Algorithm
 
 The goal is to sample structural parameters ($\*A_0$, $\*A_+$) satisfying **both** the sign and zero restrictions, but the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters ($\mathbb{P}(X=x)=0$ for continuous $X$). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.
 
@@ -343,7 +343,7 @@ Here is a high level outline of the algorithm:
 
 1. Sample reduced-form parameters ($\*B$, $\*\Sigma$, $\*Q$) conditional on the zero restrictions.
 2. Set $(\*A_0, \*A_+) = f_h^{-1}(\*B, \*\Sigma, \*Q)$.
-3. If the sign restrictions are satisfied, keep $(\*A_0, \*A_+)$ and compute a importance weight, otherwise discard.
+3. If the sign restrictions are satisfied, keep $(\*A_0, \*A_+)$ and compute an importance weight, otherwise discard.
 4. Repeat steps 1-3 until the desired number of samples is obtained.
 5. Resample with replacement using the importance weights.
 
