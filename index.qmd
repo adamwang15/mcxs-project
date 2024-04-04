@@ -15,7 +15,7 @@ bibliography: references.bib
 
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-# knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
 > **Abstract.** This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by @arias2018inference to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.
@@ -26,11 +26,11 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Introduction
 
-**Objective**: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by @arias2018inference, and apply it to analyse the optimism shock in Australia economy.
+**Objective**: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by @arias2018inference in the [bsvarSIGNs](https://github.com/bsvars/bsvarSIGNs) package, and apply it to analyse the optimism shock in Australia economy.
 
 **Question**: Does optimism shocks drive the business cycles in Australian economy?
 
-**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States, while @arias2018inference argue that PFA imposes additional restrictions and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
+**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States as it creates a simultaneous boom in consumption and hours worked. But, @arias2018inference argue that PFA imposes additional restrictions, and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
 
 # Data
 
@@ -220,6 +220,12 @@ cbind(variable, p_value) |>
 
 Adopting notations from @rubio2010structural, the SVAR model is specified as follows.
 
+The endogenous variables are
+
+$$
+\*y_t = [\text{productivity}_t,\ \text{stock prices}_t,\ \text{consumption}_t,\ \text{real interest rate}_t,\ \text{hours worked}_t]'
+$$
+
 ### Structural form
 
 $$
@@ -304,7 +310,7 @@ Their equivalence relation is summarized in the following table.
 | $\e$                 | $U$         |
 | $\*u$                | $E$         |
 
-($B_0=B$ in @wozniakBsvarsBayesianEstimation2022)
+(also $B_0=B$ in @wozniakBsvarsBayesianEstimation2022)
 
 In the following, we will use the first set of notations.
 
