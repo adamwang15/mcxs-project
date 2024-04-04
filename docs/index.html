@@ -188,13 +188,102 @@ div.csl-indent {
 <p><strong>Hours worked</strong>: total hours worked (source: ABS, series ID A85389611R).</p>
 <p>The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.</p>
 <p>To capture multiplicative relationships in macroeconomic time series and percentage change interpretation, all variables are log transformed (except for real interest rate). A preview of first 6 rows of the concatenated dataset is shown below.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 15%">
+<col style="width: 24%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">date</th>
+<th style="text-align: right;">productivity</th>
+<th style="text-align: right;">stock_prices</th>
+<th style="text-align: right;">consumption</th>
+<th style="text-align: right;">real_interest_rate</th>
+<th style="text-align: right;">hours_worked</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sep 1994</td>
+<td style="text-align: right;">4.2297</td>
+<td style="text-align: right;">3.4527</td>
+<td style="text-align: right;">4.9278</td>
+<td style="text-align: right;">4.842</td>
+<td style="text-align: right;">6.0222</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dec 1994</td>
+<td style="text-align: right;">4.2384</td>
+<td style="text-align: right;">3.3870</td>
+<td style="text-align: right;">4.9191</td>
+<td style="text-align: right;">5.961</td>
+<td style="text-align: right;">6.0143</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mar 1995</td>
+<td style="text-align: right;">4.2283</td>
+<td style="text-align: right;">3.3764</td>
+<td style="text-align: right;">4.9315</td>
+<td style="text-align: right;">5.892</td>
+<td style="text-align: right;">6.0171</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jun 1995</td>
+<td style="text-align: right;">4.2136</td>
+<td style="text-align: right;">3.4216</td>
+<td style="text-align: right;">4.9487</td>
+<td style="text-align: right;">6.209</td>
+<td style="text-align: right;">6.0220</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sep 1995</td>
+<td style="text-align: right;">4.2327</td>
+<td style="text-align: right;">3.4635</td>
+<td style="text-align: right;">4.9500</td>
+<td style="text-align: right;">6.293</td>
+<td style="text-align: right;">6.0199</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dec 1995</td>
+<td style="text-align: right;">4.2297</td>
+<td style="text-align: right;">3.4968</td>
+<td style="text-align: right;">4.9610</td>
+<td style="text-align: right;">6.708</td>
+<td style="text-align: right;">6.0164</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <section id="time-series-plot" class="level2">
 <h2 class="anchored" data-anchor-id="time-series-plot">Time series plot</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="quarto-discovered-preview-image img-fluid" width="672"></p>
+</div>
+</div>
 <p>The sample period covers 1994Q3 to 2023Q4.</p>
 </section>
 <section id="acf-and-pacf-plot" class="level2">
 <h2 class="anchored" data-anchor-id="acf-and-pacf-plot">ACF and PACF plot</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <p>The autocorrelation function (ACF) plot shows all variables have a consistent pattern of autocorrelation, this suggests that the time series are non-stationary. Stationarity is formally tested using the Augmented Dickey-Fuller test in the next section.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <p>The partial autocorrelation function (PACF) plot shows that the partial autocorrelation of all variables is significant at lag 1, real interest rate is also significant at lag 2. Therefore, choosing a lag length for the VAR model greater than or equal to 2 is reasonable, following convention for quarterly data, we will adopt a lag length of 4 for the VAR model.</p>
 </section>
 <section id="augmented-dickey-fuller-test" class="level2">
@@ -202,10 +291,90 @@ div.csl-indent {
 <section id="level" class="level3">
 <h3 class="anchored" data-anchor-id="level">Level</h3>
 <p>All five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">p_value</th>
+<th style="text-align: right;">non_stationary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">productivity</td>
+<td style="text-align: right;">0.8372</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stock_prices</td>
+<td style="text-align: right;">0.1728</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">consumption</td>
+<td style="text-align: right;">0.6170</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">real_interest_rate</td>
+<td style="text-align: right;">0.3678</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hours_worked</td>
+<td style="text-align: right;">0.0657</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
 <section id="first-difference" class="level3">
 <h3 class="anchored" data-anchor-id="first-difference">First difference</h3>
 <p>Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one <span class="math inline">\(I(1)\)</span> and it is reasonable to put them in a VAR system without further transformation.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">p_value</th>
+<th style="text-align: right;">non_stationary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">productivity</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stock_prices</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">consumption</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">real_interest_rate</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hours_worked</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
 </section>
 </section>
