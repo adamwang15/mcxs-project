@@ -44,8 +44,6 @@ library(tseries)
 library(tidyverse)
 library(knitr)
 
-devtools::install_github("bsvars/bsvarSIGNs")
-library(bsvarSIGNs)
 
 consumer_price_index = read_rba(series_id = 'GCPIAG')
 
@@ -122,15 +120,15 @@ df = merge(df_consumer_price_index, df_productivity, by = 'date') |>
 
 All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. Following @beaudry2011mood, we select the following five variables for our analysis
 
-**Productivity**: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).
+- **Productivity**: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).
 
-**Stock prices**: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol \^AXJO), divided by the consumer price index.
+- **Stock prices**: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol \^AXJO), divided by the consumer price index.
 
-**Consumption**: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.
+- **Consumption**: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.
 
-**Real interest rate**: over-night cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP).
+- **Real interest rate**: over-night cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP).
 
-**Hours worked**: total hours worked (source: ABS, series ID A85389611R).
+- **Hours worked**: total hours worked (source: ABS, series ID A85389611R).
 
 The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.
 
