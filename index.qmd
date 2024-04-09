@@ -135,7 +135,10 @@ The first two variables (productivity and stock prices) are chosen to identify t
 To capture multiplicative relationships in macroeconomic time series and percentage change interpretation, all variables are log transformed (except for real interest rate). A preview of first 6 rows of the concatenated dataset is shown below.
 
 ```{r}
-kable(head(df), digits = 4)
+library(kableExtra)
+library(tidyverse)
+
+kable(head(df), digits = 4, align = "c")
 ```
 
 ## Time series plot
@@ -210,6 +213,7 @@ cbind(variable, p_value) |>
   mutate(p_value = round(as.numeric(p_value), 4)) |> 
   mutate(non_stationary = as.numeric(p_value > 0.05)) |> 
   kable(digits = 4)
+
 ```
 
 # Model
