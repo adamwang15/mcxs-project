@@ -30,7 +30,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 **Question**: Does optimism shocks drive the business cycles in Australian economy?
 
-**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States as it creates a simultaneous boom in consumption and hours worked. But, @arias2018inference argue that PFA imposes additional restrictions, and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
+**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA)[^1], @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States as it creates a simultaneous boom in consumption and hours worked. But, @arias2018inference argue that PFA imposes additional restrictions, and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
+
+[^1]: Intuitively, the PFA uses a loss function to find a rotation matrix $\*Q$ that satisfies the zero restrictions and satisfies or close to satisfying the sign restrictions, thus it is not an exact solution. In comparison, the importance sampler algorithm is an exact solution satisfying all the restrictions.
 
 # Data
 
@@ -369,7 +371,7 @@ The importance sampling step 5 is needed to manipulate the density induced by st
 
 ## Identification
 
-After estimating the reduced-form VAR model, we plan to impose the following restrictions on the contemporaneous impulse response matrix $(\*A_0')^{-1}$ to identify optimism shock.
+After estimating the reduced-form VAR model, we plan to impose the following restrictions on the contemporaneous impulse response to identify optimism shock.
 
 | Productivity | Stock prices | Consumption | Real interest rate | Hours worked |
 |--------------|--------------|-------------|--------------------|--------------|
@@ -379,11 +381,25 @@ The identification strategy is based on the assumption that the optimism shock p
 
 ## Interpretation
 
+Two popular methods to interpret the SVAR model are impulse response function (IRF) and forecast error variance decomposition (FEVD) [@kilian2017structural, Chap 4].
+
+### IRF 
+
 The impulse response function (IRF) of the SVAR model is used to interpret the effect of the optimism shock on the endogenous variables. Specifically, we are interested in whether a positive optimism shock leads to a simultaneous boom in consumption and hours worked (as in the United States).
+
+Mathematically, the response of the $i$-th variable to the $j$-th shock at horizon $k$ is given by the element at row $i$ columns $j$ of $\*\Theta_k$, where $\*\Theta_k$ is defined recursively as
+
+\begin{aligned}&\*\Theta_{0} = \left(\mathbf{A}_{0}^{-1}\right)^{\prime},\quad\*\Theta_{h} = \sum_{l=1}^{h}\bigl(\mathbf{A}_{\ell}\mathbf{A}_{0}^{-1}\bigr)^{\prime}\*\Theta_{h-\ell},\quad\mathrm{} 1 \leq h \leq p,\\&\*\Theta_{h} = \sum_{\ell=1}^{p}\bigl(\mathbf{A}_{\ell}\mathbf{A}_{0}^{-1}\bigr)^{\prime}\*\Theta_{h-\ell},\quad\mathrm{} p < h < \infty.\end{aligned}
+
+### FEVD
 
 The forecast error variance decomposition (FEVD) is used to quantify the relative importance of the optimism shock in explaining the variability of a $h$-step ahead forecast of a particular variable. For example, we will examine the proportion of the variability of consumption and hours worked explained by the optimism shock.
 
+Mathematically, the $i$-th variable's forecast error variance decomposition of the $j$-th shock at horizon $k$ is given by
 
+$$
+\text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \*\Theta_{ij,l}
+$$
 
 
 
