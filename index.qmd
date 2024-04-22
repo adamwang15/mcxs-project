@@ -147,7 +147,7 @@ kable(head(df), digits = 4, align = "c")
 
 ```{r}
 library(ggplot2)
-
+# consider two scales: one for the real interest rate and the other (on the right) for other variables.
 df |> 
   pivot_longer(cols = -date, names_to = 'variable', values_to = 'value') |> 
   ggplot(aes(x = date, y = value, color = variable)) +
