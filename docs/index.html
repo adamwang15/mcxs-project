@@ -114,7 +114,6 @@ div.csl-indent {
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
   <ul class="collapse">
-  <li><a href="#time-series-plot" id="toc-time-series-plot" class="nav-link" data-scroll-target="#time-series-plot">Time series plot</a></li>
   <li><a href="#acf-and-pacf-plot" id="toc-acf-and-pacf-plot" class="nav-link" data-scroll-target="#acf-and-pacf-plot">ACF and PACF plot</a></li>
   <li><a href="#augmented-dickey-fuller-test" id="toc-augmented-dickey-fuller-test" class="nav-link" data-scroll-target="#augmented-dickey-fuller-test">Augmented Dickey-Fuller test</a>
   <ul class="collapse">
@@ -128,7 +127,6 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#structural-form" id="toc-structural-form" class="nav-link" data-scroll-target="#structural-form">Structural form</a></li>
   <li><a href="#reduced-form" id="toc-reduced-form" class="nav-link" data-scroll-target="#reduced-form">Reduced form</a></li>
-  <li><a href="#notation-relations" id="toc-notation-relations" class="nav-link" data-scroll-target="#notation-relations">Notation relations</a></li>
   <li><a href="#orthogonal-reduced-form-parameterization" id="toc-orthogonal-reduced-form-parameterization" class="nav-link" data-scroll-target="#orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</a></li>
   </ul></li>
   <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a></li>
@@ -169,6 +167,16 @@ div.csl-indent {
 </header>
 
 <!-- latex shortcuts -->
+<!-- css to center figure labels -->
+<div class="cell">
+<style type="text/css">
+.caption {
+  margin: auto;
+  text-align: center;
+}
+</style>
+</div>
+<!-- do not show warnings and run code when testing -->
 <blockquote class="blockquote">
 <p><strong>Abstract.</strong> This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.</p>
 <p><strong>Keywords.</strong> Bayesian Structural VAR, sign restrictions, zero restrictions, optimism shock</p>
@@ -176,7 +184,7 @@ div.csl-indent {
 <!-- [Replication Package](https://www.econometricsociety.org/publications/econometrica/2018/03/01/inference-based-structural-vector-autoregressions-identified) -->
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p><strong>Objective</strong>: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> in the <a href="https://github.com/bsvars/bsvarSIGNs">bsvarSIGNs</a> package, and apply it to analyse the optimism shock in Australia economy.</p>
+<p><strong>Objective</strong>: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> in the <a href="https://github.com/bsvars/bsvarSIGNs">bsvarSIGNs</a> package, and apply it to analyse the optimism shock to Australian economy.</p>
 <p><strong>Question</strong>: Does optimism shocks drive the business cycles in Australian economy?</p>
 <p><strong>Motivation</strong>: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, <span class="citation" data-cites="beaudry2011mood">Beaudry, Nam, and Wang (<a href="#ref-beaudry2011mood" role="doc-biblioref">2011</a>)</span> finds significant evidence that optimism shocks are a key driver of business cycles in the United States as it creates a simultaneous boom in consumption and hours worked. But, <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> argue that PFA imposes additional restrictions, and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.</p>
 </section>
@@ -184,27 +192,68 @@ div.csl-indent {
 <h1>Data</h1>
 <!-- load data -->
 <!-- concat datasets -->
-<p>All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. Following <span class="citation" data-cites="beaudry2011mood">Beaudry, Nam, and Wang (<a href="#ref-beaudry2011mood" role="doc-biblioref">2011</a>)</span>, we select the following five variables for our analysis</p>
+<p>All data are collected from the Reserve Bank of Australia (RBA), the Australian Bureau of Statistics (ABS) and Yahoo Finance. The sample period covers 1994 Q3 to 2023 Q4. Following <span class="citation" data-cites="beaudry2011mood">Beaudry, Nam, and Wang (<a href="#ref-beaudry2011mood" role="doc-biblioref">2011</a>)</span>, we select the following five variables for our analysis</p>
 <ul>
-<li><p><strong>Productivity</strong>: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).</p></li>
-<li><p><strong>Stock prices</strong>: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol ^AXJO), divided by the consumer price index.</p></li>
-<li><p><strong>Consumption</strong>: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.</p></li>
-<li><p><strong>Real interest rate</strong>: over-night cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP).</p></li>
-<li><p><strong>Hours worked</strong>: total hours worked (source: ABS, series ID A85389611R).</p></li>
+<li><strong>Productivity</strong>: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).</li>
 </ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="quarto-discovered-preview-image img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li><strong>Stock prices</strong>: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol ^AXJO), divided by the consumer price index.</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li><strong>Consumption</strong>: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li><strong>Real interest rate</strong>: over-night cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP).</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li><strong>Hours worked</strong>: total hours worked (source: ABS, series ID A85389611R).</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <p>The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.</p>
 <p>To capture multiplicative relationships in macroeconomic time series and percentage change interpretation, all variables are log transformed (except for real interest rate). A preview of first 6 rows of the concatenated dataset is shown below.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 15%">
+<col style="width: 23%">
+<col style="width: 16%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;" data-quarto-table-cell-role="th">date</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">productivity</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">stock_prices</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">consumption</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">real_interest_rate</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">hours_worked</th>
+<th style="text-align: center;">date</th>
+<th style="text-align: center;">productivity</th>
+<th style="text-align: center;">stock_prices</th>
+<th style="text-align: center;">consumption</th>
+<th style="text-align: center;">real_interest_rate</th>
+<th style="text-align: center;">hours_worked</th>
 </tr>
 </thead>
 <tbody>
@@ -258,19 +307,8 @@ div.csl-indent {
 </tr>
 </tbody>
 </table>
-
-
 </div>
 </div>
-<section id="time-series-plot" class="level2">
-<h2 class="anchored" data-anchor-id="time-series-plot">Time series plot</h2>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="quarto-discovered-preview-image img-fluid" width="672"></p>
-</div>
-</div>
-<p>The sample period covers 1994Q3 to 2023Q4.</p>
-</section>
 <section id="acf-and-pacf-plot" class="level2">
 <h2 class="anchored" data-anchor-id="acf-and-pacf-plot">ACF and PACF plot</h2>
 <div class="cell">
@@ -303,12 +341,12 @@ div.csl-indent {
 <p>All five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<table class="table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">variable</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">p_value</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">non_stationary</th>
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">p_value</th>
+<th style="text-align: right;">non_stationary</th>
 </tr>
 </thead>
 <tbody>
@@ -339,8 +377,6 @@ div.csl-indent {
 </tr>
 </tbody>
 </table>
-
-
 </div>
 </div>
 </section>
@@ -349,12 +385,12 @@ div.csl-indent {
 <p>Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one <span class="math inline">\(I(1)\)</span> and it is reasonable to put them in a VAR system without further transformation.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<table class="table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">variable</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">p_value</th>
-<th style="text-align: right;" data-quarto-table-cell-role="th">non_stationary</th>
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">p_value</th>
+<th style="text-align: right;">non_stationary</th>
 </tr>
 </thead>
 <tbody>
@@ -385,8 +421,6 @@ div.csl-indent {
 </tr>
 </tbody>
 </table>
-
-
 </div>
 </div>
 </section>
@@ -448,55 +482,6 @@ div.csl-indent {
 <p>where <span class="math inline">\(\mathbf{u} = [\mathbf{u}_1\ \cdots\ \mathbf{u}_T]'\)</span>.</p>
 <p>The matrices <span class="math inline">\(\mathbf{B}\)</span> and <span class="math inline">\(\mathbf{\Sigma}\)</span> are reduced-form parameters.</p>
 </section>
-<section id="notation-relations" class="level3">
-<h3 class="anchored" data-anchor-id="notation-relations">Notation relations</h3>
-<p>In matrix form, notations from the lectures are</p>
-<p><span class="math display">\[
-\begin{align*}
-\mathbf{Y} &amp;= \mathbf{X} A + E \\
-\mathbf{Y} B_0' &amp;= \mathbf{X} B_+' + U \\
-E | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times N}(\mathbf{0}, \mathbf{\Sigma}, \mathbf{I}_T) \\
-U | \mathbf{X} &amp;\sim \mathcal{MN}_{T\times N}(\mathbf{0}, \mathbf{I}_N, \mathbf{I}_T) \\
-\end{align*}
-\]</span></p>
-<p>Their equivalence relation is summarized in the following table.</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th><span class="citation" data-cites="rubio2010structural">Rubio-Ramirez, Waggoner, and Zha (<a href="#ref-rubio2010structural" role="doc-biblioref">2010</a>)</span></th>
-<th>Lecture</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(\mathbf{B}\)</span></td>
-<td><span class="math inline">\(A\)</span></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\mathbf{\Sigma}\)</span></td>
-<td><span class="math inline">\(\mathbf{\Sigma}\)</span></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\mathbf{A}_0\)</span></td>
-<td><span class="math inline">\(B_0'\)</span></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\mathbf{A}_+\)</span></td>
-<td><span class="math inline">\(B_+'\)</span></td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(\boldsymbol{\varepsilon}\)</span></td>
-<td><span class="math inline">\(U\)</span></td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(\mathbf{u}\)</span></td>
-<td><span class="math inline">\(E\)</span></td>
-</tr>
-</tbody>
-</table>
-<p>(also <span class="math inline">\(B_0=B\)</span> in <span class="citation" data-cites="wozniakBsvarsBayesianEstimation2022">Woźniak (<a href="#ref-wozniakBsvarsBayesianEstimation2022" role="doc-biblioref">2022</a>)</span>)</p>
-<p>In the following, we will use the first set of notations.</p>
-</section>
 <section id="orthogonal-reduced-form-parameterization" class="level3">
 <h3 class="anchored" data-anchor-id="orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</h3>
 <p>Since SVAR model are identified up to a rotation matrix <span class="math inline">\(\mathbf{Q}\)</span>, we can explicitly specified the reduced-form model as</p>
@@ -524,7 +509,7 @@ f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q}) &amp;= (
 <section id="algorithm" class="level2">
 <h2 class="anchored" data-anchor-id="algorithm">Algorithm</h2>
 <p>The goal is to sample structural parameters (<span class="math inline">\(\mathbf{A}_0\)</span>, <span class="math inline">\(\mathbf{A}_+\)</span>) satisfying <strong>both</strong> the sign and zero restrictions, but the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters (<span class="math inline">\(\mathbb{P}(X=x)=0\)</span> for continuous <span class="math inline">\(X\)</span>). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.</p>
-<p>Here is a high level outline of the algorithm:</p>
+<p>Here is a high level outline of the algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>:</p>
 <ol type="1">
 <li>Sample reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>, <span class="math inline">\(\mathbf{Q}\)</span>) conditional on the zero restrictions.</li>
 <li>Set <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+) = f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span>.</li>
@@ -602,9 +587,6 @@ Kilian, Lutz, and Helmut Lütkepohl. 2017. <em>Structural Vector Autoregressive 
 </div>
 <div id="ref-rubio2010structural" class="csl-entry" role="listitem">
 Rubio-Ramirez, Juan F, Daniel F Waggoner, and Tao Zha. 2010. <span>“Structural Vector Autoregressions: Theory of Identification and Algorithms for Inference.”</span> <em>The Review of Economic Studies</em> 77 (2): 665–96.
-</div>
-<div id="ref-wozniakBsvarsBayesianEstimation2022" class="csl-entry" role="listitem">
-Woźniak, Tomasz. 2022. <em>Bsvars: Bayesian Estimation of Structural Vector Autoregressive Models</em>. R Package. <a href="https://cran.r-project.org/package=bsvars">https://cran.r-project.org/package=bsvars</a>.
 </div>
 </div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
