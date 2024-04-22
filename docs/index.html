@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -130,11 +164,35 @@ div.csl-indent {
   <li><a href="#orthogonal-reduced-form-parameterization" id="toc-orthogonal-reduced-form-parameterization" class="nav-link" data-scroll-target="#orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</a></li>
   </ul></li>
   <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a></li>
+  <li><a href="#bayesian-inference" id="toc-bayesian-inference" class="nav-link" data-scroll-target="#bayesian-inference">Bayesian inference</a>
+  <ul class="collapse">
+  <li><a href="#derivations" id="toc-derivations" class="nav-link" data-scroll-target="#derivations">Derivations</a></li>
+  <li><a href="#implementation" id="toc-implementation" class="nav-link" data-scroll-target="#implementation">Implementation</a></li>
+  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a></li>
+  </ul></li>
   <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a>
   <ul class="collapse">
   <li><a href="#irf" id="toc-irf" class="nav-link" data-scroll-target="#irf">IRF</a></li>
   <li><a href="#fevd" id="toc-fevd" class="nav-link" data-scroll-target="#fevd">FEVD</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#us-data" id="toc-us-data" class="nav-link" data-scroll-target="#us-data">US data</a>
+  <ul class="collapse">
+  <li><a href="#irf-1" id="toc-irf-1" class="nav-link" data-scroll-target="#irf-1">IRF</a></li>
+  <li><a href="#fevd-1" id="toc-fevd-1" class="nav-link" data-scroll-target="#fevd-1">FEVD</a></li>
+  </ul></li>
+  <li><a href="#australian-data" id="toc-australian-data" class="nav-link" data-scroll-target="#australian-data">Australian data</a>
+  <ul class="collapse">
+  <li><a href="#irf-2" id="toc-irf-2" class="nav-link" data-scroll-target="#irf-2">IRF</a></li>
+  <li><a href="#fevd-2" id="toc-fevd-2" class="nav-link" data-scroll-target="#fevd-2">FEVD</a></li>
+  </ul></li>
+  <li><a href="#extension" id="toc-extension" class="nav-link" data-scroll-target="#extension">Extension</a>
+  <ul class="collapse">
+  <li><a href="#irf-3" id="toc-irf-3" class="nav-link" data-scroll-target="#irf-3">IRF</a></li>
+  <li><a href="#fevd-3" id="toc-fevd-3" class="nav-link" data-scroll-target="#fevd-3">FEVD</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -167,15 +225,6 @@ div.csl-indent {
 </header>
 
 <!-- latex shortcuts -->
-<!-- css to center figure labels -->
-<div class="cell">
-<style type="text/css">
-.caption {
-  margin: auto;
-  text-align: center;
-}
-</style>
-</div>
 <!-- do not show warnings and run code when testing -->
 <blockquote class="blockquote">
 <p><strong>Abstract.</strong> This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.</p>
@@ -198,7 +247,7 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="quarto-discovered-preview-image img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="quarto-discovered-preview-image img-fluid" width="672"></p>
 </div>
 </div>
 <ul>
@@ -206,7 +255,7 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <ul>
@@ -214,7 +263,7 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <ul>
@@ -222,7 +271,7 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <ul>
@@ -230,7 +279,7 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.</p>
@@ -519,6 +568,173 @@ f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q}) &amp;= (
 </ol>
 <p>The importance sampling step 5 is needed to manipulate the density induced by step 1 to the desired conjugate posterior density.</p>
 </section>
+<section id="bayesian-inference" class="level2">
+<h2 class="anchored" data-anchor-id="bayesian-inference">Bayesian inference</h2>
+<section id="derivations" class="level3">
+<h3 class="anchored" data-anchor-id="derivations">Derivations</h3>
+<p>The first step is to sample the reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>). Adopting the conjugate Normal-Inverse-Wishart prior,</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbf{B}|\mathbf{\Sigma }&amp;\sim \mathcal{MN}_{K\times N}(\underline{\mathbf{B}}, \underline{\mathbf{V}},\mathbf{\Sigma}) \\
+\mathbf{\Sigma }&amp;\sim \mathcal{IW}_N(\underline{\mathbf{S}}, \underline{\nu})
+\end{align*}
+\]</span></p>
+<p>and let</p>
+<p><span class="math display">\[
+\begin{align*}
+\hat{\mathbf{B}} &amp;= (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y} \\
+\mathbf{R} &amp;= (\mathbf{Y}-\mathbf{X}\hat{\mathbf{B}})'(\mathbf{Y}-\mathbf{X}\hat{\mathbf{B}})
+\end{align*}
+\]</span></p>
+<p>the conjugate posterior distribution can be derived from</p>
+<p><span class="math display">\[\begin{align*}
+p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
+
+&amp;\propto |\mathbf{\Sigma}|^{-T/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ \mathbf{\Sigma}^{-1}(\mathbf{Y}-\mathbf{X}\mathbf{B})'(\mathbf{Y}-\mathbf{X}\mathbf{B}) \right] \right\} \\
+&amp;\quad\times |\mathbf{\Sigma}|^{-T/2}\exp\left\{ -\frac{1}{2}\text{tr}[\mathbf{\Sigma}^{-1}(\mathbf{B}-\underline{\mathbf{B}})'\underline{\mathbf{V}}^{-1}(\mathbf{B}-\underline{\mathbf{B}})] \right\} \\
+&amp;\quad\times |\mathbf{\Sigma}|^{-(\underline\nu+N+1)/2}\exp\left\{ -\frac{1}{2} \text{tr}(\underline{\mathbf{S}}\mathbf{\Sigma}^{-1}) \right\} \\
+
+&amp;\propto |\mathbf{\Sigma}|^{-T/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ \left( \mathbf{R}+(\mathbf{B}-\hat{\mathbf{B}})'\mathbf{X}'\mathbf{X}(\mathbf{B}-\hat{\mathbf{B}}) \right) \mathbf{\Sigma}^{-1} \right] \right\} \\
+&amp;\quad\times |\mathbf{\Sigma}|^{-T/2}\exp\left\{ -\frac{1}{2}\text{tr}[(\mathbf{B}-\underline{\mathbf{B}})'\underline{\mathbf{V}}^{-1}(\mathbf{B}-\underline{\mathbf{B}})\mathbf{\Sigma}^{-1}] \right\} \\
+&amp;\quad\times |\mathbf{\Sigma}|^{-(\underline\nu+N+1)/2}\exp\left\{ -\frac{1}{2} \text{tr}(\underline{\mathbf{S}}\mathbf{\Sigma}^{-1}) \right\} \\
+
+&amp;\propto |\mathbf{\Sigma}|^{-T/2}\exp\left\{ -\frac{1}{2} \text{tr}\left[ \left( (\mathbf{B}-\hat{\mathbf{B}})'\mathbf{X}'\mathbf{X}(\mathbf{B}-\hat{\mathbf{B}})+(\mathbf{B}-\underline{\mathbf{B}})'\underline{\mathbf{V}}^{-1}(\mathbf{B}-\underline{\mathbf{B}}) \right) \mathbf{\Sigma}^{-1} \right] \right\} \\
+&amp;\quad\times |\mathbf{\Sigma}|^{-(\underline\nu+T+N+1)/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ (\mathbf{R}+\underline{\mathbf{S}})\mathbf{\Sigma}^{-1} \right] \right\} \\
+
+&amp;=|\mathbf{\Sigma}|^{-T/2}\exp\left\{ -\frac{1}{2} \text{tr}\left[ (\mathbf{B}-\overline{\mathbf{B}})'\overline{\mathbf{V}}^{-1}(\mathbf{B}-\overline{\mathbf{B}}) \mathbf{\Sigma}^{-1} \right] \right\} \\
+&amp;\quad\times |\mathbf{\Sigma}|^{-(\underline\nu+T+N+1)/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ (\mathbf{R}+\underline{\mathbf{S}}+\hat{\mathbf{B}}'\mathbf{X}'\mathbf{X}\hat{\mathbf{B}}+\underline{\mathbf{B}}'\underline{\mathbf{V}}^{-1}\underline{\mathbf{B}}-\overline{\mathbf{B}}'\overline{\mathbf{V}}^{-1}\overline{\mathbf{B}})\mathbf{\Sigma}^{-1} \right] \right\} \\
+
+&amp;=|\mathbf{\Sigma}|^{-T/2}\exp\left\{ -\frac{1}{2} \text{tr}\left[ (\mathbf{B}-\overline{\mathbf{B}})'\overline{\mathbf{V}}^{-1}(\mathbf{B}-\overline{\mathbf{B}}) \mathbf{\Sigma}^{-1} \right] \right\} \\
+&amp;\quad\times |\mathbf{\Sigma}|^{-(\underline\nu+T+N+1)/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ (\mathbf{Y}'\mathbf{Y}+\underline{\mathbf{S}}+\underline{\mathbf{B}}'\underline{\mathbf{V}}^{-1}\underline{\mathbf{B}}-\overline{\mathbf{B}}'\overline{\mathbf{V}}\overline{\mathbf{B}})\mathbf{\Sigma}^{-1} \right] \right\} \\
+
+&amp;=p(\mathbf{B}|\mathbf{\Sigma},\mathbf{Y})\times p(\mathbf{\Sigma}|\mathbf{Y})
+\end{align*}\]</span></p>
+<p>Therefore, the posterior distribution of the reduced-form parameters is given by</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbf{B}|\mathbf{\Sigma},\mathbf{Y} &amp;\sim \mathcal{MN}_{K\times N}(\overline{\mathbf{B}}, \overline{\mathbf{V}},\mathbf{\Sigma}) \\
+\mathbf{\Sigma}|\mathbf{Y} &amp;\sim \mathcal{IW}_N(\overline{\mathbf{S}}, \overline{\nu})
+\end{align*}
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+\begin{align*}
+\overline{\mathbf{B}} &amp;= \overline{\mathbf{V}}(\mathbf{X}'\mathbf{Y}+\underline{\mathbf{V}}^{-1}\underline{\mathbf{B}}) \\
+\overline{\mathbf{V}} &amp;= (\mathbf{X}'\mathbf{X}+\underline{\mathbf{V}}^{-1})^{-1} \\
+\overline{\mathbf{S}} &amp;= \underline{\mathbf{S}}+\mathbf{Y}'\mathbf{Y}+\underline{\mathbf{B}}'\underline{\mathbf{V}}^{-1}\underline{\mathbf{B}}-\overline{\mathbf{B}}'\overline{\mathbf{V}}^{-1}\overline{\mathbf{B}} \\
+\overline{\nu} &amp;= \underline{\nu}+T
+\end{align*}
+\]</span></p>
+</section>
+<section id="implementation" class="level3">
+<h3 class="anchored" data-anchor-id="implementation">Implementation</h3>
+<p>For computational efficiency, main functions in the <code>bsvarSIGNs</code> package are written in C++. The first function is compute posterior parameters as derived above.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>List niw_cpp<span class="op">(</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> Y<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> X<span class="op">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> Rcpp<span class="op">::</span>List prior</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">int</span> T  <span class="op">=</span> Y<span class="op">.</span>n_rows<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  mat prior_B  <span class="op">=</span> as<span class="op">&lt;</span>mat<span class="op">&gt;(</span>prior<span class="op">[</span><span class="st">"B"</span><span class="op">]);</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  mat prior_V  <span class="op">=</span> as<span class="op">&lt;</span>mat<span class="op">&gt;(</span>prior<span class="op">[</span><span class="st">"V"</span><span class="op">]);</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  mat prior_S  <span class="op">=</span> as<span class="op">&lt;</span>mat<span class="op">&gt;(</span>prior<span class="op">[</span><span class="st">"S"</span><span class="op">]);</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> prior_nu <span class="op">=</span> as<span class="op">&lt;</span><span class="dt">int</span><span class="op">&gt;(</span>prior<span class="op">[</span><span class="st">"nu"</span><span class="op">]);</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">// analytic solutions</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  mat prior_V_inv <span class="op">=</span> inv_sympd<span class="op">(</span>prior_V<span class="op">);</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  mat post_V_inv  <span class="op">=</span> prior_V_inv <span class="op">+</span> X<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> X<span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  mat post_V      <span class="op">=</span> inv_sympd<span class="op">(</span>post_V_inv<span class="op">);</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  mat post_B      <span class="op">=</span> post_V <span class="op">*</span> <span class="op">(</span>X<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> Y <span class="op">+</span> prior_V_inv <span class="op">*</span> prior_B<span class="op">);</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">// marginal posterior of Sigma</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  mat post_S  <span class="op">=</span> prior_S <span class="op">+</span> Y<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> Y <span class="op">+</span> prior_B<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> prior_V_inv <span class="op">*</span> prior_B <span class="op">-</span> post_B<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> post_V_inv <span class="op">*</span> post_B<span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  post_S      <span class="op">=</span> symmatu<span class="op">(</span>post_S<span class="op">);</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> post_nu <span class="op">=</span> prior_nu <span class="op">+</span> T<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> List<span class="op">::</span>create<span class="op">(</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    Named<span class="op">(</span><span class="st">"B"</span><span class="op">)</span>  <span class="op">=</span> post_B<span class="op">,</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    Named<span class="op">(</span><span class="st">"V"</span><span class="op">)</span>  <span class="op">=</span> post_V<span class="op">,</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    Named<span class="op">(</span><span class="st">"S"</span><span class="op">)</span>  <span class="op">=</span> post_S<span class="op">,</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    Named<span class="op">(</span><span class="st">"nu"</span><span class="op">)</span> <span class="op">=</span> post_nu</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="op">);</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The second function is to draw from the matrix normal distribution.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>arma<span class="op">::</span>mat rmatnorm_cpp<span class="op">(</span><span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> M<span class="op">,</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> U<span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> V<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  mat X <span class="op">=</span> mat<span class="op">(</span>size<span class="op">(</span>M<span class="op">),</span> fill<span class="op">::</span>randn<span class="op">);</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> M <span class="op">+</span> chol<span class="op">(</span>U<span class="op">).</span>t<span class="op">()</span> <span class="op">*</span> X <span class="op">*</span> chol<span class="op">(</span>V<span class="op">);</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To draw from the inverse Wishart distribution, we use the <code>iwishrnd</code> function from the <code>RcppArmadillo</code> package.</p>
+<p>Using these three functions together, we are able to estimate the reduced-form BVAR model.</p>
+</section>
+<section id="simulation" class="level3">
+<h3 class="anchored" data-anchor-id="simulation">Simulation</h3>
+<p>To test the validity of our code, we simulate 1,000 observations from a bi-variate Gaussian random walk process with the covariance matrix equal to the identity matrix of order 2.</p>
+<p>Then, we compute 1,000 posterior draws from a SVAR model with a constant term and one lag, using the default identification scheme: positive sign restrictions on the diagonal of <span class="math inline">\(\mathbf{A}_0\)</span>.</p>
+<p>The posterior mean of the <span class="math inline">\(\mathbf{B}\)</span> is</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">y1</th>
+<th style="text-align: right;">y2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">y1_lag</td>
+<td style="text-align: right;">0.9888</td>
+<td style="text-align: right;">0.0052</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">y2_lag</td>
+<td style="text-align: right;">0.0027</td>
+<td style="text-align: right;">0.9953</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">constant</td>
+<td style="text-align: right;">0.0594</td>
+<td style="text-align: right;">0.0846</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The posterior mean of <span class="math inline">\(\mathbf{\Sigma}\)</span> is</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">y1</th>
+<th style="text-align: right;">y2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">y1</td>
+<td style="text-align: right;">0.9764</td>
+<td style="text-align: right;">0.0881</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">y2</td>
+<td style="text-align: right;">0.0881</td>
+<td style="text-align: right;">1.0153</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>They are close to the true values of the simulated data.</p>
+</section>
+</section>
 <section id="identification" class="level2">
 <h2 class="anchored" data-anchor-id="identification">Identification</h2>
 <p>After estimating the reduced-form VAR model, we plan to impose the following restrictions on the contemporaneous impulse response to identify optimism shock.</p>
@@ -567,6 +783,62 @@ f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q}) &amp;= (
 <p><span class="math display">\[
 \text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \mathbf{\Theta}_{ij,l}
 \]</span></p>
+</section>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
+<section id="us-data" class="level2">
+<h2 class="anchored" data-anchor-id="us-data">US data</h2>
+<p>First, we apply the package to the data from the United States, and replicate the results in <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>.</p>
+<section id="irf-1" class="level3">
+<h3 class="anchored" data-anchor-id="irf-1">IRF</h3>
+<p>The impulse response functions are</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>where shock 1 is the optimism shock, and it gives very close impulse response functions to the ones in the original paper.</p>
+</section>
+<section id="fevd-1" class="level3">
+<h3 class="anchored" data-anchor-id="fevd-1">FEVD</h3>
+</section>
+</section>
+<section id="australian-data" class="level2">
+<h2 class="anchored" data-anchor-id="australian-data">Australian data</h2>
+<section id="irf-2" class="level3">
+<h3 class="anchored" data-anchor-id="irf-2">IRF</h3>
+<p>The impulse response functions are</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>where shock 1 is the optimism shock. Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.</p>
+</section>
+<section id="fevd-2" class="level3">
+<h3 class="anchored" data-anchor-id="fevd-2">FEVD</h3>
+</section>
+</section>
+<section id="extension" class="level2">
+<h2 class="anchored" data-anchor-id="extension">Extension</h2>
+<p>Now we impose an additional narrative restrictions that</p>
+<ul>
+<li>the optimism shock is negative when Covid-19 hits Australia in 2020 Q1.</li>
+</ul>
+<section id="irf-3" class="level3">
+<h3 class="anchored" data-anchor-id="irf-3">IRF</h3>
+<p>The impulse response functions are</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>With the additional assumption, we can identify more significant impacts. In the short run, the optimism shock has a positive impact on consumption and a negative impact on hours worked.</p>
+</section>
+<section id="fevd-3" class="level3">
+
 
 
 
@@ -575,7 +847,7 @@ f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q}) &amp;= (
 </section>
 
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">FEVD</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-arias2018inference" class="csl-entry" role="listitem">
 Arias, Jonas E, Juan F Rubio-Ramı́rez, and Daniel F Waggoner. 2018. <span>“Inference Based on Structural Vector Autoregressions Identified with Sign and Zero Restrictions: Theory and Applications.”</span> <em>Econometrica</em> 86 (2): 685–720.
 </div>

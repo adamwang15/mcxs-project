@@ -506,7 +506,7 @@ To test the validity of our code, we simulate 1,000 observations from a bi-varia
 
 Then, we compute 1,000 posterior draws from a SVAR model with a constant term and one lag, using the default identification scheme: positive sign restrictions on the diagonal of $\*A_0$.
 
-```{r}
+```{r include=FALSE}
 # devtools::install_github("bsvars/bsvarSIGNs")
 library(bsvarSIGNs)
 
@@ -519,7 +519,7 @@ T = 1000
 sim_Y = apply(matrix(rnorm(T*N), ncol = N), 2, cumsum)
 
 specification  = specify_bsvarSIGN$new(sim_Y, p = 1)
-posterior      = estimate(specification, S = 1000, show_progress = FALSE)
+posterior      = estimate(specification, S = 1000)
 ```
 
 The posterior mean of the $\*B$ is
@@ -588,7 +588,7 @@ First, we apply the package to the data from the United States, and replicate th
 
 ### IRF
 
-```{r}
+```{r include=FALSE}
 data(optimism)
 
 zero_irf          = matrix(0, nrow = 5, ncol = 5)
@@ -603,8 +603,13 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 1000, show_progress = FALSE)
+posterior = estimate(specification, S = 1000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
+```
+
+The impulse response functions are
+
+```{r}
 plot(irf, probability = 0.68)
 ```
 
@@ -616,7 +621,7 @@ where shock 1 is the optimism shock, and it gives very close impulse response fu
 
 ### IRF
 
-```{r}
+```{r include=FALSE}
 zero_irf          = matrix(0, nrow = 5, ncol = 5)
 zero_irf[1, 1]    = 1
 sign_irf          = array(0, dim = c(5, 5, 1))
@@ -629,8 +634,13 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 1000, show_progress = FALSE)
+posterior = estimate(specification, S = 1000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
+```
+
+The impulse response functions are
+
+```{r}
 plot(irf, probability = 0.68)
 ```
 
@@ -646,7 +656,7 @@ Now we impose an additional narrative restrictions that
 
 ### IRF
 
-```{r}
+```{r include=FALSE}
 zero_irf          = matrix(0, nrow = 5, ncol = 5)
 zero_irf[1, 1]    = 1
 sign_irf          = array(0, dim = c(5, 5, 1))
@@ -661,8 +671,13 @@ specification = specify_bsvarSIGN$new(
   zero_irf       = zero_irf
 )
 
-posterior = estimate(specification, S = 1000, show_progress = FALSE)
+posterior = estimate(specification, S = 1000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
+```
+
+The impulse response functions are
+
+```{r}
 plot(irf, probability = 0.68) 
 ```
 

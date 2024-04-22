@@ -9,6 +9,3 @@
 .httr-oauth
 .DS_Store
 *.Rproj
-*.png
-*.json
-*.html
