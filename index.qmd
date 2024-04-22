@@ -128,11 +128,14 @@ All data are collected from the Reserve Bank of Australia (RBA), the Australian 
 
 ```{r}
 library(ggplot2)
-library(gridExtra)
+
+covid_index = 103
 
 df |> 
   ggplot(aes(x = date, y = productivity)) +
   geom_line() +
+  geom_vline(xintercept = df$date[covid_index], color = "red", linetype = "dashed") +
+  annotate("text", x = df$date[covid_index+8], y = min(df$productivity), label = "Covid-19", color = "red") +
   theme_bw()
 ```
 
@@ -143,6 +146,8 @@ df |>
 df |> 
   ggplot(aes(x = date, y = stock_prices)) +
   geom_line() +
+  geom_vline(xintercept = df$date[covid_index], color = "red", linetype = "dashed") +
+  annotate("text", x = df$date[covid_index+8], y = min(df$stock_prices), label = "Covid-19", color = "red") +
   theme_bw()
 ```
 
@@ -152,6 +157,8 @@ df |>
 df |> 
   ggplot(aes(x = date, y = consumption)) +
   geom_line() +
+  geom_vline(xintercept = df$date[covid_index], color = "red", linetype = "dashed") +
+  annotate("text", x = df$date[covid_index+8], y = min(df$consumption), label = "Covid-19", color = "red") +
   theme_bw()
 ```
 
@@ -161,6 +168,8 @@ df |>
 df |> 
   ggplot(aes(x = date, y = real_interest_rate)) +
   geom_line() +
+  geom_vline(xintercept = df$date[covid_index], color = "red", linetype = "dashed") +
+  annotate("text", x = df$date[covid_index+8], y = min(df$real_interest_rate), label = "Covid-19", color = "red") +
   theme_bw()
 ```
 
@@ -170,6 +179,8 @@ df |>
 df |> 
   ggplot(aes(x = date, y = hours_worked)) +
   geom_line() +
+  geom_vline(xintercept = df$date[covid_index], color = "red", linetype = "dashed") +
+  annotate("text", x = df$date[covid_index+8], y = min(df$hours_worked), label = "Covid-19", color = "red") +
   theme_bw()
 ```
 
@@ -368,6 +379,175 @@ Here is a high level outline of the algorithm proposed by @arias2018inference:
 
 The importance sampling step 5 is needed to manipulate the density induced by step 1 to the desired conjugate posterior density.
 
+## Bayesian inference
+
+### Derivations
+
+The first step is to sample the reduced-form parameters ($\*B$, $\*\Sigma$). Adopting the conjugate Normal-Inverse-Wishart prior,
+
+$$
+\begin{align*}
+\*B|\*\Sigma &\sim \mathcal{MN}_{K\times N}(\underline{\*B}, \underline{\*V},\*\Sigma) \\
+\*\Sigma &\sim \mathcal{IW}_N(\underline{\*S}, \underline{\nu})
+\end{align*}
+$$
+
+and let
+
+$$
+\begin{align*}
+\hat{\*B} &= (\*X'\*X)^{-1}\*X'\*Y \\
+\*R &= (\*Y-\*X\hat{\*B})'(\*Y-\*X\hat{\*B})
+\end{align*}
+$$
+
+the conjugate posterior distribution can be derived from 
+
+\begin{align*}
+p(\*B,\*\Sigma|\*Y) 
+
+&\propto |\*\Sigma|^{-T/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ \*\Sigma^{-1}(\*Y-\*X\*B)'(\*Y-\*X\*B) \right] \right\} \\
+&\quad\times |\*\Sigma|^{-T/2}\exp\left\{ -\frac{1}{2}\text{tr}[\*\Sigma^{-1}(\*B-\underline{\*B})'\underline{\*V}^{-1}(\*B-\underline{\*B})] \right\} \\
+&\quad\times |\*\Sigma|^{-(\underline\nu+N+1)/2}\exp\left\{ -\frac{1}{2} \text{tr}(\underline{\*S}\*\Sigma^{-1}) \right\} \\
+
+&\propto |\*\Sigma|^{-T/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ \left( \*R+(\*B-\hat{\*B})'\*X'\*X(\*B-\hat{\*B}) \right) \*\Sigma^{-1} \right] \right\} \\
+&\quad\times |\*\Sigma|^{-T/2}\exp\left\{ -\frac{1}{2}\text{tr}[(\*B-\underline{\*B})'\underline{\*V}^{-1}(\*B-\underline{\*B})\*\Sigma^{-1}] \right\} \\
+&\quad\times |\*\Sigma|^{-(\underline\nu+N+1)/2}\exp\left\{ -\frac{1}{2} \text{tr}(\underline{\*S}\*\Sigma^{-1}) \right\} \\
+
+&\propto |\*\Sigma|^{-T/2}\exp\left\{ -\frac{1}{2} \text{tr}\left[ \left( (\*B-\hat{\*B})'\*X'\*X(\*B-\hat{\*B})+(\*B-\underline{\*B})'\underline{\*V}^{-1}(\*B-\underline{\*B}) \right) \*\Sigma^{-1} \right] \right\} \\
+&\quad\times |\*\Sigma|^{-(\underline\nu+T+N+1)/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ (\*R+\underline{\*S})\*\Sigma^{-1} \right] \right\} \\
+
+&=|\*\Sigma|^{-T/2}\exp\left\{ -\frac{1}{2} \text{tr}\left[ (\*B-\overline{\*B})'\overline{\*V}^{-1}(\*B-\overline{\*B}) \*\Sigma^{-1} \right] \right\} \\
+&\quad\times |\*\Sigma|^{-(\underline\nu+T+N+1)/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ (\*R+\underline{\*S}+\hat{\*B}'\*X'\*X\hat{\*B}+\underline{\*B}'\underline{\*V}^{-1}\underline{\*B}-\overline{\*B}'\overline{\*V}^{-1}\overline{\*B})\*\Sigma^{-1} \right] \right\} \\
+
+&=|\*\Sigma|^{-T/2}\exp\left\{ -\frac{1}{2} \text{tr}\left[ (\*B-\overline{\*B})'\overline{\*V}^{-1}(\*B-\overline{\*B}) \*\Sigma^{-1} \right] \right\} \\
+&\quad\times |\*\Sigma|^{-(\underline\nu+T+N+1)/2}\exp\left\{ -\frac{1}{2}\text{tr}\left[ (\*Y'\*Y+\underline{\*S}+\underline{\*B}'\underline{\*V}^{-1}\underline{\*B}-\overline{\*B}'\overline{\*V}\overline{\*B})\*\Sigma^{-1} \right] \right\} \\
+
+&=p(\*B|\*\Sigma,\*Y)\times p(\*\Sigma|\*Y)
+\end{align*}
+
+Therefore, the posterior distribution of the reduced-form parameters is given by
+
+$$
+\begin{align*}
+\*B|\*\Sigma,\*Y &\sim \mathcal{MN}_{K\times N}(\overline{\*B}, \overline{\*V},\*\Sigma) \\
+\*\Sigma|\*Y &\sim \mathcal{IW}_N(\overline{\*S}, \overline{\nu})
+\end{align*}
+$$
+
+where
+
+$$
+\begin{align*}
+\overline{\*B} &= \overline{\*V}(\*X'\*Y+\underline{\*V}^{-1}\underline{\*B}) \\
+\overline{\*V} &= (\*X'\*X+\underline{\*V}^{-1})^{-1} \\
+\overline{\*S} &= \underline{\*S}+\*Y'\*Y+\underline{\*B}'\underline{\*V}^{-1}\underline{\*B}-\overline{\*B}'\overline{\*V}^{-1}\overline{\*B} \\
+\overline{\nu} &= \underline{\nu}+T
+\end{align*}
+$$
+
+### Implementation
+
+For computational efficiency, main functions in the ``bsvarSIGNs`` package are written in C++. The first function is compute posterior parameters as derived above.
+
+```cpp
+Rcpp::List niw_cpp(
+    const arma::mat& Y,
+    const arma::mat& X,
+    const Rcpp::List prior
+) {
+
+  const int T  = Y.n_rows;
+  
+  mat prior_B  = as<mat>(prior["B"]);
+  mat prior_V  = as<mat>(prior["V"]);
+  mat prior_S  = as<mat>(prior["S"]);
+  int prior_nu = as<int>(prior["nu"]);
+  
+  // analytic solutions
+  mat prior_V_inv = inv_sympd(prior_V);
+  mat post_V_inv  = prior_V_inv + X.t() * X;
+  mat post_V      = inv_sympd(post_V_inv);
+  mat post_B      = post_V * (X.t() * Y + prior_V_inv * prior_B);
+  
+  // marginal posterior of Sigma
+  mat post_S  = prior_S + Y.t() * Y + prior_B.t() * prior_V_inv * prior_B - post_B.t() * post_V_inv * post_B;
+  post_S      = symmatu(post_S);
+  int post_nu = prior_nu + T;
+  
+  return List::create(
+    Named("B")  = post_B,
+    Named("V")  = post_V,
+    Named("S")  = post_S,
+    Named("nu") = post_nu
+  );
+}
+```
+
+The second function is to draw from the matrix normal distribution.
+
+```cpp
+arma::mat rmatnorm_cpp(const arma::mat& M,
+                      const arma::mat& U,
+                      const arma::mat& V) {
+  
+  mat X = mat(size(M), fill::randn);
+  return M + chol(U).t() * X * chol(V);
+}
+```
+
+To draw from the inverse Wishart distribution, we use the ``iwishrnd`` function from the ``RcppArmadillo`` package.
+
+Using these three functions together, we are able to estimate the reduced-form BVAR model.
+
+### Simulation
+
+To test the validity of our code, we simulate 1,000 observations from a bi-variate Gaussian random walk process with the covariance matrix equal to the identity matrix of order 2.
+
+Then, we compute 1,000 posterior draws from a SVAR model with a constant term and one lag, using the default identification scheme: positive sign restrictions on the diagonal of $\*A_0$.
+
+```{r}
+# devtools::install_github("bsvars/bsvarSIGNs")
+library(bsvarSIGNs)
+
+set.seed(123)
+
+# simulate data
+N = 2
+T = 1000
+
+sim_Y = apply(matrix(rnorm(T*N), ncol = N), 2, cumsum)
+
+specification  = specify_bsvarSIGN$new(sim_Y, p = 1)
+posterior      = estimate(specification, S = 1000, show_progress = FALSE)
+```
+
+The posterior mean of the $\*B$ is
+
+```{r}
+mean_B = posterior$posterior$A |> 
+  apply(c(1, 2), mean) |> 
+  t()
+
+rownames(mean_B) = c("y1_lag", "y2_lag", "constant")
+colnames(mean_B) = c("y1", "y2")
+
+kable(mean_B, digits = 4)
+```
+
+The posterior mean of $\*\Sigma$ is
+
+```{r}
+mean_Sigma = apply(posterior$posterior$Sigma, c(1, 2), mean)
+
+rownames(mean_Sigma) = c("y1", "y2")
+colnames(mean_Sigma) = c("y1", "y2")
+
+kable(mean_Sigma, digits = 4)
+```
+
+They are close to the true values of the simulated data.
+
 ## Identification
 
 After estimating the reduced-form VAR model, we plan to impose the following restrictions on the contemporaneous impulse response to identify optimism shock.
@@ -400,6 +580,95 @@ $$
 \text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \*\Theta_{ij,l}
 $$
 
+# Results
+
+## US data
+
+First, we apply the package to the data from the United States, and replicate the results in @arias2018inference.
+
+### IRF
+
+```{r}
+data(optimism)
+
+zero_irf          = matrix(0, nrow = 5, ncol = 5)
+zero_irf[1, 1]    = 1
+sign_irf          = array(0, dim = c(5, 5, 1))
+sign_irf[2, 1, 1] = 1
+
+specification = specify_bsvarSIGN$new(
+  optimism*100,
+  p        = 4,
+  sign_irf = sign_irf,
+  zero_irf = zero_irf
+)
+
+posterior = estimate(specification, S = 1000, show_progress = FALSE)
+irf       = compute_impulse_responses(posterior, horizon = 40)
+plot(irf, probability = 0.68)
+```
+
+where shock 1 is the optimism shock, and it gives very close impulse response functions to the ones in the original paper.
+
+### FEVD
+
+## Australian data
+
+### IRF
+
+```{r}
+zero_irf          = matrix(0, nrow = 5, ncol = 5)
+zero_irf[1, 1]    = 1
+sign_irf          = array(0, dim = c(5, 5, 1))
+sign_irf[2, 1, 1] = 1
+
+specification = specify_bsvarSIGN$new(
+  Y*100,
+  p        = 4,
+  sign_irf = sign_irf,
+  zero_irf = zero_irf
+)
+
+posterior = estimate(specification, S = 1000, show_progress = FALSE)
+irf       = compute_impulse_responses(posterior, horizon = 40)
+plot(irf, probability = 0.68)
+```
+
+where shock 1 is the optimism shock. Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.
+
+### FEVD
+
+## Extension
+
+Now we impose an additional narrative restrictions that
+
+- the optimism shock is negative when Covid-19 hits Australia in 2020 Q1.
+
+### IRF
+
+```{r}
+zero_irf          = matrix(0, nrow = 5, ncol = 5)
+zero_irf[1, 1]    = 1
+sign_irf          = array(0, dim = c(5, 5, 1))
+sign_irf[2, 1, 1] = 1
+sign_narrative    = matrix(c(1, -1, 1, 1, 103, 0), ncol = 6)
+
+specification = specify_bsvarSIGN$new(
+  Y*100,
+  p              = 4,
+  sign_irf       = sign_irf,
+  sign_narrative = sign_narrative,
+  zero_irf       = zero_irf
+)
+
+posterior = estimate(specification, S = 1000, show_progress = FALSE)
+irf       = compute_impulse_responses(posterior, horizon = 40)
+plot(irf, probability = 0.68) 
+```
+
+With the additional assumption, we can identify more significant impacts. In the short run, the optimism shock has a positive impact on consumption and a negative impact on hours worked.
+
+### FEVD
 
 
 
