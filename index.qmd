@@ -313,19 +313,6 @@ U | \*X &\sim \mathcal{MN}_{T\times N}(\*0, \*I_N, \*I_T) \\
 \end{align*}
 $$
 
-Their equivalence relation is summarized in the following table.
-
-| @rubio2010structural | Lecture     |
-|----------------------|-------------|
-| $\*B$                | $A$         |
-| $\*\Sigma$           | $\*\Sigma$  |
-| $\*A_0$              | $B_0'$      |
-| $\*A_+$              | $B_+'$      |
-| $\e$                 | $U$         |
-| $\*u$                | $E$         |
-
-(also $B_0=B$ in @wozniakBsvarsBayesianEstimation2022)
-
 In the following, we will use the first set of notations.
 
 ### Orthogonal reduced-form parameterization
