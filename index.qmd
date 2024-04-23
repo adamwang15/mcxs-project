@@ -365,20 +365,6 @@ f_h^{-1}(\*B, \*\Sigma, \*Q) &= (
 \end{align*}
 $$
 
-## Algorithm
-
-The goal is to sample structural parameters ($\*A_0$, $\*A_+$) satisfying **both** the sign and zero restrictions, but the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters ($\mathbb{P}(X=x)=0$ for continuous $X$). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.
-
-Here is a high level outline of the algorithm proposed by @arias2018inference:
-
-1. Sample reduced-form parameters ($\*B$, $\*\Sigma$, $\*Q$) conditional on the zero restrictions.
-2. Set $(\*A_0, \*A_+) = f_h^{-1}(\*B, \*\Sigma, \*Q)$.
-3. If the sign restrictions are satisfied, keep $(\*A_0, \*A_+)$ and compute an importance weight, otherwise discard.
-4. Repeat steps 1-3 until the desired number of samples is obtained.
-5. Resample with replacement using the importance weights.
-
-The importance sampling step 5 is needed to manipulate the density induced by step 1 to the desired conjugate posterior density.
-
 ## Bayesian inference
 
 ### Derivations
@@ -487,9 +473,11 @@ Rcpp::List niw_cpp(
 The second function is to draw from the matrix normal distribution.
 
 ```cpp
-arma::mat rmatnorm_cpp(const arma::mat& M,
-                      const arma::mat& U,
-                      const arma::mat& V) {
+arma::mat rmatnorm_cpp(
+    const arma::mat& M,
+    const arma::mat& U,
+    const arma::mat& V
+) {
   
   mat X = mat(size(M), fill::randn);
   return M + chol(U).t() * X * chol(V);
@@ -558,6 +546,74 @@ After estimating the reduced-form VAR model, we plan to impose the following res
 
 The identification strategy is based on the assumption that the optimism shock positively affects stock prices, and has no contemporaneous effect on productivity.
 
+## Algorithm
+
+To perform this identification, we need an algorithm to sample from the posterior distribution of the structural parameters ($\*A_0$, $\*A_+$) conditional on the zero and sign restrictions.
+
+However, the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters (akin to $\mathbb{P}(X=x)=0$ for continuous $X$). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.
+
+Here is a high level outline of the algorithm proposed by @arias2018inference:
+
+1. Sample reduced-form parameters ($\*B$, $\*\Sigma$, $\*Q$) conditional on the zero restrictions.
+2. Set $(\*A_0, \*A_+) = f_h^{-1}(\*B, \*\Sigma, \*Q)$.
+3. If the sign restrictions are satisfied, keep $(\*A_0, \*A_+)$ and compute an importance weight, otherwise discard.
+4. Repeat steps 1-3 until the desired number of samples is obtained.
+5. Resample with replacement using the importance weights.
+
+Where step 5 (importance sampling) is needed to manipulate the density induced by step 1 to the desired Nomral-Generalized-Normal posterior density $\mathcal{NGN}$.
+
+To be explicit, starting with a Uniform-Normal-Inverse-Wishart prior distribution, the importance weight in step 3 is given by
+
+$$
+\begin{align*}
+\frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
+&=\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
+&\propto\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
+\end{align*}
+$$
+
+where $\mathcal Z$ denotes satisfying zero restrictions and $\mathcal S$ denotes satisfying the sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2. Here is the code to calculate this importance weight.
+
+```cpp
+double log_volume_element(
+    const arma::field<arma::mat>& Z,
+    const arma::mat&              A0,
+    const arma::mat&              Aplus
+) {
+  colvec vec_structural = join_vert(vectorise(A0), vectorise(Aplus));
+  
+  mat Dz  = Df([Z](const colvec& x) { return zero_restrictions(Z, x); }, vec_structural);
+  mat Dgf = Df([Z](const colvec& x) { return g_fh_vec(Z, x); }, vec_structural);
+  
+  mat DN  = Dgf * null(Dz);
+  
+  return 0.5 * log_det(DN.t() * DN).real();
+}
+```
+
+### Extension
+
+Besides the zero and sign restrictions, another popular identification scheme proposed by @antolin2018narrative is to impose narrative restrictions on the structural shocks and historical decomposition. For example, restricting a structural shock to be negative during some period, and we will apply this to restrict the optimism shock during the Covid-19 pandemic.
+
+But, the difficulty is that the narrative restrictions $\mathcal{R}$ requires another resample with some importance weight:
+
+$$
+\frac{1}{\omega(\*B,\*\Sigma,\*Q)} \propto \frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)}
+$$
+
+To combine these two identification schemes, we need to calculate the importance weight when **all** of the three restrictions, zero, sign, and narrative, are present:
+
+$$
+\begin{align*}
+\frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
+&=\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
+&\propto\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
+&\propto\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
+\end{align*}
+$$
+
+Therefore, it is simply the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.
+
 ## Interpretation
 
 Two popular methods to interpret the SVAR model are impulse response function (IRF) and forecast error variance decomposition (FEVD) [@kilian2017structural, Chap 4].
@@ -574,7 +630,7 @@ Mathematically, the response of the $i$-th variable to the $j$-th shock at horiz
 
 The forecast error variance decomposition (FEVD) is used to quantify the relative importance of the optimism shock in explaining the variability of a $h$-step ahead forecast of a particular variable. For example, we will examine the proportion of the variability of consumption and hours worked explained by the optimism shock.
 
-Mathematically, the $i$-th variable's forecast error variance decomposition of the $j$-th shock at horizon $k$ is given by
+Mathematically, the $i$-th variable's forecast error variance decomposition of the $j$-th shock at horizon $h$ is given by
 
 $$
 \text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \*\Theta_{ij,l}
@@ -603,21 +659,50 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 1000)
+posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
 ```{r}
-plot(irf, probability = 0.68)
+# devtools::install_github("bsvars/bsvars")
+
+# plot irf of one shock
+plot_irf1 = function(irf) {
+  N = dim(irf)[1]
+  
+  par(mfrow = c(2, 3))
+  
+  for (i in 1:N) {
+    bsvars::plot_ribbon(
+      irf[i, 1, , ],
+      probability = 0.68,
+      main = colnames(Y)[i],
+      xlab = "Quarter",
+      ylab = "Percent",
+      bty  = "n",
+      )
+    abline(h = 0)
+  }
+}
+
+plot_irf1(irf)
 ```
 
 where shock 1 is the optimism shock, and it gives very close impulse response functions to the ones in the original paper.
 
 ### FEVD
 
+The forecast error variance decomposition is
+
+```{r}
+fevd = compute_variance_decompositions(posterior, horizon = 40)
+```
+
 ## Australian data
+
+All subsequent analysis are performed on the Australian data.
 
 ### IRF
 
@@ -634,25 +719,31 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 1000)
+posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
 ```{r}
-plot(irf, probability = 0.68)
+plot_irf1(irf)
 ```
 
-where shock 1 is the optimism shock. Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.
+Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.
 
 ### FEVD
 
+The forecast error variance decomposition is
+
+```{r}
+fevd = compute_variance_decompositions(posterior, horizon = 40)
+```
+
 ## Extension
 
-Now we impose an additional narrative restrictions that
+Now we introduce an additional narrative restrictions that
 
-- the optimism shock is negative when Covid-19 hits Australia in 2020 Q1.
+> the optimism shock is **negative** when Covid-19 hits Australia in 2020 Q1.
 
 ### IRF
 
@@ -661,7 +752,7 @@ zero_irf          = matrix(0, nrow = 5, ncol = 5)
 zero_irf[1, 1]    = 1
 sign_irf          = array(0, dim = c(5, 5, 1))
 sign_irf[2, 1, 1] = 1
-sign_narrative    = matrix(c(1, -1, 1, 1, 103, 0), ncol = 6)
+sign_narrative    = matrix(c(1, -1, 1, 1, covid_index, 0), ncol = 6)
 
 specification = specify_bsvarSIGN$new(
   Y*100,
@@ -671,19 +762,37 @@ specification = specify_bsvarSIGN$new(
   zero_irf       = zero_irf
 )
 
-posterior = estimate(specification, S = 1000)
+posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
 ```{r}
-plot(irf, probability = 0.68) 
+plot_irf1(irf)
 ```
 
 With the additional assumption, we can identify more significant impacts. In the short run, the optimism shock has a positive impact on consumption and a negative impact on hours worked.
 
+Although not significant, it is interesting to see that the optimism shock has a negative impact on hours worked in Australia in the short run, in contrast to a positive impact in the US.
+
 ### FEVD
+
+The forecast error variance decomposition is
+
+```{r}
+fevd = compute_variance_decompositions(posterior, horizon = 40)
+```
+
+
+
+
+
+
+
+
+
+
 
 
 

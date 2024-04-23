@@ -163,7 +163,6 @@ div.csl-indent {
   <li><a href="#reduced-form" id="toc-reduced-form" class="nav-link" data-scroll-target="#reduced-form">Reduced form</a></li>
   <li><a href="#orthogonal-reduced-form-parameterization" id="toc-orthogonal-reduced-form-parameterization" class="nav-link" data-scroll-target="#orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</a></li>
   </ul></li>
-  <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a></li>
   <li><a href="#bayesian-inference" id="toc-bayesian-inference" class="nav-link" data-scroll-target="#bayesian-inference">Bayesian inference</a>
   <ul class="collapse">
   <li><a href="#derivations" id="toc-derivations" class="nav-link" data-scroll-target="#derivations">Derivations</a></li>
@@ -171,6 +170,10 @@ div.csl-indent {
   <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a></li>
   </ul></li>
   <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
+  <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a>
+  <ul class="collapse">
+  <li><a href="#extension" id="toc-extension" class="nav-link" data-scroll-target="#extension">Extension</a></li>
+  </ul></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a>
   <ul class="collapse">
   <li><a href="#irf" id="toc-irf" class="nav-link" data-scroll-target="#irf">IRF</a></li>
@@ -189,7 +192,7 @@ div.csl-indent {
   <li><a href="#irf-2" id="toc-irf-2" class="nav-link" data-scroll-target="#irf-2">IRF</a></li>
   <li><a href="#fevd-2" id="toc-fevd-2" class="nav-link" data-scroll-target="#fevd-2">FEVD</a></li>
   </ul></li>
-  <li><a href="#extension" id="toc-extension" class="nav-link" data-scroll-target="#extension">Extension</a>
+  <li><a href="#extension-1" id="toc-extension-1" class="nav-link" data-scroll-target="#extension-1">Extension</a>
   <ul class="collapse">
   <li><a href="#irf-3" id="toc-irf-3" class="nav-link" data-scroll-target="#irf-3">IRF</a></li>
   <li><a href="#fevd-3" id="toc-fevd-3" class="nav-link" data-scroll-target="#fevd-3">FEVD</a></li>
@@ -555,19 +558,6 @@ f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q}) &amp;= (
 \]</span></p>
 </section>
 </section>
-<section id="algorithm" class="level2">
-<h2 class="anchored" data-anchor-id="algorithm">Algorithm</h2>
-<p>The goal is to sample structural parameters (<span class="math inline">\(\mathbf{A}_0\)</span>, <span class="math inline">\(\mathbf{A}_+\)</span>) satisfying <strong>both</strong> the sign and zero restrictions, but the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters (<span class="math inline">\(\mathbb{P}(X=x)=0\)</span> for continuous <span class="math inline">\(X\)</span>). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.</p>
-<p>Here is a high level outline of the algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>:</p>
-<ol type="1">
-<li>Sample reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>, <span class="math inline">\(\mathbf{Q}\)</span>) conditional on the zero restrictions.</li>
-<li>Set <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+) = f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span>.</li>
-<li>If the sign restrictions are satisfied, keep <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+)\)</span> and compute an importance weight, otherwise discard.</li>
-<li>Repeat steps 1-3 until the desired number of samples is obtained.</li>
-<li>Resample with replacement using the importance weights.</li>
-</ol>
-<p>The importance sampling step 5 is needed to manipulate the density induced by step 1 to the desired conjugate posterior density.</p>
-</section>
 <section id="bayesian-inference" class="level2">
 <h2 class="anchored" data-anchor-id="bayesian-inference">Bayesian inference</h2>
 <section id="derivations" class="level3">
@@ -661,13 +651,15 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="op">);</span></span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The second function is to draw from the matrix normal distribution.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>arma<span class="op">::</span>mat rmatnorm_cpp<span class="op">(</span><span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> M<span class="op">,</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> U<span class="op">,</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> V<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  mat X <span class="op">=</span> mat<span class="op">(</span>size<span class="op">(</span>M<span class="op">),</span> fill<span class="op">::</span>randn<span class="op">);</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> M <span class="op">+</span> chol<span class="op">(</span>U<span class="op">).</span>t<span class="op">()</span> <span class="op">*</span> X <span class="op">*</span> chol<span class="op">(</span>V<span class="op">);</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>arma<span class="op">::</span>mat rmatnorm_cpp<span class="op">(</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> M<span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> U<span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> V</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  mat X <span class="op">=</span> mat<span class="op">(</span>size<span class="op">(</span>M<span class="op">),</span> fill<span class="op">::</span>randn<span class="op">);</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> M <span class="op">+</span> chol<span class="op">(</span>U<span class="op">).</span>t<span class="op">()</span> <span class="op">*</span> X <span class="op">*</span> chol<span class="op">(</span>V<span class="op">);</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To draw from the inverse Wishart distribution, we use the <code>iwishrnd</code> function from the <code>RcppArmadillo</code> package.</p>
 <p>Using these three functions together, we are able to estimate the reduced-form BVAR model.</p>
 </section>
@@ -767,6 +759,61 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 </table>
 <p>The identification strategy is based on the assumption that the optimism shock positively affects stock prices, and has no contemporaneous effect on productivity.</p>
 </section>
+<section id="algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="algorithm">Algorithm</h2>
+<p>To perform this identification, we need an algorithm to sample from the posterior distribution of the structural parameters (<span class="math inline">\(\mathbf{A}_0\)</span>, <span class="math inline">\(\mathbf{A}_+\)</span>) conditional on the zero and sign restrictions.</p>
+<p>However, the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters (akin to <span class="math inline">\(\mathbb{P}(X=x)=0\)</span> for continuous <span class="math inline">\(X\)</span>). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.</p>
+<p>Here is a high level outline of the algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>:</p>
+<ol type="1">
+<li>Sample reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>, <span class="math inline">\(\mathbf{Q}\)</span>) conditional on the zero restrictions.</li>
+<li>Set <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+) = f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span>.</li>
+<li>If the sign restrictions are satisfied, keep <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+)\)</span> and compute an importance weight, otherwise discard.</li>
+<li>Repeat steps 1-3 until the desired number of samples is obtained.</li>
+<li>Resample with replacement using the importance weights.</li>
+</ol>
+<p>Where step 5 (importance sampling) is needed to manipulate the density induced by step 1 to the desired Nomral-Generalized-Normal posterior density <span class="math inline">\(\mathcal{NGN}\)</span>.</p>
+<p>To be explicit, starting with a Uniform-Normal-Inverse-Wishart prior distribution, the importance weight in step 3 is given by</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+&amp;=\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+&amp;\propto\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+\end{align*}
+\]</span></p>
+<p>where <span class="math inline">\(\mathcal Z\)</span> denotes satisfying zero restrictions and <span class="math inline">\(\mathcal S\)</span> denotes satisfying the sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2. Here is the code to calculate this importance weight.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> log_volume_element<span class="op">(</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>field<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;&amp;</span> Z<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              A0<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              Aplus</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  colvec vec_structural <span class="op">=</span> join_vert<span class="op">(</span>vectorise<span class="op">(</span>A0<span class="op">),</span> vectorise<span class="op">(</span>Aplus<span class="op">));</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  mat Dz  <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> zero_restrictions<span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  mat Dgf <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="va">g_fh_vec</span><span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  mat DN  <span class="op">=</span> Dgf <span class="op">*</span> null<span class="op">(</span>Dz<span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> log_det<span class="op">(</span>DN<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> DN<span class="op">).</span>real<span class="op">();</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="extension" class="level3">
+<h3 class="anchored" data-anchor-id="extension">Extension</h3>
+<p>Besides the zero and sign restrictions, another popular identification scheme proposed by <span class="citation" data-cites="antolin2018narrative">Antolı́n-Dı́az and Rubio-Ramı́rez (<a href="#ref-antolin2018narrative" role="doc-biblioref">2018</a>)</span> is to impose narrative restrictions on the structural shocks and historical decomposition. For example, restricting a structural shock to be negative during some period, and we will apply this to restrict the optimism shock during the Covid-19 pandemic.</p>
+<p>But, the difficulty is that the narrative restrictions <span class="math inline">\(\mathcal{R}\)</span> requires another resample with some importance weight:</p>
+<p><span class="math display">\[
+\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})} \propto \frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
+\]</span></p>
+<p>To combine these two identification schemes, we need to calculate the importance weight when <strong>all</strong> of the three restrictions, zero, sign, and narrative, are present:</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+&amp;=\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+&amp;\propto\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+&amp;\propto\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+\end{align*}
+\]</span></p>
+<p>Therefore, it is simply the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.</p>
+</section>
+</section>
 <section id="interpretation" class="level2">
 <h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
 <p>Two popular methods to interpret the SVAR model are impulse response function (IRF) and forecast error variance decomposition (FEVD) <span class="citation" data-cites="kilian2017structural">(<a href="#ref-kilian2017structural" role="doc-biblioref">Kilian and Lütkepohl 2017</a>, Chap 4)</span>.</p>
@@ -779,7 +826,7 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <section id="fevd" class="level3">
 <h3 class="anchored" data-anchor-id="fevd">FEVD</h3>
 <p>The forecast error variance decomposition (FEVD) is used to quantify the relative importance of the optimism shock in explaining the variability of a <span class="math inline">\(h\)</span>-step ahead forecast of a particular variable. For example, we will examine the proportion of the variability of consumption and hours worked explained by the optimism shock.</p>
-<p>Mathematically, the <span class="math inline">\(i\)</span>-th variable’s forecast error variance decomposition of the <span class="math inline">\(j\)</span>-th shock at horizon <span class="math inline">\(k\)</span> is given by</p>
+<p>Mathematically, the <span class="math inline">\(i\)</span>-th variable’s forecast error variance decomposition of the <span class="math inline">\(j\)</span>-th shock at horizon <span class="math inline">\(h\)</span> is given by</p>
 <p><span class="math display">\[
 \text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \mathbf{\Theta}_{ij,l}
 \]</span></p>
@@ -803,42 +850,47 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 </section>
 <section id="fevd-1" class="level3">
 <h3 class="anchored" data-anchor-id="fevd-1">FEVD</h3>
+<p>The forecast error variance decomposition is</p>
 </section>
 </section>
 <section id="australian-data" class="level2">
 <h2 class="anchored" data-anchor-id="australian-data">Australian data</h2>
+<p>All subsequent analysis are performed on the Australian data.</p>
 <section id="irf-2" class="level3">
 <h3 class="anchored" data-anchor-id="irf-2">IRF</h3>
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>where shock 1 is the optimism shock. Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.</p>
+<p>Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.</p>
 </section>
 <section id="fevd-2" class="level3">
 <h3 class="anchored" data-anchor-id="fevd-2">FEVD</h3>
+<p>The forecast error variance decomposition is</p>
 </section>
 </section>
-<section id="extension" class="level2">
-<h2 class="anchored" data-anchor-id="extension">Extension</h2>
-<p>Now we impose an additional narrative restrictions that</p>
-<ul>
-<li>the optimism shock is negative when Covid-19 hits Australia in 2020 Q1.</li>
-</ul>
+<section id="extension-1" class="level2">
+<h2 class="anchored" data-anchor-id="extension-1">Extension</h2>
+<p>Now we introduce an additional narrative restrictions that</p>
+<blockquote class="blockquote">
+<p>the optimism shock is <strong>negative</strong> when Covid-19 hits Australia in 2020 Q1.</p>
+</blockquote>
 <section id="irf-3" class="level3">
 <h3 class="anchored" data-anchor-id="irf-3">IRF</h3>
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>With the additional assumption, we can identify more significant impacts. In the short run, the optimism shock has a positive impact on consumption and a negative impact on hours worked.</p>
+<p>Although not significant, it is interesting to see that the optimism shock has a negative impact on hours worked in Australia in the short run, in contrast to a positive impact in the US.</p>
 </section>
 <section id="fevd-3" class="level3">
-
+<h3 class="anchored" data-anchor-id="fevd-3">FEVD</h3>
+<p>The forecast error variance decomposition is</p>
 
 
 
@@ -847,7 +899,10 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 </section>
 
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">FEVD</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-antolin2018narrative" class="csl-entry" role="listitem">
+Antolı́n-Dı́az, Juan, and Juan F Rubio-Ramı́rez. 2018. <span>“Narrative Sign Restrictions for SVARs.”</span> <em>American Economic Review</em> 108 (10): 2802–29.
+</div>
 <div id="ref-arias2018inference" class="csl-entry" role="listitem">
 Arias, Jonas E, Juan F Rubio-Ramı́rez, and Daniel F Waggoner. 2018. <span>“Inference Based on Structural Vector Autoregressions Identified with Sign and Zero Restrictions: Theory and Applications.”</span> <em>Econometrica</em> 86 (2): 685–720.
 </div>
