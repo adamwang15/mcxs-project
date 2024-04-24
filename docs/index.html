@@ -775,8 +775,8 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>To be explicit, starting with a Uniform-Normal-Inverse-Wishart prior distribution, the importance weight in step 3 is given by</p>
 <p><span class="math display">\[
 \begin{align*}
-\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
-&amp;=\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+&amp;=\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
 &amp;\propto\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
 \end{align*}
 \]</span></p>
@@ -805,8 +805,8 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>To combine these two identification schemes, we need to calculate the importance weight when <strong>all</strong> of the three restrictions, zero, sign, and narrative, are present:</p>
 <p><span class="math display">\[
 \begin{align*}
-\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
-&amp;=\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+&amp;=\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
 &amp;\propto\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
 &amp;\propto\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
 \end{align*}

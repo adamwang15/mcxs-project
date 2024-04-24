@@ -566,8 +566,8 @@ To be explicit, starting with a Uniform-Normal-Inverse-Wishart prior distributio
 
 $$
 \begin{align*}
-\frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
-&=\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
+\frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
+&=\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
 &\propto\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
 \end{align*}
 $$
@@ -605,8 +605,8 @@ To combine these two identification schemes, we need to calculate the importance
 
 $$
 \begin{align*}
-\frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
-&=\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
+\frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
+&=\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
 &\propto\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
 &\propto\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
 \end{align*}
