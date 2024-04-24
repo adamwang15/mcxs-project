@@ -572,7 +572,7 @@ $$
 \end{align*}
 $$
 
-where $\mathcal Z$ denotes satisfying zero restrictions and $\mathcal S$ denotes satisfying the sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2. Here is the code to calculate this importance weight.
+where $\mathcal Z$ denotes zero restrictions and $\mathcal S$ denotes sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2. Here is the code to calculate the volume element $v_{(g\circ f_h)|\mathcal Z}$:
 
 ```cpp
 double log_volume_element(
@@ -670,7 +670,9 @@ The impulse response functions are
 
 # plot irf of one shock
 plot_irf1 = function(irf) {
-  N = dim(irf)[1]
+  N       = dim(irf)[1]
+  ylab    = rep("Percent", N)
+  ylab[4] = "Percentage Point"
   
   par(mfrow = c(2, 3))
   
@@ -680,7 +682,7 @@ plot_irf1 = function(irf) {
       probability = 0.68,
       main = colnames(Y)[i],
       xlab = "Quarter",
-      ylab = "Percent",
+      ylab = ylab[i],
       bty  = "n",
       )
     abline(h = 0)
@@ -699,6 +701,7 @@ The forecast error variance decomposition is
 ```{r}
 fevd = compute_variance_decompositions(posterior, horizon = 40)
 ```
+
 
 ## Australian data
 

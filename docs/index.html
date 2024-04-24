@@ -780,7 +780,7 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 &amp;\propto\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
 \end{align*}
 \]</span></p>
-<p>where <span class="math inline">\(\mathcal Z\)</span> denotes satisfying zero restrictions and <span class="math inline">\(\mathcal S\)</span> denotes satisfying the sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2. Here is the code to calculate this importance weight.</p>
+<p>where <span class="math inline">\(\mathcal Z\)</span> denotes zero restrictions and <span class="math inline">\(\mathcal S\)</span> denotes sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2. Here is the code to calculate the volume element <span class="math inline">\(v_{(g\circ f_h)|\mathcal Z}\)</span>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> log_volume_element<span class="op">(</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>field<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;&amp;</span> Z<span class="op">,</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              A0<span class="op">,</span></span>
