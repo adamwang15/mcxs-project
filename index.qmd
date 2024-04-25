@@ -53,7 +53,8 @@ consumer_price_index = read_rba(series_id = 'GCPIAG')
 
 productivity         = read_rba(series_id = 'GNFPROSQI')
 
-asx200               = tq_get('^AXJO', from = '1990-01-01', to = '2023-12-31')
+asx200               = tq_get('^AXJO', from = '1994-01-01', to = '2023-12-31')
+# aord               = tq_get('^AORD', from = '1994-01-01', to = '2023-12-31')
 # stock_prices       = asx200 / consumer_price_index
 
 retail_turnover      = read_abs(series_id = 'A3348585R')
@@ -79,13 +80,21 @@ df_productivity = productivity |>
   rename(productivity = value) |> 
   mutate(date = as.yearmon(date))
 
-df_asx200 = asx200 |> 
-  rename(asx200 = close) |> 
-  na.locf(fromLast = TRUE) |> 
-  mutate(ym = as.yearmon(date)) |> 
-  slice_max(date, by = ym) |> 
-  select(date, asx200) |> 
+df_asx200 = asx200 |>
+  rename(asx200 = close) |>
+  na.locf(fromLast = TRUE) |>
+  mutate(ym = as.yearmon(date)) |>
+  slice_max(date, by = ym) |>
+  select(date, asx200) |>
   mutate(date = as.yearmon(date))
+
+# df_aord = aord |> 
+#   rename(aord = close) |> 
+#   na.locf(fromLast = TRUE) |> 
+#   mutate(ym = as.yearmon(date)) |> 
+#   slice_max(date, by = ym) |> 
+#   select(date, aord) |> 
+#   mutate(date = as.yearmon(date))
 
 df_retail_turnover = retail_turnover |>
   select(date, value) |>
@@ -107,7 +116,8 @@ df_hours_worked = hours_worked |>
   rename(hours_worked = value) |> 
   mutate(date = as.yearmon(date))
 
-df = merge(df_consumer_price_index, df_productivity, by = 'date') |>
+df = 
+  merge(df_consumer_price_index, df_productivity, by = 'date') |>
   merge(df_asx200, by = 'date') |>
   merge(df_retail_turnover, by = 'date') |>
   merge(df_cash_rate, by = 'date') |>
@@ -636,7 +646,7 @@ The forecast error variance decomposition (FEVD) is used to quantify the relativ
 Mathematically, the $i$-th variable's forecast error variance decomposition of the $j$-th shock at horizon $h$ is given by
 
 $$
-\text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \*\Theta_{ij,l}
+\text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \*\Theta_{ij,l}^{2}
 $$
 
 # Results
@@ -662,13 +672,13 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 1000)
+posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
-```{r}
+```{r us-irf}
 # devtools::install_github("bsvars/bsvars")
 
 # plot irf of one shock
@@ -699,10 +709,136 @@ where shock 1 is the optimism shock, and it gives very close impulse response fu
 
 ### FEVD
 
-The forecast error variance decomposition is
+```{r}
+compute_fevd = function(irf, horizon = 40) {
+  N    = dim(irf)[1]
+  S    = dim(irf)[4]
+  fevd = array(NA,c(N,N,horizon,S))
+
+  for (s in 1:S){
+   
+    for (i in 1:(horizon)){
+      
+      for (n in 1:N){
+        for (nn in 1:N){
+          fevd[n,nn,i,s]  = sum(irf[n,nn,1:i,s]^2)
+        }
+      }
+      fevd[,,i,s]         = diag(1/apply(fevd[,,i,s],1,sum))%*%fevd[,,i,s]
+    }
+  }
+
+  fevd        = 100*fevd
+  class(fevd) = "fevd"
+  fevd
+}
+
+plot.fevd = function(
+    x,
+    n,
+    cols,
+    main,
+    xlab,
+    mar.multi = c(1, 4.6, 0, 4.6),
+    oma.multi = c(6, 0, 5, 0),
+    ...
+) {
+  
+  if ( missing(main) ) main = "Forecast Error Variance Decompositions"
+  if ( missing(xlab) ) xlab = "horizon"
+  
+  N         = dim(x)[1]
+  H         = dim(x)[3] - 1
+  
+  if ( missing(cols) ) {
+    fc          = grDevices::colorRampPalette(c("#ff69b4", "#ffd700"))
+    cols        = fc(N)
+  }
+  
+  fevd      = apply(x, 1:3, mean)
+  FEVD      = list()
+  FEVD_mid  = list()
+  for (j in 1:N) {
+    FEVD[[j]] = rbind(rep(0, H + 1), apply(fevd[j,,], 2, cumsum))
+    FEVD_mid[[j]] = (FEVD[[j]][1:N, H + 1] + FEVD[[j]][2:(N + 1), H + 1]) / 2
+  }
+    
+  graphics::plot(
+    x = 0:H,
+    y = FEVD[[n]][1,],
+    type = "n",
+    ylim = c(0, 100),
+    main = colnames(Y)[n],
+    xlab = "Quarter",
+    ylab = "",
+    bty = "n",
+    axes = FALSE,
+    ...
+  )
+  
+  for (i in 1:N) {
+    graphics::polygon(
+      c(0:H, H:0), 
+      c(FEVD[[n]][i,], rev(FEVD[[n]][i + 1,])), 
+      col = cols[i],
+      border = cols[i]
+    )
+  }
+  
+  # graphics::axis(1, labels = if (n == N) TRUE else FALSE)
+  graphics::axis(1, labels = TRUE)
+  graphics::axis(2, c(0, 50, 100), c(0, 50, 100))
+  graphics::axis(4, FEVD_mid[[n]], 1:N)
+  
+  # graphics::mtext( # RHS "shocks"
+  #   "shocks",
+  #   side = 4,
+  #   line = 3,
+  #   outer = FALSE,
+  #   cex = 0.6
+  # )
+  
+  graphics::mtext( # main title
+    main,
+    side = 3,
+    line = 2,
+    outer = TRUE
+  )
+  
+  graphics::mtext( # x-axis label
+    xlab,
+    side = 1,
+    line = 3,
+    outer = TRUE
+  )
+  
+  invisible(x)
+} # END plot.PosteriorFEVD
+```
+
+The forecast error variance decomposition of consumption and hours worked are
+
+```{r us-fevd}
+fevd = compute_fevd(irf, horizon = 40)
+
+par(mfrow = c(1, 2))
+plot(fevd, n = 3)
+plot(fevd, n = 5)
+```
+
+(where shock 1 is the optimism shock, same for all subsequent plots)
+
+Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are
 
 ```{r}
-fevd = compute_variance_decompositions(posterior, horizon = 40)
+fevd_40 = 
+  fevd[1, , 40, ] |> 
+  apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
+  t() |>
+  round(2)
+
+rownames(fevd_40) = colnames(Y)
+kable(fevd_40)
 ```
 
 
@@ -725,13 +861,13 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 1000)
+posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
-```{r}
+```{r au-irf}
 plot_irf1(irf)
 ```
 
@@ -739,10 +875,27 @@ Comparing with the US data, the optimism shock has a much smaller effect on cons
 
 ### FEVD
 
-The forecast error variance decomposition is
+The forecast error variance decomposition of consumption and hours worked are
+
+```{r au-fevd}
+fevd = compute_fevd(irf, horizon = 40)
+
+par(mfrow = c(1, 2))
+plot(fevd, n = 3)
+plot(fevd, n = 5)
+```
+
+Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are
 
 ```{r}
-fevd = compute_variance_decompositions(posterior, horizon = 40)
+fevd_40 = 
+  fevd[1, , 40, ] |> 
+  apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
+  t() |>
+  round(2)
+
+rownames(fevd_40) = colnames(Y)
+kable(fevd_40)
 ```
 
 ## Extension
@@ -768,13 +921,13 @@ specification = specify_bsvarSIGN$new(
   zero_irf       = zero_irf
 )
 
-posterior = estimate(specification, S = 1000)
+posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
-```{r}
+```{r au-ext-irf}
 plot_irf1(irf)
 ```
 
@@ -784,23 +937,28 @@ Although not significant, it is interesting to see that the optimism shock has a
 
 ### FEVD
 
-The forecast error variance decomposition is
+The forecast error variance decomposition of consumption and hours worked are
 
-```{r}
-fevd = compute_variance_decompositions(posterior, horizon = 40)
+```{r au-ext-fevd}
+fevd = compute_fevd(irf, horizon = 40)
+
+par(mfrow = c(1, 2))
+plot(fevd, n = 3)
+plot(fevd, n = 5)
 ```
 
+Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are
 
+```{r}
+fevd_40 = 
+  fevd[1, , 40, ] |> 
+  apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
+  t() |>
+  round(2)
 
-
-
-
-
-
-
-
-
-
+rownames(fevd_40) = colnames(Y)
+kable(fevd_40)
+```
 
 
 

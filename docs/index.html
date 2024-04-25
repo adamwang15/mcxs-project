@@ -831,7 +831,7 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The forecast error variance decomposition (FEVD) is used to quantify the relative importance of the optimism shock in explaining the variability of a <span class="math inline">\(h\)</span>-step ahead forecast of a particular variable. For example, we will examine the proportion of the variability of consumption and hours worked explained by the optimism shock.</p>
 <p>Mathematically, the <span class="math inline">\(i\)</span>-th variable’s forecast error variance decomposition of the <span class="math inline">\(j\)</span>-th shock at horizon <span class="math inline">\(h\)</span> is given by</p>
 <p><span class="math display">\[
-\text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \mathbf{\Theta}_{ij,l}
+\text{FEVD}_j^i(h) = \frac{\text{MSFE}_{j}^{i}(h)}{\sum_{n=1}^{N}\text{MSFE}_{j}^{n}(h)}, \quad \text{MSFE}_{j}^{i}(h) = \sum_{l=0}^{h-1} \mathbf{\Theta}_{ij,l}^{2}
 \]</span></p>
 </section>
 </section>
@@ -846,14 +846,67 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/us-irf-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>where shock 1 is the optimism shock, and it gives very close impulse response functions to the ones in the original paper.</p>
 </section>
 <section id="fevd-1" class="level3">
 <h3 class="anchored" data-anchor-id="fevd-1">FEVD</h3>
-<p>The forecast error variance decomposition is</p>
+<p>The forecast error variance decomposition of consumption and hours worked are</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/us-fevd-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>(where shock 1 is the optimism shock, same for all subsequent plots)</p>
+<p>Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">16%</th>
+<th style="text-align: right;">50%</th>
+<th style="text-align: right;">84%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">productivity</td>
+<td style="text-align: right;">1.51</td>
+<td style="text-align: right;">7.13</td>
+<td style="text-align: right;">19.17</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stock_prices</td>
+<td style="text-align: right;">5.81</td>
+<td style="text-align: right;">19.18</td>
+<td style="text-align: right;">43.67</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">consumption</td>
+<td style="text-align: right;">5.74</td>
+<td style="text-align: right;">17.69</td>
+<td style="text-align: right;">41.79</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">real_interest_rate</td>
+<td style="text-align: right;">6.37</td>
+<td style="text-align: right;">20.38</td>
+<td style="text-align: right;">43.55</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hours_worked</td>
+<td style="text-align: right;">4.51</td>
+<td style="text-align: right;">13.05</td>
+<td style="text-align: right;">36.85</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
 </section>
 <section id="australian-data" class="level2">
@@ -864,14 +917,66 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/au-irf-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.</p>
 </section>
 <section id="fevd-2" class="level3">
 <h3 class="anchored" data-anchor-id="fevd-2">FEVD</h3>
-<p>The forecast error variance decomposition is</p>
+<p>The forecast error variance decomposition of consumption and hours worked are</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/au-fevd-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">16%</th>
+<th style="text-align: right;">50%</th>
+<th style="text-align: right;">84%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">productivity</td>
+<td style="text-align: right;">0.92</td>
+<td style="text-align: right;">7.14</td>
+<td style="text-align: right;">20.10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stock_prices</td>
+<td style="text-align: right;">2.48</td>
+<td style="text-align: right;">10.95</td>
+<td style="text-align: right;">40.99</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">consumption</td>
+<td style="text-align: right;">3.54</td>
+<td style="text-align: right;">12.35</td>
+<td style="text-align: right;">43.05</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">real_interest_rate</td>
+<td style="text-align: right;">3.58</td>
+<td style="text-align: right;">17.34</td>
+<td style="text-align: right;">51.71</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hours_worked</td>
+<td style="text-align: right;">3.12</td>
+<td style="text-align: right;">24.29</td>
+<td style="text-align: right;">51.15</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
 </section>
 <section id="extension-1" class="level2">
@@ -885,7 +990,7 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/au-ext-irf-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>With the additional assumption, we can identify more significant impacts. In the short run, the optimism shock has a positive impact on consumption and a negative impact on hours worked.</p>
@@ -893,7 +998,59 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 </section>
 <section id="fevd-3" class="level3">
 <h3 class="anchored" data-anchor-id="fevd-3">FEVD</h3>
-<p>The forecast error variance decomposition is</p>
+<p>The forecast error variance decomposition of consumption and hours worked are</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/au-ext-fevd-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">16%</th>
+<th style="text-align: right;">50%</th>
+<th style="text-align: right;">84%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">productivity</td>
+<td style="text-align: right;">1.01</td>
+<td style="text-align: right;">7.56</td>
+<td style="text-align: right;">24.36</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">stock_prices</td>
+<td style="text-align: right;">3.32</td>
+<td style="text-align: right;">14.92</td>
+<td style="text-align: right;">43.42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">consumption</td>
+<td style="text-align: right;">4.57</td>
+<td style="text-align: right;">15.80</td>
+<td style="text-align: right;">55.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">real_interest_rate</td>
+<td style="text-align: right;">2.99</td>
+<td style="text-align: right;">13.88</td>
+<td style="text-align: right;">40.17</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hours_worked</td>
+<td style="text-align: right;">3.80</td>
+<td style="text-align: right;">15.45</td>
+<td style="text-align: right;">39.68</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 
 
