@@ -1,5 +1,5 @@
 ---
-title: "Sign and zero restrictions: optimism shock on the Australian business cycle"
+title: "Sign and Zero Restrictions: Optimism Shock on the Australian Business Cycle"
 author: "Adam Wang"
 
 execute:
@@ -137,6 +137,7 @@ All data are collected from the Reserve Bank of Australia (RBA), the Australian 
 - **Productivity**: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).
 
 ```{r}
+#| fig-cap: "Productivity"
 library(ggplot2)
 
 covid_index = 103
@@ -153,6 +154,7 @@ df |>
 - **Stock prices**: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol \^AXJO), divided by the consumer price index.
 
 ```{r}
+#| fig-cap: "Stock prices"
 df |> 
   ggplot(aes(x = date, y = stock_prices)) +
   geom_line() +
@@ -164,6 +166,7 @@ df |>
 - **Consumption**: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.
 
 ```{r}
+#| fig-cap: "Consumption"
 df |> 
   ggplot(aes(x = date, y = consumption)) +
   geom_line() +
@@ -175,6 +178,7 @@ df |>
 - **Real interest rate**: over-night cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP).
 
 ```{r}
+#| fig-cap: "Real interest rate"
 df |> 
   ggplot(aes(x = date, y = real_interest_rate)) +
   geom_line() +
@@ -186,6 +190,7 @@ df |>
 - **Hours worked**: total hours worked (source: ABS, series ID A85389611R).
 
 ```{r}
+#| fig-cap: "Hours worked"
 df |> 
   ggplot(aes(x = date, y = hours_worked)) +
   geom_line() +
@@ -498,7 +503,7 @@ To draw from the inverse Wishart distribution, we use the ``iwishrnd`` function 
 
 Using these three functions together, we are able to estimate the reduced-form BVAR model.
 
-### Simulation
+### Simulation 1: reduced-form
 
 To test the validity of our code, we simulate 1,000 observations from a bi-variate Gaussian random walk process with the covariance matrix equal to the identity matrix of order 2.
 
@@ -546,6 +551,142 @@ kable(mean_Sigma, digits = 4)
 
 They are close to the true values of the simulated data.
 
+### Simulation 2: structural form
+
+Suppose the true structural model is
+
+$$
+\begin{bmatrix}
+-1 & 1\\
+1 & 0\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t}\\
+y_{2,t}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+-1 & 1\\
+1 & 0\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t-1}\\
+y_{2,t-1}\\
+\end{bmatrix}
++
+\begin{bmatrix}
+\varepsilon_{1,t}\\
+\varepsilon_{2,t}\\
+\end{bmatrix},
+\begin{bmatrix}
+\varepsilon_{1,t}\\
+\varepsilon_{2,t}\\
+\end{bmatrix}
+\sim
+\mathcal{N}(
+\begin{bmatrix}
+0 \\
+0
+\end{bmatrix}
+,
+\begin{bmatrix}
+1 & 0 \\
+0 & 1 \\
+\end{bmatrix}
+)
+$$
+
+equivalently, we can simulate 1,000 observations from the reduced-form
+
+$$
+\begin{bmatrix}
+y_{1,t}\\
+y_{2,t}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0\\
+0 & 1\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t-1}\\
+y_{2,t-1}\\
+\end{bmatrix}
++
+\begin{bmatrix}
+u_{1,t}\\
+u_{2,t}\\
+\end{bmatrix},
+\begin{bmatrix}
+u_{1,t}\\
+u_{2,t}\\
+\end{bmatrix}
+\sim
+\mathcal{N}(
+\begin{bmatrix}
+0 \\
+0
+\end{bmatrix}
+,
+\begin{bmatrix}
+1 & 1 \\
+1 & 2 \\
+\end{bmatrix}
+)
+$$
+
+```{r include=FALSE}
+# devtools::install_github("bsvars/bsvarSIGNs")
+library(bsvarSIGNs)
+
+set.seed(123)
+
+# simulate data
+N = 2
+T = 1000
+
+U     = mvtnorm::rmvnorm(T, rep(0, N), matrix(c(1, 1, 1, 2), N, N))
+sim_Y = apply(U, 2, cumsum)
+
+sign_irf = array(matrix(c(0, 1, 1, 1), 2, 2), dim = c(2, 2, 1))
+zero_irf = matrix(c(1, 0, 0, 0), 2, 2)
+
+specification  = specify_bsvarSIGN$new(sim_Y, 
+                                       p = 1, 
+                                       sign_irf = sign_irf,
+                                       zero_irf = zero_irf
+                                       )
+posterior      = estimate(specification, S = 1000)
+```
+
+Putting zero and sign restrictions on the inverse of the structural matrix
+
+$$
+\begin{bmatrix}
+-1 & 1\\
+1 & 0\\
+\end{bmatrix}^{-1}
+=
+\begin{bmatrix}
+0 & 1\\
+1 & 1\\
+\end{bmatrix}
+\Rightarrow
+\begin{bmatrix}
+0 & +\\
++ & +\\
+\end{bmatrix}
+$$
+
+Posterior mean of 1,000 draws of the structural matrix is
+
+```{r}
+posterior$posterior$B |> 
+  apply(c(1, 2), mean) |> 
+  t() |> 
+  round(4)
+```
+
 ## Identification
 
 After estimating the reduced-form VAR model, we plan to impose the following restrictions on the contemporaneous impulse response to identify optimism shock.
@@ -572,7 +713,7 @@ Here is a high level outline of the algorithm proposed by @arias2018inference:
 
 Where step 5 (importance sampling) is needed to manipulate the density induced by step 1 to the desired Nomral-Generalized-Normal posterior density $\mathcal{NGN}$.
 
-To be explicit, starting with a Uniform-Normal-Inverse-Wishart prior distribution, the importance weight in step 3 is given by
+To be explicit, starting with a Uniform-Normal-Inverse-Wishart $\mathcal{UNIW}$ prior distribution, the importance weight in step 3 is given by (posterior condition on $\*Y$ is dropped for brevity):
 
 $$
 \begin{align*}
@@ -618,7 +759,8 @@ $$
 \frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
 =&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
 =&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)}
-\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}
+\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}\\
+&\times
 \frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
 \propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
 \propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
@@ -672,13 +814,14 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 10000)
+posterior = estimate(specification, S = 20000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
 ```{r us-irf}
+#| fig-cap: "US IRF"
 # devtools::install_github("bsvars/bsvars")
 
 # plot irf of one shock
@@ -819,6 +962,7 @@ plot.fevd = function(
 The forecast error variance decomposition of consumption and hours worked are
 
 ```{r us-fevd}
+#| fig-cap: "US FEVD"
 fevd = compute_fevd(irf, horizon = 40)
 
 par(mfrow = c(1, 2))
@@ -841,6 +985,7 @@ rownames(fevd_40) = colnames(Y)
 kable(fevd_40)
 ```
 
+(the columns represent the median and 68% credible interval)
 
 ## Australian data
 
@@ -861,13 +1006,14 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 10000)
+posterior = estimate(specification, S = 20000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
 ```{r au-irf}
+#| fig-cap: "Australian IRF"
 plot_irf1(irf)
 ```
 
@@ -878,6 +1024,7 @@ Comparing with the US data, the optimism shock has a much smaller effect on cons
 The forecast error variance decomposition of consumption and hours worked are
 
 ```{r au-fevd}
+#| fig-cap: "Australian FEVD"
 fevd = compute_fevd(irf, horizon = 40)
 
 par(mfrow = c(1, 2))
@@ -921,13 +1068,14 @@ specification = specify_bsvarSIGN$new(
   zero_irf       = zero_irf
 )
 
-posterior = estimate(specification, S = 10000)
+posterior = estimate(specification, S = 20000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
 The impulse response functions are
 
 ```{r au-ext-irf}
+#| fig-cap: "Australian IRF with narrative restriction"
 plot_irf1(irf)
 ```
 
@@ -940,6 +1088,7 @@ Although not significant, it is interesting to see that the optimism shock has a
 The forecast error variance decomposition of consumption and hours worked are
 
 ```{r au-ext-fevd}
+#| fig-cap: "Australian FEVD with narrative restriction"
 fevd = compute_fevd(irf, horizon = 40)
 
 par(mfrow = c(1, 2))

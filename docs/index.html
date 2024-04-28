@@ -8,7 +8,7 @@
 
 <meta name="author" content="Adam Wang">
 
-<title>Macroeconometrics Research Report - Sign and zero restrictions: optimism shock on the Australian business cycle</title>
+<title>Macroeconometrics Research Report - Sign and Zero Restrictions: Optimism Shock on the Australian Business Cycle</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -167,7 +167,8 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#derivations" id="toc-derivations" class="nav-link" data-scroll-target="#derivations">Derivations</a></li>
   <li><a href="#implementation" id="toc-implementation" class="nav-link" data-scroll-target="#implementation">Implementation</a></li>
-  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a></li>
+  <li><a href="#simulation-1-reduced-form" id="toc-simulation-1-reduced-form" class="nav-link" data-scroll-target="#simulation-1-reduced-form">Simulation 1: reduced-form</a></li>
+  <li><a href="#simulation-2-structural-form" id="toc-simulation-2-structural-form" class="nav-link" data-scroll-target="#simulation-2-structural-form">Simulation 2: structural form</a></li>
   </ul></li>
   <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
   <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a>
@@ -206,7 +207,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Sign and zero restrictions: optimism shock on the Australian business cycle</h1>
+<h1 class="title">Sign and Zero Restrictions: Optimism Shock on the Australian Business Cycle</h1>
 </div>
 
 
@@ -250,7 +251,12 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="quarto-discovered-preview-image img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="quarto-discovered-preview-image img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Productivity</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <ul>
@@ -258,7 +264,12 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Stock prices</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <ul>
@@ -266,7 +277,12 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Consumption</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <ul>
@@ -274,7 +290,12 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Real interest rate</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <ul>
@@ -282,7 +303,12 @@ div.csl-indent {
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Hours worked</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.</p>
@@ -419,7 +445,7 @@ div.csl-indent {
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">0.3678</td>
+<td style="text-align: right;">0.3705</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="odd">
@@ -663,8 +689,8 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>To draw from the inverse Wishart distribution, we use the <code>iwishrnd</code> function from the <code>RcppArmadillo</code> package.</p>
 <p>Using these three functions together, we are able to estimate the reduced-form BVAR model.</p>
 </section>
-<section id="simulation" class="level3">
-<h3 class="anchored" data-anchor-id="simulation">Simulation</h3>
+<section id="simulation-1-reduced-form" class="level3">
+<h3 class="anchored" data-anchor-id="simulation-1-reduced-form">Simulation 1: reduced-form</h3>
 <p>To test the validity of our code, we simulate 1,000 observations from a bi-variate Gaussian random walk process with the covariance matrix equal to the identity matrix of order 2.</p>
 <p>Then, we compute 1,000 posterior draws from a SVAR model with a constant term and one lag, using the default identification scheme: positive sign restrictions on the diagonal of <span class="math inline">\(\mathbf{A}_0\)</span>.</p>
 <p>The posterior mean of the <span class="math inline">\(\mathbf{B}\)</span> is</p>
@@ -726,6 +752,112 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 </div>
 <p>They are close to the true values of the simulated data.</p>
 </section>
+<section id="simulation-2-structural-form" class="level3">
+<h3 class="anchored" data-anchor-id="simulation-2-structural-form">Simulation 2: structural form</h3>
+<p>Suppose the true structural model is</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+-1 &amp; 1\\
+1 &amp; 0\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t}\\
+y_{2,t}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+-1 &amp; 1\\
+1 &amp; 0\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t-1}\\
+y_{2,t-1}\\
+\end{bmatrix}
++
+\begin{bmatrix}
+\varepsilon_{1,t}\\
+\varepsilon_{2,t}\\
+\end{bmatrix},
+\begin{bmatrix}
+\varepsilon_{1,t}\\
+\varepsilon_{2,t}\\
+\end{bmatrix}
+\sim
+\mathcal{N}(
+\begin{bmatrix}
+0 \\
+0
+\end{bmatrix}
+,
+\begin{bmatrix}
+1 &amp; 0 \\
+0 &amp; 1 \\
+\end{bmatrix}
+)
+\]</span></p>
+<p>equivalently, we can simulate 1,000 observations from the reduced-form</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+y_{1,t}\\
+y_{2,t}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 &amp; 0\\
+0 &amp; 1\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t-1}\\
+y_{2,t-1}\\
+\end{bmatrix}
++
+\begin{bmatrix}
+u_{1,t}\\
+u_{2,t}\\
+\end{bmatrix},
+\begin{bmatrix}
+u_{1,t}\\
+u_{2,t}\\
+\end{bmatrix}
+\sim
+\mathcal{N}(
+\begin{bmatrix}
+0 \\
+0
+\end{bmatrix}
+,
+\begin{bmatrix}
+1 &amp; 1 \\
+1 &amp; 2 \\
+\end{bmatrix}
+)
+\]</span></p>
+<p>Putting zero and sign restrictions on the inverse of the structural matrix</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+-1 &amp; 1\\
+1 &amp; 0\\
+\end{bmatrix}^{-1}
+=
+\begin{bmatrix}
+0 &amp; 1\\
+1 &amp; 1\\
+\end{bmatrix}
+\Rightarrow
+\begin{bmatrix}
+0 &amp; +\\
++ &amp; +\\
+\end{bmatrix}
+\]</span></p>
+<p>Posterior mean of 1,000 draws of the structural matrix is</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>        [,1]   [,2]
+[1,] -0.9636 1.0463
+[2,]  0.9630 0.0000</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="identification" class="level2">
 <h2 class="anchored" data-anchor-id="identification">Identification</h2>
@@ -772,7 +904,7 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <li>Resample with replacement using the importance weights.</li>
 </ol>
 <p>Where step 5 (importance sampling) is needed to manipulate the density induced by step 1 to the desired Nomral-Generalized-Normal posterior density <span class="math inline">\(\mathcal{NGN}\)</span>.</p>
-<p>To be explicit, starting with a Uniform-Normal-Inverse-Wishart prior distribution, the importance weight in step 3 is given by</p>
+<p>To be explicit, starting with a Uniform-Normal-Inverse-Wishart <span class="math inline">\(\mathcal{UNIW}\)</span> prior distribution, the importance weight in step 3 is given by (posterior condition on <span class="math inline">\(\mathbf{Y}\)</span> is dropped for brevity):</p>
 <p><span class="math display">\[
 \begin{align*}
 \frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
@@ -781,20 +913,20 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 \end{align*}
 \]</span></p>
 <p>where <span class="math inline">\(\mathcal Z\)</span> denotes zero restrictions and <span class="math inline">\(\mathcal S\)</span> denotes sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2. Here is the code to calculate the volume element <span class="math inline">\(v_{(g\circ f_h)|\mathcal Z}\)</span>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> log_volume_element<span class="op">(</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>field<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;&amp;</span> Z<span class="op">,</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              A0<span class="op">,</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              Aplus</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  colvec vec_structural <span class="op">=</span> join_vert<span class="op">(</span>vectorise<span class="op">(</span>A0<span class="op">),</span> vectorise<span class="op">(</span>Aplus<span class="op">));</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  mat Dz  <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> zero_restrictions<span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  mat Dgf <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="va">g_fh_vec</span><span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  mat DN  <span class="op">=</span> Dgf <span class="op">*</span> null<span class="op">(</span>Dz<span class="op">);</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> log_det<span class="op">(</span>DN<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> DN<span class="op">).</span>real<span class="op">();</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> log_volume_element<span class="op">(</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>field<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;&amp;</span> Z<span class="op">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              A0<span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              Aplus</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  colvec vec_structural <span class="op">=</span> join_vert<span class="op">(</span>vectorise<span class="op">(</span>A0<span class="op">),</span> vectorise<span class="op">(</span>Aplus<span class="op">));</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  mat Dz  <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> zero_restrictions<span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  mat Dgf <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="va">g_fh_vec</span><span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  mat DN  <span class="op">=</span> Dgf <span class="op">*</span> null<span class="op">(</span>Dz<span class="op">);</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> log_det<span class="op">(</span>DN<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> DN<span class="op">).</span>real<span class="op">();</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="extension" class="level3">
 <h3 class="anchored" data-anchor-id="extension">Extension</h3>
 <p>Besides the zero and sign restrictions, another popular identification scheme proposed by <span class="citation" data-cites="antolin2018narrative">Antolı́n-Dı́az and Rubio-Ramı́rez (<a href="#ref-antolin2018narrative" role="doc-biblioref">2018</a>)</span> is to impose narrative restrictions on the structural shocks and historical decomposition. For example, restricting a structural shock to be negative during some period, and we will apply this to restrict the optimism shock during the Covid-19 pandemic.</p>
@@ -808,7 +940,8 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 \frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
 =&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
 =&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
-\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}
+\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\\
+&amp;\times
 \frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
 \propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
 \propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
@@ -846,7 +979,12 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/us-irf-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/us-irf-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">US IRF</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <p>where shock 1 is the optimism shock, and it gives very close impulse response functions to the ones in the original paper.</p>
@@ -856,7 +994,12 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The forecast error variance decomposition of consumption and hours worked are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/us-fevd-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/us-fevd-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">US FEVD</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <p>(where shock 1 is the optimism shock, same for all subsequent plots)</p>
@@ -875,38 +1018,39 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">1.51</td>
-<td style="text-align: right;">7.13</td>
-<td style="text-align: right;">19.17</td>
+<td style="text-align: right;">1.90</td>
+<td style="text-align: right;">7.77</td>
+<td style="text-align: right;">19.30</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">5.81</td>
-<td style="text-align: right;">19.18</td>
-<td style="text-align: right;">43.67</td>
+<td style="text-align: right;">5.26</td>
+<td style="text-align: right;">17.10</td>
+<td style="text-align: right;">43.25</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">5.74</td>
-<td style="text-align: right;">17.69</td>
-<td style="text-align: right;">41.79</td>
+<td style="text-align: right;">5.48</td>
+<td style="text-align: right;">19.00</td>
+<td style="text-align: right;">42.94</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">6.37</td>
-<td style="text-align: right;">20.38</td>
-<td style="text-align: right;">43.55</td>
+<td style="text-align: right;">6.69</td>
+<td style="text-align: right;">20.44</td>
+<td style="text-align: right;">42.63</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">4.51</td>
-<td style="text-align: right;">13.05</td>
-<td style="text-align: right;">36.85</td>
+<td style="text-align: right;">4.22</td>
+<td style="text-align: right;">13.54</td>
+<td style="text-align: right;">34.43</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+<p>(the columns represent the median and 68% credible interval)</p>
 </section>
 </section>
 <section id="australian-data" class="level2">
@@ -917,7 +1061,12 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/au-irf-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/au-irf-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Australian IRF</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.</p>
@@ -927,7 +1076,12 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The forecast error variance decomposition of consumption and hours worked are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/au-fevd-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/au-fevd-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Australian FEVD</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are</p>
@@ -945,33 +1099,33 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">0.92</td>
-<td style="text-align: right;">7.14</td>
-<td style="text-align: right;">20.10</td>
+<td style="text-align: right;">1.44</td>
+<td style="text-align: right;">6.29</td>
+<td style="text-align: right;">22.21</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">2.48</td>
-<td style="text-align: right;">10.95</td>
-<td style="text-align: right;">40.99</td>
+<td style="text-align: right;">4.25</td>
+<td style="text-align: right;">17.05</td>
+<td style="text-align: right;">43.11</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">3.54</td>
-<td style="text-align: right;">12.35</td>
-<td style="text-align: right;">43.05</td>
+<td style="text-align: right;">2.95</td>
+<td style="text-align: right;">9.18</td>
+<td style="text-align: right;">40.85</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">3.58</td>
-<td style="text-align: right;">17.34</td>
-<td style="text-align: right;">51.71</td>
+<td style="text-align: right;">3.86</td>
+<td style="text-align: right;">17.05</td>
+<td style="text-align: right;">41.39</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">3.12</td>
-<td style="text-align: right;">24.29</td>
-<td style="text-align: right;">51.15</td>
+<td style="text-align: right;">4.06</td>
+<td style="text-align: right;">15.65</td>
+<td style="text-align: right;">44.64</td>
 </tr>
 </tbody>
 </table>
@@ -990,7 +1144,12 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/au-ext-irf-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/au-ext-irf-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Australian IRF with narrative restriction</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <p>With the additional assumption, we can identify more significant impacts. In the short run, the optimism shock has a positive impact on consumption and a negative impact on hours worked.</p>
@@ -1001,7 +1160,12 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>The forecast error variance decomposition of consumption and hours worked are</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/au-ext-fevd-1.png" class="img-fluid" width="672"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/au-ext-fevd-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Australian FEVD with narrative restriction</figcaption><p></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are</p>
@@ -1019,33 +1183,33 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">1.01</td>
-<td style="text-align: right;">7.56</td>
-<td style="text-align: right;">24.36</td>
+<td style="text-align: right;">1.04</td>
+<td style="text-align: right;">8.04</td>
+<td style="text-align: right;">27.04</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">3.32</td>
-<td style="text-align: right;">14.92</td>
-<td style="text-align: right;">43.42</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">18.70</td>
+<td style="text-align: right;">46.50</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">4.57</td>
-<td style="text-align: right;">15.80</td>
-<td style="text-align: right;">55.06</td>
+<td style="text-align: right;">3.56</td>
+<td style="text-align: right;">16.27</td>
+<td style="text-align: right;">40.87</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">2.99</td>
-<td style="text-align: right;">13.88</td>
-<td style="text-align: right;">40.17</td>
+<td style="text-align: right;">3.89</td>
+<td style="text-align: right;">11.80</td>
+<td style="text-align: right;">39.17</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">3.80</td>
-<td style="text-align: right;">15.45</td>
-<td style="text-align: right;">39.68</td>
+<td style="text-align: right;">4.12</td>
+<td style="text-align: right;">15.36</td>
+<td style="text-align: right;">46.94</td>
 </tr>
 </tbody>
 </table>

@@ -1,0 +1,327 @@
+---
+title: Optimism Shock
+subtitle: on the Australian Business Cycle
+author: Adam Wang
+institute: University of Melbourne
+
+format:
+  beamer:
+    fontfamily: libertinus
+    fontsize: 10pt
+
+execute:
+  echo: false
+
+bibliography: references.bib
+---
+
+# Introduction
+
+In this research project, I...
+
+- R package [**bsvarSIGNs**](https://github.com/bsvars/bsvarSIGNs)
+  * hopefully on CRAN next semester!
+
+- Implements **@arias2018inference**
+
+- Replicates US data
+
+- Extends to Australian data and more
+
+# bsvarSIGNs
+
+- Bayesian structural vector autoregression (bsvar)
+
+- Simultaneous equations + autoregression
+
+- Identified with many restrictions
+  * zero restrictions
+  * sign restrictions
+  * narrative restrictions
+  
+# Question
+
+Does optimism shock drive business cycles?
+
+- Theory suggests **yes** [@angeletos2018quantifying]
+
+- Optimistic $\rightarrow$ spend more and work harder $\rightarrow$ economic boom!
+
+- What does the data say?
+
+# Optimism shock
+
+- **Positively** affects stock prices
+
+- **Zero** impact on productivity
+
+$$
+\begin{bmatrix}
+u_t^\text{productivity} \\
+u_t^\text{stock prices} \\
+u_t^\text{consumption} \\
+u_t^\text{real interest rate} \\
+u_t^\text{hours worked} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & * & * & * & * \\
++ & * & * & * & * \\
+* & * & * & * & * \\
+* & * & * & * & * \\
+* & * & * & * & * \\
+\end{bmatrix}
+\begin{bmatrix}
+\varepsilon_t^\text{optimism} \\
+\varepsilon_t^2 \\
+\varepsilon_t^3 \\
+\varepsilon_t^4 \\
+\varepsilon_t^5 \\
+\end{bmatrix}
+$$
+
+$u_t$ reduced-form errors, $\varepsilon_t$ structural shocks, $*=$ no restrictions
+
+# Penalty function approach
+
+@beaudry2011mood
+
+- Studies optimism shock with penalty function approach (PFA).
+
+- Concludes optimism shock **drives** business cycle
+
+- Since significant boom in **consumption and hours worked**.
+
+![US optimism shock impulse responses with PFA](./data/pfa-irf.png){width=80%}
+
+# Original paper
+
+@arias2018inference
+
+- Proves PFA imposes **additional** restrictions
+
+- Proposed an importance sampler that gives **true** solutions
+
+- Concludes optimism shock does **not** drive business cycle
+
+![US optimism shock impulse responses with importance sampler](./data/is-irf.png){width=80%}
+
+# Importance sampler algorithm
+
+Orthogonal reduced-form parameterization:
+
+$$
+y_t' = x_t' B + e_t' Q' \text{chol}(\Sigma,\text{upper})
+$$
+
+1. Sample ($\*B$, $\*\Sigma$, $\*Q$) conditional on the zero restrictions.
+
+2. If the sign restrictions are satisfied, keep the draw and compute an importance weight, otherwise discard.
+
+3. Repeat steps 1-2 until the desired number of samples is obtained.
+
+4. Resample with replacement using the importance weights.
+
+# Replication
+
+Same US data, different code
+
+![US optimism shock impulse responses using bsvarSIGNs](./docs/index_files/figure-html/us-irf-1.png){width=85%}
+
+# Extension 1: Australian data
+
+No significant impact
+
+![Australian optimism shock impulse responses using bsvarSIGNs](./docs/index_files/figure-html/au-irf-1.png){width=85%}
+
+# Extension 2: narrative restriction
+
+@antolin2018narrative
+
+- Algorithm to impose narrative restrictions
+
+- **Sign** of structural shocks
+
+- ...
+
+Assume additionally that the optimism shock
+
+- is **negative** when Covid-19 hits Australia in 2020 Q1
+
+$$
+\varepsilon_{2020 Q1}^\text{optimism} < 0
+$$
+
+# Extension 2: Covid-19
+
+A pessimism shock
+
+![ASX 200 index](./docs/index_files/figure-html/unnamed-chunk-4-1.png){width=85%}
+
+# Extension 2: pseudo proof
+
+(To my knowledge) no paper has combined the two algorithms[^1]
+
+Both papers use importance sampler
+
+- Suppose the importance weights are $w_1$ and $w_2$
+
+- To **combine** the two algorithms, resample with weights $w$
+
+- Where $w = w_1 \times w_2$
+
+A more rigorous proof (with no guarantee of correctness) is available [*here*](https://adamwang15.github.io/mcxs-report/#extension)
+
+[^1]: @arias2018inference and @antolin2018narrative
+
+# Extension 2: result
+
+No significant impact (but Australians work less!)
+
+![Australian optimism shock impulse responses with narrative restriction](./docs/index_files/figure-html/au-ext-irf-1.png){width=85%}
+
+# Summary
+
+- Optimism shock does **not** drive business cycle
+  
+- Result holds for both US and Australia
+  
+- Result is robust to restriction on Covid-19
+
+# Appendix: simulation study
+
+Suppose the true structural model is
+$$
+\begin{bmatrix}
+-1 & 1\\
+1 & 0\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t}\\
+y_{2,t}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+-1 & 1\\
+1 & 0\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t-1}\\
+y_{2,t-1}\\
+\end{bmatrix}
++
+\begin{bmatrix}
+\varepsilon_{1,t}\\
+\varepsilon_{2,t}\\
+\end{bmatrix},
+\begin{bmatrix}
+\varepsilon_{1,t}\\
+\varepsilon_{2,t}\\
+\end{bmatrix}
+\sim
+\mathcal{N}(
+\begin{bmatrix}
+0 \\
+0
+\end{bmatrix}
+,
+\begin{bmatrix}
+1 & 0 \\
+0 & 1 \\
+\end{bmatrix}
+)
+$$
+equivalently, we can simulate 1,000 observations from the reduced-form
+$$
+\begin{bmatrix}
+y_{1,t}\\
+y_{2,t}\\
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0\\
+0 & 1\\
+\end{bmatrix}
+\begin{bmatrix}
+y_{1,t-1}\\
+y_{2,t-1}\\
+\end{bmatrix}
++
+\begin{bmatrix}
+u_{1,t}\\
+u_{2,t}\\
+\end{bmatrix},
+\begin{bmatrix}
+u_{1,t}\\
+u_{2,t}\\
+\end{bmatrix}
+\sim
+\mathcal{N}(
+\begin{bmatrix}
+0 \\
+0
+\end{bmatrix}
+,
+\begin{bmatrix}
+1 & 1 \\
+1 & 2 \\
+\end{bmatrix}
+)
+$$
+```{r include=FALSE}
+# devtools::install_github("bsvars/bsvarSIGNs")
+library(bsvarSIGNs)
+
+set.seed(123)
+
+# simulate data
+N = 2
+T = 1000
+
+U = mvtnorm::rmvnorm(T, rep(0, N), matrix(c(1, 1, 1, 2), N, N))
+Y = apply(U, 2, cumsum)
+
+sign_irf = array(matrix(c(0, 1, 1, 1), 2, 2), dim = c(2, 2, 1))
+zero_irf = matrix(c(1, 0, 0, 0), 2, 2)
+
+specification  = specify_bsvarSIGN$new(Y, 
+                                       p = 1, 
+                                       sign_irf = sign_irf,
+                                       zero_irf = zero_irf
+                                       )
+posterior      = estimate(specification, S = 1000)
+```
+Putting zero and sign restrictions on the inverse of the structural matrix
+$$
+\begin{bmatrix}
+-1 & 1\\
+1 & 0\\
+\end{bmatrix}^{-1}
+=
+\begin{bmatrix}
+0 & 1\\
+1 & 1\\
+\end{bmatrix}
+\Rightarrow
+\begin{bmatrix}
+0 & +\\
++ & +\\
+\end{bmatrix}
+$$
+Posterior mean of 1,000 draws of the structural matrix is
+```{r}
+posterior$posterior$B |> 
+  apply(c(1, 2), mean) |> 
+  t() |> 
+  round(4)
+```
+
+# References
+
+
+
+
+
+
+
+
