@@ -163,18 +163,19 @@ div.csl-indent {
   <li><a href="#reduced-form" id="toc-reduced-form" class="nav-link" data-scroll-target="#reduced-form">Reduced form</a></li>
   <li><a href="#orthogonal-reduced-form-parameterization" id="toc-orthogonal-reduced-form-parameterization" class="nav-link" data-scroll-target="#orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</a></li>
   </ul></li>
-  <li><a href="#bayesian-inference" id="toc-bayesian-inference" class="nav-link" data-scroll-target="#bayesian-inference">Bayesian inference</a>
-  <ul class="collapse">
-  <li><a href="#derivations" id="toc-derivations" class="nav-link" data-scroll-target="#derivations">Derivations</a></li>
-  <li><a href="#implementation" id="toc-implementation" class="nav-link" data-scroll-target="#implementation">Implementation</a></li>
-  <li><a href="#simulation-1-reduced-form" id="toc-simulation-1-reduced-form" class="nav-link" data-scroll-target="#simulation-1-reduced-form">Simulation 1: reduced-form</a></li>
-  <li><a href="#simulation-2-structural-form" id="toc-simulation-2-structural-form" class="nav-link" data-scroll-target="#simulation-2-structural-form">Simulation 2: structural form</a></li>
-  </ul></li>
-  <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
   <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a>
   <ul class="collapse">
+  <li><a href="#reduced-form-1" id="toc-reduced-form-1" class="nav-link" data-scroll-target="#reduced-form-1">Reduced form</a></li>
+  <li><a href="#structural-form-1" id="toc-structural-form-1" class="nav-link" data-scroll-target="#structural-form-1">Structural form</a></li>
+  <li><a href="#implementations" id="toc-implementations" class="nav-link" data-scroll-target="#implementations">Implementations</a></li>
   <li><a href="#extension" id="toc-extension" class="nav-link" data-scroll-target="#extension">Extension</a></li>
   </ul></li>
+  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a>
+  <ul class="collapse">
+  <li><a href="#reduced-form-2" id="toc-reduced-form-2" class="nav-link" data-scroll-target="#reduced-form-2">Reduced form</a></li>
+  <li><a href="#structural-form-2" id="toc-structural-form-2" class="nav-link" data-scroll-target="#structural-form-2">Structural form</a></li>
+  </ul></li>
+  <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a>
   <ul class="collapse">
   <li><a href="#irf" id="toc-irf" class="nav-link" data-scroll-target="#irf">IRF</a></li>
@@ -584,10 +585,10 @@ f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q}) &amp;= (
 \]</span></p>
 </section>
 </section>
-<section id="bayesian-inference" class="level2">
-<h2 class="anchored" data-anchor-id="bayesian-inference">Bayesian inference</h2>
-<section id="derivations" class="level3">
-<h3 class="anchored" data-anchor-id="derivations">Derivations</h3>
+<section id="algorithm" class="level2">
+<h2 class="anchored" data-anchor-id="algorithm">Algorithm</h2>
+<section id="reduced-form-1" class="level3">
+<h3 class="anchored" data-anchor-id="reduced-form-1">Reduced form</h3>
 <p>The first step is to sample the reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>). Adopting the conjugate Normal-Inverse-Wishart prior,</p>
 <p><span class="math display">\[
 \begin{align*}
@@ -642,8 +643,31 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 \end{align*}
 \]</span></p>
 </section>
-<section id="implementation" class="level3">
-<h3 class="anchored" data-anchor-id="implementation">Implementation</h3>
+<section id="structural-form-1" class="level3">
+<h3 class="anchored" data-anchor-id="structural-form-1">Structural form</h3>
+<p>To perform zero and sign restrictions, we need an algorithm to sample from the posterior distribution of the structural parameters (<span class="math inline">\(\mathbf{A}_0\)</span>, <span class="math inline">\(\mathbf{A}_+\)</span>) conditional on the zero and sign restrictions.</p>
+<p>However, the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters (akin to <span class="math inline">\(\mathbb{P}(X=x)=0\)</span> for continuous <span class="math inline">\(X\)</span>). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.</p>
+<p>Here is a high level outline of the algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>:</p>
+<ol type="1">
+<li>Sample reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>, <span class="math inline">\(\mathbf{Q}\)</span>) conditional on the zero restrictions.</li>
+<li>Set <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+) = f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span>.</li>
+<li>If the sign restrictions are satisfied, keep <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+)\)</span> and compute an importance weight, otherwise discard.</li>
+<li>Repeat steps 1-3 until the desired number of samples is obtained.</li>
+<li>Resample with replacement using the importance weights.</li>
+</ol>
+<p>Where step 5 (importance sampling) is needed to manipulate the density induced by step 1 to the desired Nomral-Generalized-Normal posterior density <span class="math inline">\(\mathcal{NGN}\)</span>.</p>
+<p>To be explicit, starting with a Uniform-Normal-Inverse-Wishart <span class="math inline">\(\mathcal{UNIW}\)</span> prior distribution, the importance weight in step 3 is given by (posterior condition on <span class="math inline">\(\mathbf{Y}\)</span> is dropped for brevity):</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+&amp;=\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+&amp;\propto\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+\end{align*}
+\]</span></p>
+<p>where <span class="math inline">\(\mathcal Z\)</span> denotes zero restrictions and <span class="math inline">\(\mathcal S\)</span> denotes sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2.</p>
+</section>
+<section id="implementations" class="level3">
+<h3 class="anchored" data-anchor-id="implementations">Implementations</h3>
 <p>For computational efficiency, main functions in the <code>bsvarSIGNs</code> package are written in C++. The first function is compute posterior parameters as derived above.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Rcpp<span class="op">::</span>List niw_cpp<span class="op">(</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span> Y<span class="op">,</span></span>
@@ -686,11 +710,50 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  mat X <span class="op">=</span> mat<span class="op">(</span>size<span class="op">(</span>M<span class="op">),</span> fill<span class="op">::</span>randn<span class="op">);</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> M <span class="op">+</span> chol<span class="op">(</span>U<span class="op">).</span>t<span class="op">()</span> <span class="op">*</span> X <span class="op">*</span> chol<span class="op">(</span>V<span class="op">);</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>To draw from the inverse Wishart distribution, we use the <code>iwishrnd</code> function from the <code>RcppArmadillo</code> package.</p>
-<p>Using these three functions together, we are able to estimate the reduced-form BVAR model.</p>
+<p>To draw from the inverse Wishart distribution, we use the <code>iwishrnd</code> function from the <code>RcppArmadillo</code> package. Using these three functions together, we are able to estimate the reduced-form BVAR model.</p>
+<p>The following code calculates the volume element <span class="math inline">\(v_{(g\circ f_h)|\mathcal Z}\)</span> in the resampling step for the structural parameters</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> log_volume_element<span class="op">(</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>field<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;&amp;</span> Z<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              A0<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              Aplus</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  colvec vec_structural <span class="op">=</span> join_vert<span class="op">(</span>vectorise<span class="op">(</span>A0<span class="op">),</span> vectorise<span class="op">(</span>Aplus<span class="op">));</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  mat Dz  <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> zero_restrictions<span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  mat Dgf <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="va">g_fh_vec</span><span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  mat DN  <span class="op">=</span> Dgf <span class="op">*</span> null<span class="op">(</span>Dz<span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> log_det<span class="op">(</span>DN<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> DN<span class="op">).</span>real<span class="op">();</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="simulation-1-reduced-form" class="level3">
-<h3 class="anchored" data-anchor-id="simulation-1-reduced-form">Simulation 1: reduced-form</h3>
+<section id="extension" class="level3">
+<h3 class="anchored" data-anchor-id="extension">Extension</h3>
+<p>Besides the zero and sign restrictions, another popular identification scheme proposed by <span class="citation" data-cites="antolin2018narrative">Antolı́n-Dı́az and Rubio-Ramı́rez (<a href="#ref-antolin2018narrative" role="doc-biblioref">2018</a>)</span> is to impose narrative restrictions on the structural shocks and historical decomposition. For example, restricting a structural shock to be negative during some period, and we will apply this to restrict the optimism shock during the Covid-19 pandemic.</p>
+<p>But, the difficulty is that the narrative restrictions <span class="math inline">\(\mathcal{R}\)</span> requires another resample with some importance weight:</p>
+<p><span class="math display">\[
+\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})} \propto \frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
+\]</span></p>
+<p>To combine these two identification schemes, we need to calculate the importance weight when <strong>all</strong> of the three restrictions, zero, sign, and narrative, are present. Here is a preliminary calculation, with no guarantee of correctness:</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+=&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+=&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
+\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\\
+&amp;\times
+\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+\propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+\propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+\end{align*}
+\]</span></p>
+<p>Where <span class="math inline">\(\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\propto1\)</span>, since zero restrictions does not change the likelihood. Therefore, it is simply the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.</p>
+</section>
+</section>
+<section id="simulation" class="level2">
+<h2 class="anchored" data-anchor-id="simulation">Simulation</h2>
+<section id="reduced-form-2" class="level3">
+<h3 class="anchored" data-anchor-id="reduced-form-2">Reduced form</h3>
 <p>To test the validity of our code, we simulate 1,000 observations from a bi-variate Gaussian random walk process with the covariance matrix equal to the identity matrix of order 2.</p>
 <p>Then, we compute 1,000 posterior draws from a SVAR model with a constant term and one lag, using the default identification scheme: positive sign restrictions on the diagonal of <span class="math inline">\(\mathbf{A}_0\)</span>.</p>
 <p>The posterior mean of the <span class="math inline">\(\mathbf{B}\)</span> is</p>
@@ -707,18 +770,18 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">y1_lag</td>
-<td style="text-align: right;">0.9888</td>
+<td style="text-align: right;">0.9885</td>
 <td style="text-align: right;">0.0052</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">y2_lag</td>
 <td style="text-align: right;">0.0027</td>
-<td style="text-align: right;">0.9953</td>
+<td style="text-align: right;">0.9954</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">constant</td>
-<td style="text-align: right;">0.0594</td>
-<td style="text-align: right;">0.0846</td>
+<td style="text-align: right;">0.0589</td>
+<td style="text-align: right;">0.0822</td>
 </tr>
 </tbody>
 </table>
@@ -738,13 +801,13 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">y1</td>
-<td style="text-align: right;">0.9764</td>
+<td style="text-align: right;">0.9768</td>
 <td style="text-align: right;">0.0881</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">y2</td>
 <td style="text-align: right;">0.0881</td>
-<td style="text-align: right;">1.0153</td>
+<td style="text-align: right;">1.0157</td>
 </tr>
 </tbody>
 </table>
@@ -752,8 +815,8 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 </div>
 <p>They are close to the true values of the simulated data.</p>
 </section>
-<section id="simulation-2-structural-form" class="level3">
-<h3 class="anchored" data-anchor-id="simulation-2-structural-form">Simulation 2: structural form</h3>
+<section id="structural-form-2" class="level3">
+<h3 class="anchored" data-anchor-id="structural-form-2">Structural form</h3>
 <p>Suppose the true structural model is</p>
 <p><span class="math display">\[
 \begin{bmatrix}
@@ -861,7 +924,7 @@ u_{2,t}\\
 </section>
 <section id="identification" class="level2">
 <h2 class="anchored" data-anchor-id="identification">Identification</h2>
-<p>After estimating the reduced-form VAR model, we plan to impose the following restrictions on the contemporaneous impulse response to identify optimism shock.</p>
+<p>The following restrictions are imposed on the contemporaneous impulse response to identify the optimism shock.</p>
 <table class="table">
 <colgroup>
 <col style="width: 18%">
@@ -890,65 +953,6 @@ u_{2,t}\\
 </tbody>
 </table>
 <p>The identification strategy is based on the assumption that the optimism shock positively affects stock prices, and has no contemporaneous effect on productivity.</p>
-</section>
-<section id="algorithm" class="level2">
-<h2 class="anchored" data-anchor-id="algorithm">Algorithm</h2>
-<p>To perform this identification, we need an algorithm to sample from the posterior distribution of the structural parameters (<span class="math inline">\(\mathbf{A}_0\)</span>, <span class="math inline">\(\mathbf{A}_+\)</span>) conditional on the zero and sign restrictions.</p>
-<p>However, the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters (akin to <span class="math inline">\(\mathbb{P}(X=x)=0\)</span> for continuous <span class="math inline">\(X\)</span>). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.</p>
-<p>Here is a high level outline of the algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>:</p>
-<ol type="1">
-<li>Sample reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>, <span class="math inline">\(\mathbf{Q}\)</span>) conditional on the zero restrictions.</li>
-<li>Set <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+) = f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span>.</li>
-<li>If the sign restrictions are satisfied, keep <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+)\)</span> and compute an importance weight, otherwise discard.</li>
-<li>Repeat steps 1-3 until the desired number of samples is obtained.</li>
-<li>Resample with replacement using the importance weights.</li>
-</ol>
-<p>Where step 5 (importance sampling) is needed to manipulate the density induced by step 1 to the desired Nomral-Generalized-Normal posterior density <span class="math inline">\(\mathcal{NGN}\)</span>.</p>
-<p>To be explicit, starting with a Uniform-Normal-Inverse-Wishart <span class="math inline">\(\mathcal{UNIW}\)</span> prior distribution, the importance weight in step 3 is given by (posterior condition on <span class="math inline">\(\mathbf{Y}\)</span> is dropped for brevity):</p>
-<p><span class="math display">\[
-\begin{align*}
-\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
-&amp;=\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
-&amp;\propto\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
-\end{align*}
-\]</span></p>
-<p>where <span class="math inline">\(\mathcal Z\)</span> denotes zero restrictions and <span class="math inline">\(\mathcal S\)</span> denotes sign restrictions. The numerator is the target density, and the denominator is the proposal density from steps 1-2. Here is the code to calculate the volume element <span class="math inline">\(v_{(g\circ f_h)|\mathcal Z}\)</span>:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> log_volume_element<span class="op">(</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>field<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;&amp;</span> Z<span class="op">,</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              A0<span class="op">,</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              Aplus</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  colvec vec_structural <span class="op">=</span> join_vert<span class="op">(</span>vectorise<span class="op">(</span>A0<span class="op">),</span> vectorise<span class="op">(</span>Aplus<span class="op">));</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  mat Dz  <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> zero_restrictions<span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  mat Dgf <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="va">g_fh_vec</span><span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  mat DN  <span class="op">=</span> Dgf <span class="op">*</span> null<span class="op">(</span>Dz<span class="op">);</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> log_det<span class="op">(</span>DN<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> DN<span class="op">).</span>real<span class="op">();</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="extension" class="level3">
-<h3 class="anchored" data-anchor-id="extension">Extension</h3>
-<p>Besides the zero and sign restrictions, another popular identification scheme proposed by <span class="citation" data-cites="antolin2018narrative">Antolı́n-Dı́az and Rubio-Ramı́rez (<a href="#ref-antolin2018narrative" role="doc-biblioref">2018</a>)</span> is to impose narrative restrictions on the structural shocks and historical decomposition. For example, restricting a structural shock to be negative during some period, and we will apply this to restrict the optimism shock during the Covid-19 pandemic.</p>
-<p>But, the difficulty is that the narrative restrictions <span class="math inline">\(\mathcal{R}\)</span> requires another resample with some importance weight:</p>
-<p><span class="math display">\[
-\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})} \propto \frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
-\]</span></p>
-<p>To combine these two identification schemes, we need to calculate the importance weight when <strong>all</strong> of the three restrictions, zero, sign, and narrative, are present. Here is a preliminary calculation, with no guarantee of correctness:</p>
-<p><span class="math display">\[
-\begin{align*}
-\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
-=&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
-=&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
-\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\\
-&amp;\times
-\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
-\propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
-\propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
-\end{align*}
-\]</span></p>
-<p>Where <span class="math inline">\(\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\propto1\)</span>, since zero restrictions does not change the likelihood. Therefore, it is simply the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.</p>
-</section>
 </section>
 <section id="interpretation" class="level2">
 <h2 class="anchored" data-anchor-id="interpretation">Interpretation</h2>
@@ -1018,33 +1022,33 @@ u_{2,t}\\
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">1.90</td>
-<td style="text-align: right;">7.77</td>
-<td style="text-align: right;">19.30</td>
+<td style="text-align: right;">1.61</td>
+<td style="text-align: right;">7.43</td>
+<td style="text-align: right;">18.96</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">5.26</td>
-<td style="text-align: right;">17.10</td>
-<td style="text-align: right;">43.25</td>
+<td style="text-align: right;">5.30</td>
+<td style="text-align: right;">19.65</td>
+<td style="text-align: right;">44.40</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">5.48</td>
-<td style="text-align: right;">19.00</td>
-<td style="text-align: right;">42.94</td>
+<td style="text-align: right;">5.67</td>
+<td style="text-align: right;">17.42</td>
+<td style="text-align: right;">42.79</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">6.69</td>
-<td style="text-align: right;">20.44</td>
-<td style="text-align: right;">42.63</td>
+<td style="text-align: right;">6.72</td>
+<td style="text-align: right;">19.69</td>
+<td style="text-align: right;">42.67</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">4.22</td>
-<td style="text-align: right;">13.54</td>
-<td style="text-align: right;">34.43</td>
+<td style="text-align: right;">4.78</td>
+<td style="text-align: right;">12.77</td>
+<td style="text-align: right;">36.46</td>
 </tr>
 </tbody>
 </table>
@@ -1099,33 +1103,33 @@ u_{2,t}\\
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">1.44</td>
-<td style="text-align: right;">6.29</td>
-<td style="text-align: right;">22.21</td>
+<td style="text-align: right;">1.28</td>
+<td style="text-align: right;">6.92</td>
+<td style="text-align: right;">24.64</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">4.25</td>
-<td style="text-align: right;">17.05</td>
-<td style="text-align: right;">43.11</td>
+<td style="text-align: right;">3.36</td>
+<td style="text-align: right;">13.45</td>
+<td style="text-align: right;">46.39</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">2.95</td>
-<td style="text-align: right;">9.18</td>
-<td style="text-align: right;">40.85</td>
+<td style="text-align: right;">3.22</td>
+<td style="text-align: right;">13.00</td>
+<td style="text-align: right;">41.12</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">3.86</td>
-<td style="text-align: right;">17.05</td>
-<td style="text-align: right;">41.39</td>
+<td style="text-align: right;">3.19</td>
+<td style="text-align: right;">17.72</td>
+<td style="text-align: right;">40.05</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">4.06</td>
-<td style="text-align: right;">15.65</td>
-<td style="text-align: right;">44.64</td>
+<td style="text-align: right;">3.53</td>
+<td style="text-align: right;">15.97</td>
+<td style="text-align: right;">46.94</td>
 </tr>
 </tbody>
 </table>
@@ -1183,33 +1187,33 @@ u_{2,t}\\
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">1.04</td>
-<td style="text-align: right;">8.04</td>
-<td style="text-align: right;">27.04</td>
+<td style="text-align: right;">1.72</td>
+<td style="text-align: right;">8.70</td>
+<td style="text-align: right;">28.70</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">3.92</td>
-<td style="text-align: right;">18.70</td>
-<td style="text-align: right;">46.50</td>
+<td style="text-align: right;">2.94</td>
+<td style="text-align: right;">13.15</td>
+<td style="text-align: right;">43.17</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">3.56</td>
-<td style="text-align: right;">16.27</td>
-<td style="text-align: right;">40.87</td>
+<td style="text-align: right;">3.23</td>
+<td style="text-align: right;">14.68</td>
+<td style="text-align: right;">40.76</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">3.89</td>
-<td style="text-align: right;">11.80</td>
-<td style="text-align: right;">39.17</td>
+<td style="text-align: right;">3.75</td>
+<td style="text-align: right;">14.42</td>
+<td style="text-align: right;">41.46</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">4.12</td>
-<td style="text-align: right;">15.36</td>
-<td style="text-align: right;">46.94</td>
+<td style="text-align: right;">3.86</td>
+<td style="text-align: right;">17.19</td>
+<td style="text-align: right;">46.89</td>
 </tr>
 </tbody>
 </table>
