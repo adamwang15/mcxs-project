@@ -1008,7 +1008,7 @@ specification = specify_bsvarSIGN$new(
   zero_irf = zero_irf
 )
 
-posterior = estimate(specification, S = 50000)
+posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
@@ -1070,7 +1070,7 @@ specification = specify_bsvarSIGN$new(
   zero_irf       = zero_irf
 )
 
-posterior = estimate(specification, S = 50000)
+posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
