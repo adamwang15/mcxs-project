@@ -174,9 +174,15 @@ A more rigorous proof (with no guarantee of correctness) is available [*here*](h
 
 [^1]: @arias2018inference and @antolin2018narrative
 
+# Extension 2: history
+
+Historical values of optimism shock
+
+![Australian optimism shock](./docs/index_files/figure-html/au-ext-shock-1.png){width=85%}
+
 # Extension 2: result
 
-No significant impact (but Australians work less!)
+Still no significant impact
 
 ![Australian optimism shock impulse responses with narrative restriction](./docs/index_files/figure-html/au-ext-irf-1.png){width=85%}
 
