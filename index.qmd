@@ -1110,9 +1110,7 @@ The impulse response functions are
 plot_irf1(irf)
 ```
 
-With the additional assumption, we can identify more significant impacts. In the short run, the optimism shock has a positive impact on consumption and a negative impact on hours worked.
-
-Although not significant, it is interesting to see that the optimism shock has a negative impact on hours worked in Australia in the short run, in contrast to a positive impact in the US.
+Still no significant effects.
 
 ### FEVD
 
