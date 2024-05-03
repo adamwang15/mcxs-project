@@ -575,6 +575,34 @@ $$
 
 Where $\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}\propto1$, since zero restrictions does not change the likelihood. Therefore, it is simply the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.
 
+The following code calculates $\omega(\*B,\*\Sigma,\*Q)$ for the narrative restrictions
+
+```cpp
+double weight_narrative(
+    const int&                    T,
+    arma::mat                     sign_narrative,
+    const arma::cube&             irf
+) {
+  
+  const int M         = 1e+04;  // number of draws to approximate normal distribution
+  
+  double    n_success = 1.0e-15;
+  
+  cube      Z(irf.n_rows, sign_narrative.col(5).max() + 1, M, fill::randn);
+  
+  // change all starting period to the first period
+  // since we use the same M draws for all narrative restrictions
+  sign_narrative.col(4) = ones(sign_narrative.n_rows, 1);
+  
+  for (int m=0; m<M; m++) {
+    if (match_sign_narrative(Z.slice(m), sign_narrative, irf)) {
+      n_success++;
+    }
+  }
+  return M / n_success;
+}
+```
+
 ## Simulation
 
 ### Reduced form
@@ -993,8 +1021,6 @@ kable(fevd_40)
 
 All subsequent analysis are performed on the Australian data.
 
-### IRF
-
 ```{r include=FALSE}
 zero_irf          = matrix(0, nrow = 5, ncol = 5)
 zero_irf[1, 1]    = 1
@@ -1009,12 +1035,40 @@ specification = specify_bsvarSIGN$new(
 )
 
 posterior = estimate(specification, S = 10000)
-irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
+
+
+### History
+
+Historical values of the optimism shock is
+
+```{r au-shock}
+optimism_shock = posterior$posterior$shocks[1, , ] |> 
+  apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
+  t()
+
+bsvars::plot_ribbon(
+  optimism_shock,
+  probability = 0.68,
+  main = "optimism shock",
+  bty  = "n",
+  xaxt = "n",
+  )
+abline(h = 0)
+abline(v = covid_index - 4 - 1, lty = 5)
+
+label_index = seq(1, dim(optimism_shock)[1], 20)
+axis(1, at = label_index, 
+     labels = as.yearqtr(index(Y))[label_index + 4 + 1])
+```
+
+### IRF
 
 The impulse response functions are
 
 ```{r au-irf}
+irf       = compute_impulse_responses(posterior, horizon = 40)
+
 #| fig-cap: "Australian IRF"
 plot_irf1(irf)
 ```
@@ -1074,7 +1128,7 @@ posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
-### Restriction
+### History
 
 Historical values of the optimism shock is
 
@@ -1087,8 +1141,6 @@ bsvars::plot_ribbon(
   optimism_shock,
   probability = 0.68,
   main = "optimism shock",
-  # xlab = "Quarter",
-  # ylab = ylab[i],
   bty  = "n",
   xaxt = "n",
   )

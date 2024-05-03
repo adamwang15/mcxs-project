@@ -191,12 +191,13 @@ div.csl-indent {
   </ul></li>
   <li><a href="#australian-data" id="toc-australian-data" class="nav-link" data-scroll-target="#australian-data">Australian data</a>
   <ul class="collapse">
+  <li><a href="#history" id="toc-history" class="nav-link" data-scroll-target="#history">History</a></li>
   <li><a href="#irf-2" id="toc-irf-2" class="nav-link" data-scroll-target="#irf-2">IRF</a></li>
   <li><a href="#fevd-2" id="toc-fevd-2" class="nav-link" data-scroll-target="#fevd-2">FEVD</a></li>
   </ul></li>
   <li><a href="#extension-1" id="toc-extension-1" class="nav-link" data-scroll-target="#extension-1">Extension</a>
   <ul class="collapse">
-  <li><a href="#restriction" id="toc-restriction" class="nav-link" data-scroll-target="#restriction">Restriction</a></li>
+  <li><a href="#history-1" id="toc-history-1" class="nav-link" data-scroll-target="#history-1">History</a></li>
   <li><a href="#irf-3" id="toc-irf-3" class="nav-link" data-scroll-target="#irf-3">IRF</a></li>
   <li><a href="#fevd-3" id="toc-fevd-3" class="nav-link" data-scroll-target="#fevd-3">FEVD</a></li>
   </ul></li>
@@ -749,6 +750,30 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 \end{align*}
 \]</span></p>
 <p>Where <span class="math inline">\(\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\propto1\)</span>, since zero restrictions does not change the likelihood. Therefore, it is simply the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.</p>
+<p>The following code calculates <span class="math inline">\(\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})\)</span> for the narrative restrictions</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> weight_narrative<span class="op">(</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> <span class="dt">int</span><span class="op">&amp;</span>                    T<span class="op">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    arma<span class="op">::</span>mat                     sign_narrative<span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>cube<span class="op">&amp;</span>             irf</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">int</span> M         <span class="op">=</span> <span class="fl">1e+04</span><span class="op">;</span>  <span class="co">// number of draws to approximate normal distribution</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span>    n_success <span class="op">=</span> <span class="fl">1.0e-15</span><span class="op">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  cube      Z<span class="op">(</span>irf<span class="op">.</span>n_rows<span class="op">,</span> sign_narrative<span class="op">.</span>col<span class="op">(</span><span class="dv">5</span><span class="op">).</span>max<span class="op">()</span> <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> M<span class="op">,</span> fill<span class="op">::</span>randn<span class="op">);</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">// change all starting period to the first period</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">// since we use the same M draws for all narrative restrictions</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  sign_narrative<span class="op">.</span>col<span class="op">(</span><span class="dv">4</span><span class="op">)</span> <span class="op">=</span> ones<span class="op">(</span>sign_narrative<span class="op">.</span>n_rows<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> m<span class="op">=</span><span class="dv">0</span><span class="op">;</span> m<span class="op">&lt;</span>M<span class="op">;</span> m<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>match_sign_narrative<span class="op">(</span>Z<span class="op">.</span>slice<span class="op">(</span>m<span class="op">),</span> sign_narrative<span class="op">,</span> irf<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>      n_success<span class="op">++;</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> M <span class="op">/</span> n_success<span class="op">;</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="simulation" class="level2">
@@ -1061,17 +1086,21 @@ u_{2,t}\\
 <section id="australian-data" class="level2">
 <h2 class="anchored" data-anchor-id="australian-data">Australian data</h2>
 <p>All subsequent analysis are performed on the Australian data.</p>
+<section id="history" class="level3">
+<h3 class="anchored" data-anchor-id="history">History</h3>
+<p>Historical values of the optimism shock is</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/au-shock-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
 <section id="irf-2" class="level3">
 <h3 class="anchored" data-anchor-id="irf-2">IRF</h3>
 <p>The impulse response functions are</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/au-irf-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Australian IRF</figcaption><p></p>
-</figure>
-</div>
+<p><img src="index_files/figure-html/au-irf-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.</p>
@@ -1144,8 +1173,8 @@ u_{2,t}\\
 <blockquote class="blockquote">
 <p>the optimism shock is <strong>negative</strong> when Covid-19 hits Australia in 2020 Q1.</p>
 </blockquote>
-<section id="restriction" class="level3">
-<h3 class="anchored" data-anchor-id="restriction">Restriction</h3>
+<section id="history-1" class="level3">
+<h3 class="anchored" data-anchor-id="history-1">History</h3>
 <p>Historical values of the optimism shock is</p>
 <div class="cell">
 <div class="cell-output-display">

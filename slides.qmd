@@ -297,7 +297,9 @@ specification  = specify_bsvarSIGN$new(Y,
                                        )
 posterior      = estimate(specification, S = 1000)
 ```
+
 Putting zero and sign restrictions on the inverse of the structural matrix
+
 $$
 \begin{bmatrix}
 -1 & 1\\
@@ -315,6 +317,7 @@ $$
 \end{bmatrix}
 $$
 Posterior mean of 1,000 draws of the structural matrix is
+
 ```{r}
 posterior$posterior$B |> 
   apply(c(1, 2), mean) |> 
