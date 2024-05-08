@@ -310,7 +310,7 @@ $$
 \end{align*}
 $$
 
-where $\*A_+ = [\*A_1'\ \cdots\ \*A_p'\ \*c']$ and $\*x_t = [\*y_{t-1}'\ \cdots\ \*y_{t-p}'\ 1]$. The dimension of $\*A_+$ is $K\times N$ where $K=Np+1$.
+where $\*A_+ = [\*A_1'\ \cdots\ \*A_p'\ \hspace{4mm}\*c']$ and $\*x_t = [\*y_{t-1}'\ \cdots\ \*y_{t-p}'\hspace{4mm}\ 1]$. The dimension of $\*A_+$ is $K\times N$ where $K=Np+1$.
 
 In matrix form,
 
@@ -375,7 +375,6 @@ f_h(\*A_0, \*A_+) &= (
 f_h^{-1}(\*B, \*\Sigma, \*Q) &= (
   \underbrace{h(\*\Sigma)^{-1} \*Q}_{\*A_0},
   \underbrace{\*B h(\*\Sigma)^{-1} \*Q}_{\*A_+}
-  )
   )
 \end{align*}
 $$
@@ -533,17 +532,22 @@ The following code calculates the volume element $v_{(g\circ f_h)|\mathcal Z}$ i
 
 ```cpp
 double log_volume_element(
-    const arma::field<arma::mat>& Z,
+    const arma::field<arma::mat>& Z, //Field of matrices representing narrative restrictions
     const arma::mat&              A0,
     const arma::mat&              Aplus
 ) {
   colvec vec_structural = join_vert(vectorise(A0), vectorise(Aplus));
   
+  // Compute the derivative of the narrative restrictions wrt the structural parameters
   mat Dz  = Df([Z](const colvec& x) { return zero_restrictions(Z, x); }, vec_structural);
+  
+  // Compute derivative of combined mapping function g_fh_vec wrt the structural parameters
   mat Dgf = Df([Z](const colvec& x) { return g_fh_vec(Z, x); }, vec_structural);
   
+  // Compute the null space of the derivative of the narrative restrictions
   mat DN  = Dgf * null(Dz);
   
+  // Logarithm of determinant, then take the real part
   return 0.5 * log_det(DN.t() * DN).real();
 }
 ```
@@ -623,6 +627,7 @@ T = 1000
 
 sim_Y = apply(matrix(rnorm(T*N), ncol = N), 2, cumsum)
 
+# Initialize a Bayesian structural VAR model using simulated data `sim_Y` and lag order `p = 1`
 specification  = specify_bsvarSIGN$new(sim_Y, p = 1)
 posterior      = estimate(specification, S = 1000)
 ```
