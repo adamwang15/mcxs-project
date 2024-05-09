@@ -530,7 +530,7 @@ div.csl-indent {
 \mathbf{y}_t' \mathbf{A}_0 &amp;= \mathbf{x}_t' \mathbf{A}_+ + \boldsymbol{\varepsilon}_t'
 \end{align*}
 \]</span></p>
-<p>where <span class="math inline">\(\mathbf{A}_+ = [\mathbf{A}_1'\ \cdots\ \mathbf{A}_p'\ \mathbf{c}']\)</span> and <span class="math inline">\(\mathbf{x}_t = [\mathbf{y}_{t-1}'\ \cdots\ \mathbf{y}_{t-p}'\ 1]\)</span>. The dimension of <span class="math inline">\(\mathbf{A}_+\)</span> is <span class="math inline">\(K\times N\)</span> where <span class="math inline">\(K=Np+1\)</span>.</p>
+<p>where <span class="math inline">\(\mathbf{A}_+ = [\mathbf{A}_1'\ \cdots\ \mathbf{A}_p'\ \hspace{4mm}\mathbf{c}']\)</span> and <span class="math inline">\(\mathbf{x}_t = [\mathbf{y}_{t-1}'\ \cdots\ \mathbf{y}_{t-p}'\hspace{4mm}\ 1]\)</span>. The dimension of <span class="math inline">\(\mathbf{A}_+\)</span> is <span class="math inline">\(K\times N\)</span> where <span class="math inline">\(K=Np+1\)</span>.</p>
 <p>In matrix form,</p>
 <p><span class="math display">\[
 \begin{align*}
@@ -581,7 +581,6 @@ f_h(\mathbf{A}_0, \mathbf{A}_+) &amp;= (
 f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q}) &amp;= (
   \underbrace{h(\mathbf{\Sigma})^{-1} \mathbf{Q}}_{\mathbf{A}_0},
   \underbrace{\mathbf{B} h(\mathbf{\Sigma})^{-1} \mathbf{Q}}_{\mathbf{A}_+}
-  )
   )
 \end{align*}
 \]</span></p>
@@ -715,19 +714,24 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>To draw from the inverse Wishart distribution, we use the <code>iwishrnd</code> function from the <code>RcppArmadillo</code> package. Using these three functions together, we are able to estimate the reduced-form BVAR model.</p>
 <p>The following code calculates the volume element <span class="math inline">\(v_{(g\circ f_h)|\mathcal Z}\)</span> in the resampling step for the structural parameters</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> log_volume_element<span class="op">(</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>field<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;&amp;</span> Z<span class="op">,</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>field<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;&amp;</span> Z<span class="op">,</span> <span class="co">//Field of matrices representing narrative restrictions</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              A0<span class="op">,</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> arma<span class="op">::</span>mat<span class="op">&amp;</span>              Aplus</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  colvec vec_structural <span class="op">=</span> join_vert<span class="op">(</span>vectorise<span class="op">(</span>A0<span class="op">),</span> vectorise<span class="op">(</span>Aplus<span class="op">));</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  mat Dz  <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> zero_restrictions<span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  mat Dgf <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="va">g_fh_vec</span><span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Compute the derivative of the narrative restrictions wrt the structural parameters</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  mat Dz  <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> zero_restrictions<span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  mat DN  <span class="op">=</span> Dgf <span class="op">*</span> null<span class="op">(</span>Dz<span class="op">);</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> log_det<span class="op">(</span>DN<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> DN<span class="op">).</span>real<span class="op">();</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Compute derivative of combined mapping function g_fh_vec wrt the structural parameters</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  mat Dgf <span class="op">=</span> Df<span class="op">([</span>Z<span class="op">](</span><span class="at">const</span> colvec<span class="op">&amp;</span> x<span class="op">)</span> <span class="op">{</span> <span class="cf">return</span> <span class="va">g_fh_vec</span><span class="op">(</span>Z<span class="op">,</span> x<span class="op">);</span> <span class="op">},</span> vec_structural<span class="op">);</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Compute the null space of the derivative of the narrative restrictions</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  mat DN  <span class="op">=</span> Dgf <span class="op">*</span> null<span class="op">(</span>Dz<span class="op">);</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Logarithm of determinant, then take the real part</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> log_det<span class="op">(</span>DN<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> DN<span class="op">).</span>real<span class="op">();</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="extension" class="level3">
 <h3 class="anchored" data-anchor-id="extension">Extension</h3>
@@ -736,20 +740,19 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p><span class="math display">\[
 \frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})} \propto \frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
 \]</span></p>
-<p>To combine these two identification schemes, we need to calculate the importance weight when <strong>all</strong> of the three restrictions, zero, sign, and narrative, are present. Here is a preliminary calculation, with no guarantee of correctness:</p>
-<p><span class="math display">\[
-\begin{align*}
-\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
-=&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
-=&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
-\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\\
-&amp;\times
-\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
-\propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
-\propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
-\end{align*}
-\]</span></p>
-<p>Where <span class="math inline">\(\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\propto1\)</span>, since zero restrictions does not change the likelihood. Therefore, it is simply the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.</p>
+<p>To combine these two identifications, we need to calculate the importance weight when <strong>all</strong> of the three restrictions, zero, sign, and narrative, are present. Intuitively, it is the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.</p>
+<!-- $$ -->
+<!-- \begin{align*} -->
+<!-- \frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)} -->
+<!-- =&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
+<!-- =&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)} -->
+<!-- \frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}\\ -->
+<!-- &\times -->
+<!-- \frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
+<!-- \propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
+<!-- \propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)} -->
+<!-- \end{align*} -->
+<!-- $$ -->
 <p>The following code calculates <span class="math inline">\(\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})\)</span> for the narrative restrictions</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> weight_narrative<span class="op">(</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> <span class="dt">int</span><span class="op">&amp;</span>                    T<span class="op">,</span></span>
