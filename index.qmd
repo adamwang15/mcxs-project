@@ -17,7 +17,6 @@ bibliography: references.bib
 
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-# knitr::opts_chunk$set(eval = FALSE)
 ```
 
 > **Abstract.** This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by @arias2018inference to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.
@@ -47,14 +46,15 @@ library(tidyquant)
 library(tseries)
 library(tidyverse)
 library(knitr)
+library(zoo)
 
 
 consumer_price_index = read_rba(series_id = 'GCPIAG')
 
 productivity         = read_rba(series_id = 'GNFPROSQI')
 
-asx200               = tq_get('^AXJO', from = '1994-01-01', to = '2023-12-31')
-# aord               = tq_get('^AORD', from = '1994-01-01', to = '2023-12-31')
+asx200               = tq_get('^AXJO', from = '1994-01-01')
+# aord               = tq_get('^AORD', from = '1994-01-01')
 # stock_prices       = asx200 / consumer_price_index
 
 retail_turnover      = read_abs(series_id = 'A3348585R')
@@ -828,10 +828,6 @@ $$
 
 ## US data
 
-First, we apply the package to the data from the United States, and replicate the results in @arias2018inference.
-
-### IRF
-
 ```{r include=FALSE}
 data(optimism)
 
@@ -851,10 +847,40 @@ posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
+First, we apply the package to the data from the United States, and replicate the results in @arias2018inference.
+
+### History
+
+Historical values of the optimism shock is
+
+```{r us-shock}
+optimism_shock = posterior$posterior$shocks[1, , ] |> 
+  apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
+  t()
+
+bsvars::plot_ribbon(
+  optimism_shock,
+  probability = 0.68,
+  main = "optimism shock",
+  bty  = "n",
+  xaxt = "n",
+  )
+abline(h = 0)
+# abline(v = covid_index - 4 - 1, lty = 5)
+
+label_index = seq(1, dim(optimism_shock)[1], 20)
+axis(1, at = label_index, 
+     labels = as.yearqtr(index(optimism))[label_index + 4 + 1])
+```
+
+Most of the historical values of the optimism shock are not significantly different from 0, perhaps putting only one zero and one sign restriction is not enough to identify the optimism shock.
+
+### IRF
+
 The impulse response functions are
 
 ```{r us-irf}
-#| fig-cap: "US IRF"
+#| fig-cap: "US IRF (median and 68% highest density interval)"
 # devtools::install_github("bsvars/bsvars")
 
 # plot irf of one shock
@@ -881,7 +907,7 @@ plot_irf1 = function(irf) {
 plot_irf1(irf)
 ```
 
-where shock 1 is the optimism shock, and it gives very close impulse response functions to the ones in the original paper.
+which is very close to the ones in the original paper. Although consumption and hours worked have a boom in the median IRF, they are not significantly different from 0. Therefore, base on this identification strategy, the optimism shock does not drive business cycles in the US.
 
 ### FEVD
 
@@ -995,7 +1021,7 @@ plot.fevd = function(
 The forecast error variance decomposition of consumption and hours worked are
 
 ```{r us-fevd}
-#| fig-cap: "US FEVD"
+#| fig-cap: "US FEVD (shock 1 = optimism shock)"
 fevd = compute_fevd(irf, horizon = 40)
 
 par(mfrow = c(1, 2))
@@ -1003,13 +1029,11 @@ plot(fevd, n = 3)
 plot(fevd, n = 5)
 ```
 
-(where shock 1 is the optimism shock, same for all subsequent plots)
-
-Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are
+Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are
 
 ```{r}
 fevd_40 = 
-  fevd[1, , 40, ] |> 
+  fevd[, 1, 40, ] |> 
   apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
   t() |>
   round(2)
@@ -1018,7 +1042,7 @@ rownames(fevd_40) = colnames(Y)
 kable(fevd_40)
 ```
 
-(the columns represent the median and 68% credible interval)
+which is very close to the ones in the original paper. As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in the US.
 
 ## Australian data
 
@@ -1039,7 +1063,6 @@ specification = specify_bsvarSIGN$new(
 
 posterior = estimate(specification, S = 10000)
 ```
-
 
 ### History
 
@@ -1070,13 +1093,13 @@ axis(1, at = label_index,
 The impulse response functions are
 
 ```{r au-irf}
-irf       = compute_impulse_responses(posterior, horizon = 40)
+#| fig-cap: "Australian IRF (median and 68% highest density interval)"
 
-#| fig-cap: "Australian IRF"
+irf = compute_impulse_responses(posterior, horizon = 40)
 plot_irf1(irf)
 ```
 
-Comparing with the US data, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run.
+Comparing to the US, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run. Therefore, base on the same identification strategy, the optimism shock does not drive business cycles in Australia as well. 
 
 ### FEVD
 
@@ -1091,11 +1114,11 @@ plot(fevd, n = 3)
 plot(fevd, n = 5)
 ```
 
-Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are
+Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are
 
 ```{r}
 fevd_40 = 
-  fevd[1, , 40, ] |> 
+  fevd[, 1, 40, ] |> 
   apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
   t() |>
   round(2)
@@ -1103,6 +1126,8 @@ fevd_40 =
 rownames(fevd_40) = colnames(Y)
 kable(fevd_40)
 ```
+
+As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia.
 
 ## Extension
 
@@ -1161,18 +1186,20 @@ axis(1, at = label_index,
 The impulse response functions are
 
 ```{r au-ext-irf}
-#| fig-cap: "Australian IRF with narrative restriction"
+#| fig-cap: "Australian IRF with narrative restriction (median and 68% highest density interval)"
+
 plot_irf1(irf)
 ```
 
-Still no significant effects.
+After imposing the additional narrative restriction, the optimism shock still has no significant impact of the IRFs. Therefore, the conclusion that optimism shock does not drive business cycles in Australia is robust to the additional assumption.
 
 ### FEVD
 
-The forecast error variance decomposition of consumption and hours worked are
+Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are
 
 ```{r au-ext-fevd}
 #| fig-cap: "Australian FEVD with narrative restriction"
+
 fevd = compute_fevd(irf, horizon = 40)
 
 par(mfrow = c(1, 2))
@@ -1184,7 +1211,7 @@ Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are
 
 ```{r}
 fevd_40 = 
-  fevd[1, , 40, ] |> 
+  fevd[, 1, 40, ] |> 
   apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
   t() |>
   round(2)
@@ -1193,7 +1220,7 @@ rownames(fevd_40) = colnames(Y)
 kable(fevd_40)
 ```
 
-
+As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia.
 
 
 
