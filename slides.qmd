@@ -1,6 +1,5 @@
 ---
-title: Optimism Shock
-subtitle: on the Australian Business Cycle
+title: "Sign and Zero Restrictions: Optimism Shock on the Australian Business Cycle"
 author: Adam Wang
 institute: University of Melbourne
 
@@ -15,45 +14,168 @@ execute:
 bibliography: references.bib
 ---
 
-# Introduction
+# Kitty!
 
-In this research project, I...
+![Hunting!](./data/kitty.png){height=70%}
 
-- R package [**bsvarSIGNs**](https://github.com/bsvars/bsvarSIGNs)
-  * hopefully on CRAN next semester!
+# Data
 
-- Implements **@arias2018inference**
+<!-- load data -->
 
-- Replicates US data
+```{r include=FALSE}
+library(readrba)
+library(readabs)
+library(tidyquant)
+library(tseries)
+library(tidyverse)
+library(knitr)
+library(zoo)
 
-- Extends to Australian data and more
 
-# bsvarSIGNs
+consumer_price_index = read_rba(series_id = 'GCPIAG')
 
-- Bayesian structural vector autoregression (bsvar)
+productivity         = read_rba(series_id = 'GNFPROSQI')
 
-- Simultaneous equations + autoregression
+asx200               = tq_get('^AXJO', from = '1994-01-01')
+# aord               = tq_get('^AORD', from = '1994-01-01')
+# stock_prices       = asx200 / consumer_price_index
 
-- Identified with many restrictions
-  * zero restrictions
-  * sign restrictions
-  * narrative restrictions
-  
-# Question
+retail_turnover      = read_abs(series_id = 'A3348585R')
+# consumption        = retail_turnover / consumer_price_index
 
-Does optimism shock drive business cycles?
+cash_rate            = read_rba(series_id = 'FIRMMCRI')
+inflation            = read_rba(series_id = 'GCPIAGSAQP')
+# real_interest_rate = cash_rate - inflation
 
-- Theory suggests **yes** [@angeletos2018quantifying]
+hours_worked         = read_abs(series_id = 'A85389461V')
+```
 
-- Optimistic $\rightarrow$ spend more and work harder $\rightarrow$ economic boom!
+<!-- concat datasets -->
 
-- What does the data say?
+```{r include=FALSE}
+df_consumer_price_index = consumer_price_index |> 
+  select(date, value) |>
+  rename(consumer_price_index = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_productivity = productivity |> 
+  select(date, value) |>
+  rename(productivity = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_asx200 = asx200 |>
+  rename(asx200 = close) |>
+  na.locf(fromLast = TRUE) |>
+  mutate(ym = as.yearmon(date)) |>
+  slice_max(date, by = ym) |>
+  select(date, asx200) |>
+  mutate(date = as.yearmon(date))
+
+# df_aord = aord |> 
+#   rename(aord = close) |> 
+#   na.locf(fromLast = TRUE) |> 
+#   mutate(ym = as.yearmon(date)) |> 
+#   slice_max(date, by = ym) |> 
+#   select(date, aord) |> 
+#   mutate(date = as.yearmon(date))
+
+df_retail_turnover = retail_turnover |>
+  select(date, value) |>
+  rename(retail_turnover = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_cash_rate = cash_rate |>
+  select(date, value) |>
+  rename(cash_rate = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_inflation = inflation |>
+  select(date, value) |>
+  rename(inflation = value) |> 
+  mutate(date = as.yearmon(date))
+
+df_hours_worked = hours_worked |>
+  select(date, value) |>
+  rename(hours_worked = value) |> 
+  mutate(date = as.yearmon(date))
+
+df = 
+  merge(df_consumer_price_index, df_productivity, by = 'date') |>
+  merge(df_asx200, by = 'date') |>
+  merge(df_retail_turnover, by = 'date') |>
+  merge(df_cash_rate, by = 'date') |>
+  merge(df_inflation, by = 'date') |>
+  merge(df_hours_worked, by = 'date') |> 
+  mutate(productivity       = log(productivity),
+         stock_prices       = log(asx200 / consumer_price_index),
+         consumption        = log(retail_turnover / consumer_price_index),
+         real_interest_rate = cash_rate - inflation,
+         hours_worked       = log(hours_worked)
+         ) |> 
+  select(date, productivity, stock_prices, consumption, real_interest_rate, hours_worked)
+```
+
+<!-- plot -->
+
+```{r}
+p1 = ggplot(df, aes(x = date)) +
+  geom_line(aes(y = real_interest_rate)) +
+  labs(x = 'Date', y = 'Percentage point') +
+  geom_text(aes(
+    x = max(date),
+    y = mean(stock_prices),
+    label = "Real interest rate"
+  ),
+  hjust = 1,
+  vjust = 0) +
+  theme_minimal()
+
+
+p2 = ggplot(df, aes(x = date)) +
+  geom_line(aes(y = productivity)) +
+  geom_line(aes(y = stock_prices)) +
+  geom_line(aes(y = consumption)) +
+  geom_line(aes(y = hours_worked)) +
+  labs(x = 'Date', y = 'Log-level') +
+  geom_text(aes(
+    x = max(date),
+    y = mean(productivity),
+    label = "Productivity"
+  ),
+  hjust = 1,
+  vjust = 0) +
+  geom_text(aes(
+    x = max(date),
+    y = mean(stock_prices),
+    label = "Stock Prices"
+  ),
+  hjust = 1,
+  vjust = 0) +
+  geom_text(aes(
+    x = max(date),
+    y = mean(consumption),
+    label = "Consumption"
+  ),
+  hjust = 1,
+  vjust = 0) +
+  geom_text(aes(
+    x = max(date),
+    y = mean(hours_worked),
+    label = "Hours Worked"
+  ),
+  hjust = 1,
+  vjust = 0) +
+  theme_minimal()
+
+gridExtra::grid.arrange(p1, p2, ncol = 1)
+```
+
 
 # Optimism shock
 
-- **Positively** affects stock prices
-
 - **Zero** impact on productivity
+
+- **Positively** affects stock prices
 
 $$
 \begin{bmatrix}
@@ -82,248 +204,25 @@ $$
 
 $u_t$ reduced-form errors, $\varepsilon_t$ structural shocks, $*=$ no restrictions
 
-# Penalty function approach
+# Extension
 
-@beaudry2011mood
+- Narrative restriction by @antolin2018narrative
 
-- Studies optimism shock with penalty function approach (PFA).
+- Restriction on sign of structural shocks
 
-- Concludes optimism shock **drives** business cycle
+- Covid-19 is a **negative** optimism shock
 
-- Since significant boom in **consumption and hours worked**.
+$$\varepsilon_{2020Q1}^\text{optimism} < 0$$
 
-![US optimism shock impulse responses with PFA](./data/pfa-irf.png){width=80%}
+# Result
 
-# Original paper
+![Australian optimism shock impulse responses (68% interval)](./docs/index_files/figure-html/au-ext-irf-1.png){width=85%}
 
-@arias2018inference
+# Best thing!
 
-- Proves PFA imposes **additional** restrictions
+- Stealing other people's code
 
-- Proposed an importance sampler that gives **true** solutions
-
-- Concludes optimism shock does **not** drive business cycle
-
-![US optimism shock impulse responses with importance sampler](./data/is-irf.png){width=80%}
-
-# Importance sampler algorithm
-
-Orthogonal reduced-form parameterization:
-
-$$
-y_t' = x_t' B + e_t' Q' \text{chol}(\Sigma,\text{upper})
-$$
-
-1. Sample ($\*B$, $\*\Sigma$, $\*Q$) conditional on the zero restrictions.
-
-2. If the sign restrictions are satisfied, keep the draw and compute an importance weight, otherwise discard.
-
-3. Repeat steps 1-2 until the desired number of samples is obtained.
-
-4. Resample with replacement using the importance weights.
-
-# Replication
-
-Same US data, different code
-
-![US optimism shock impulse responses using bsvarSIGNs](./docs/index_files/figure-html/us-irf-1.png){width=85%}
-
-# Extension 1: Australian data
-
-No significant impact
-
-![Australian optimism shock impulse responses using bsvarSIGNs](./docs/index_files/figure-html/au-irf-1.png){width=85%}
-
-# Extension 2: narrative restriction
-
-@antolin2018narrative
-
-- Algorithm to impose narrative restrictions
-
-- **Sign** of structural shocks
-
-- ...
-
-Assume additionally that the optimism shock
-
-- is **negative** when Covid-19 hits Australia in 2020 Q1
-
-$$
-\varepsilon_{2020 Q1}^\text{optimism} < 0
-$$
-
-# Extension 2: Covid-19
-
-A pessimism shock
-
-![ASX 200 index](./docs/index_files/figure-html/unnamed-chunk-4-1.png){width=85%}
-
-# Extension 2: pseudo proof
-
-(To my knowledge) no paper has combined the two algorithms[^1]
-
-Both papers use importance sampler
-
-- Suppose the importance weights are $w_1$ and $w_2$
-
-- To **combine** the two algorithms, resample with weights $w$
-
-- Where $w = w_1 \times w_2$
-
-A more rigorous proof (with no guarantee of correctness) is available [*here*](https://adamwang15.github.io/mcxs-report/#extension)
-
-[^1]: @arias2018inference and @antolin2018narrative
-
-# Extension 2: history
-
-Historical values of optimism shock
-
-![Australian optimism shock](./docs/index_files/figure-html/au-ext-shock-1.png){width=85%}
-
-# Extension 2: result
-
-Still no significant impact
-
-![Australian optimism shock impulse responses with narrative restriction](./docs/index_files/figure-html/au-ext-irf-1.png){width=85%}
-
-# Summary
-
-- Optimism shock does **not** drive business cycle
-  
-- Result holds for both US and Australia
-  
-- Result is robust to restriction on Covid-19
-
-# Appendix: simulation study
-
-Suppose the true structural model is
-$$
-\begin{bmatrix}
--1 & 1\\
-1 & 0\\
-\end{bmatrix}
-\begin{bmatrix}
-y_{1,t}\\
-y_{2,t}\\
-\end{bmatrix}
-=
-\begin{bmatrix}
--1 & 1\\
-1 & 0\\
-\end{bmatrix}
-\begin{bmatrix}
-y_{1,t-1}\\
-y_{2,t-1}\\
-\end{bmatrix}
-+
-\begin{bmatrix}
-\varepsilon_{1,t}\\
-\varepsilon_{2,t}\\
-\end{bmatrix},
-\begin{bmatrix}
-\varepsilon_{1,t}\\
-\varepsilon_{2,t}\\
-\end{bmatrix}
-\sim
-\mathcal{N}(
-\begin{bmatrix}
-0 \\
-0
-\end{bmatrix}
-,
-\begin{bmatrix}
-1 & 0 \\
-0 & 1 \\
-\end{bmatrix}
-)
-$$
-equivalently, we can simulate 1,000 observations from the reduced-form
-$$
-\begin{bmatrix}
-y_{1,t}\\
-y_{2,t}\\
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & 0\\
-0 & 1\\
-\end{bmatrix}
-\begin{bmatrix}
-y_{1,t-1}\\
-y_{2,t-1}\\
-\end{bmatrix}
-+
-\begin{bmatrix}
-u_{1,t}\\
-u_{2,t}\\
-\end{bmatrix},
-\begin{bmatrix}
-u_{1,t}\\
-u_{2,t}\\
-\end{bmatrix}
-\sim
-\mathcal{N}(
-\begin{bmatrix}
-0 \\
-0
-\end{bmatrix}
-,
-\begin{bmatrix}
-1 & 1 \\
-1 & 2 \\
-\end{bmatrix}
-)
-$$
-```{r include=FALSE}
-# devtools::install_github("bsvars/bsvarSIGNs")
-library(bsvarSIGNs)
-
-set.seed(123)
-
-# simulate data
-N = 2
-T = 1000
-
-U = mvtnorm::rmvnorm(T, rep(0, N), matrix(c(1, 1, 1, 2), N, N))
-Y = apply(U, 2, cumsum)
-
-sign_irf = array(matrix(c(0, 1, 1, 1), 2, 2), dim = c(2, 2, 1))
-zero_irf = matrix(c(1, 0, 0, 0), 2, 2)
-
-specification  = specify_bsvarSIGN$new(Y, 
-                                       p = 1, 
-                                       sign_irf = sign_irf,
-                                       zero_irf = zero_irf
-                                       )
-posterior      = estimate(specification, S = 1000)
-```
-
-Putting zero and sign restrictions on the inverse of the structural matrix
-
-$$
-\begin{bmatrix}
--1 & 1\\
-1 & 0\\
-\end{bmatrix}^{-1}
-=
-\begin{bmatrix}
-0 & 1\\
-1 & 1\\
-\end{bmatrix}
-\Rightarrow
-\begin{bmatrix}
-0 & +\\
-+ & +\\
-\end{bmatrix}
-$$
-Posterior mean of 1,000 draws of the structural matrix is
-
-```{r}
-posterior$posterior$B |> 
-  apply(c(1, 2), mean) |> 
-  t() |> 
-  round(4)
-```
+![Swamp puppy!](./data/swamp puppy.png){width=70%}
 
 # References
 
