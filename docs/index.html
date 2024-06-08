@@ -8,7 +8,7 @@
 
 <meta name="author" content="Adam Wang">
 
-<title>Macroeconometrics Research Report - Sign and Zero Restrictions: Optimism Shock on the Australian Business Cycle</title>
+<title>Sign and Zero Restrictions: Optimism Shock on the Australian Business Cycle</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -77,41 +77,16 @@ div.csl-indent {
 }</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
-  "location": "navbar",
-  "copy-button": false,
-  "collapse-after": 3,
-  "panel-placement": "end",
-  "type": "overlay",
-  "limit": 20,
-  "language": {
-    "search-no-results-text": "No results",
-    "search-matching-documents-text": "matching documents",
-    "search-copy-link-title": "Copy link to search",
-    "search-hide-matches-text": "Hide additional matches",
-    "search-more-match-text": "more match in this document",
-    "search-more-matches-text": "more matches in this document",
-    "search-clear-button-title": "Clear",
-    "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
-  }
-}</script>
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -119,94 +94,10 @@ div.csl-indent {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="fullcontent">
 
-<div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
-      <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Macroeconometrics Research Report</span>
-    </a>
-  </div>
-        <div class="quarto-navbar-tools ms-auto">
-</div>
-          <div id="quarto-search" class="" title="Search"></div>
-      </div> <!-- /container-fluid -->
-    </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
-<!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
-  <ul class="collapse">
-  <li><a href="#acf-and-pacf-plot" id="toc-acf-and-pacf-plot" class="nav-link" data-scroll-target="#acf-and-pacf-plot">ACF and PACF plot</a></li>
-  <li><a href="#augmented-dickey-fuller-test" id="toc-augmented-dickey-fuller-test" class="nav-link" data-scroll-target="#augmented-dickey-fuller-test">Augmented Dickey-Fuller test</a>
-  <ul class="collapse">
-  <li><a href="#level" id="toc-level" class="nav-link" data-scroll-target="#level">Level</a></li>
-  <li><a href="#first-difference" id="toc-first-difference" class="nav-link" data-scroll-target="#first-difference">First difference</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a>
-  <ul class="collapse">
-  <li><a href="#specification" id="toc-specification" class="nav-link" data-scroll-target="#specification">Specification</a>
-  <ul class="collapse">
-  <li><a href="#structural-form" id="toc-structural-form" class="nav-link" data-scroll-target="#structural-form">Structural form</a></li>
-  <li><a href="#reduced-form" id="toc-reduced-form" class="nav-link" data-scroll-target="#reduced-form">Reduced form</a></li>
-  <li><a href="#orthogonal-reduced-form-parameterization" id="toc-orthogonal-reduced-form-parameterization" class="nav-link" data-scroll-target="#orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</a></li>
-  </ul></li>
-  <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a>
-  <ul class="collapse">
-  <li><a href="#reduced-form-1" id="toc-reduced-form-1" class="nav-link" data-scroll-target="#reduced-form-1">Reduced form</a></li>
-  <li><a href="#structural-form-1" id="toc-structural-form-1" class="nav-link" data-scroll-target="#structural-form-1">Structural form</a></li>
-  <li><a href="#implementations" id="toc-implementations" class="nav-link" data-scroll-target="#implementations">Implementations</a></li>
-  <li><a href="#extension" id="toc-extension" class="nav-link" data-scroll-target="#extension">Extension</a></li>
-  </ul></li>
-  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a>
-  <ul class="collapse">
-  <li><a href="#reduced-form-2" id="toc-reduced-form-2" class="nav-link" data-scroll-target="#reduced-form-2">Reduced form</a></li>
-  <li><a href="#structural-form-2" id="toc-structural-form-2" class="nav-link" data-scroll-target="#structural-form-2">Structural form</a></li>
-  </ul></li>
-  <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
-  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a>
-  <ul class="collapse">
-  <li><a href="#irf" id="toc-irf" class="nav-link" data-scroll-target="#irf">IRF</a></li>
-  <li><a href="#fevd" id="toc-fevd" class="nav-link" data-scroll-target="#fevd">FEVD</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
-  <ul class="collapse">
-  <li><a href="#us-data" id="toc-us-data" class="nav-link" data-scroll-target="#us-data">US data</a>
-  <ul class="collapse">
-  <li><a href="#history" id="toc-history" class="nav-link" data-scroll-target="#history">History</a></li>
-  <li><a href="#irf-1" id="toc-irf-1" class="nav-link" data-scroll-target="#irf-1">IRF</a></li>
-  <li><a href="#fevd-1" id="toc-fevd-1" class="nav-link" data-scroll-target="#fevd-1">FEVD</a></li>
-  </ul></li>
-  <li><a href="#australian-data" id="toc-australian-data" class="nav-link" data-scroll-target="#australian-data">Australian data</a>
-  <ul class="collapse">
-  <li><a href="#history-1" id="toc-history-1" class="nav-link" data-scroll-target="#history-1">History</a></li>
-  <li><a href="#irf-2" id="toc-irf-2" class="nav-link" data-scroll-target="#irf-2">IRF</a></li>
-  <li><a href="#fevd-2" id="toc-fevd-2" class="nav-link" data-scroll-target="#fevd-2">FEVD</a></li>
-  </ul></li>
-  <li><a href="#extension-1" id="toc-extension-1" class="nav-link" data-scroll-target="#extension-1">Extension</a>
-  <ul class="collapse">
-  <li><a href="#history-2" id="toc-history-2" class="nav-link" data-scroll-target="#history-2">History</a></li>
-  <li><a href="#irf-3" id="toc-irf-3" class="nav-link" data-scroll-target="#irf-3">IRF</a></li>
-  <li><a href="#fevd-3" id="toc-fevd-3" class="nav-link" data-scroll-target="#fevd-3">FEVD</a></li>
-  </ul></li>
-  </ul></li>
-  </ul>
-</nav>
-    </div>
-<!-- main -->
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -233,7 +124,6 @@ div.csl-indent {
 </header>
 
 <!-- latex shortcuts -->
-<!-- do not show warnings and run code when testing -->
 <blockquote class="blockquote">
 <p><strong>Abstract.</strong> This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.</p>
 <p><strong>Keywords.</strong> Bayesian Structural VAR, sign restrictions, zero restrictions, optimism shock</p>
@@ -243,7 +133,7 @@ div.csl-indent {
 <h1>Introduction</h1>
 <p><strong>Objective</strong>: The goal of this research project is to implement the sign and zero restrictions algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> in the <a href="https://github.com/bsvars/bsvarSIGNs">bsvarSIGNs</a> package, and apply it to analyse the optimism shock to Australian economy.</p>
 <p><strong>Question</strong>: Does optimism shocks drive the business cycles in Australian economy?</p>
-<p><strong>Motivation</strong>: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, <span class="citation" data-cites="beaudry2011mood">Beaudry, Nam, and Wang (<a href="#ref-beaudry2011mood" role="doc-biblioref">2011</a>)</span> finds significant evidence that optimism shocks are a key driver of business cycles in the United States as it creates a simultaneous boom in consumption and hours worked. But, <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> argue that PFA imposes additional restrictions, and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.</p>
+<p><strong>Motivation</strong>: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), <span class="citation" data-cites="beaudry2011mood">Beaudry, Nam, and Wang (<a href="#ref-beaudry2011mood" role="doc-biblioref">2011</a>)</span> finds significant evidence that optimism shocks are a key driver of business cycles in the United States as it creates a simultaneous boom in consumption and hours worked. But, <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> argue that PFA imposes additional restrictions, and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.</p>
 </section>
 <section id="data" class="level1">
 <h1>Data</h1>
@@ -253,7 +143,7 @@ div.csl-indent {
 <ul>
 <li><strong>Productivity</strong>: non-farm labour productivity per hour (source: RBA, series ID GNFPROSQI).</li>
 </ul>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-3_0421f45f085c661f4f3e3d9137fd5cbb">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -266,7 +156,7 @@ div.csl-indent {
 <ul>
 <li><strong>Stock prices</strong>: end-of-period ASX 200 index (source: Yahoo Finance, ticker symbol ^AXJO), divided by the consumer price index.</li>
 </ul>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-4_5d5d5b2f0c38cc7684c9d8a684966ed1">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -279,7 +169,7 @@ div.csl-indent {
 <ul>
 <li><strong>Consumption</strong>: retail turnover (source: ABS, series ID A3348585R), divided by the consumer price index.</li>
 </ul>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-5_d5fb27f534dd28c35c86d8162069b14b">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -292,7 +182,7 @@ div.csl-indent {
 <ul>
 <li><strong>Real interest rate</strong>: over-night cash rate nets inflation (source: RBA, series ID FIRMMCRI and GCPIAGSAQP).</li>
 </ul>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-6_536643c92a247fc03d95a7e792163456">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -305,7 +195,7 @@ div.csl-indent {
 <ul>
 <li><strong>Hours worked</strong>: total hours worked (source: ABS, series ID A85389611R).</li>
 </ul>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-7_91cb838527938f4c7f2cd1f7f859b3e4">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -317,7 +207,7 @@ div.csl-indent {
 </div>
 <p>The first two variables (productivity and stock prices) are chosen to identify the optimism shock, the last three variables (consumption, real interest rate and hours worked) are chosen to capture the business cycle dynamics as in standard macroeconomic theory.</p>
 <p>To capture multiplicative relationships in macroeconomic time series and percentage change interpretation, all variables are log transformed (except for real interest rate). A preview of first 6 rows of the concatenated dataset is shown below.</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-8_d2ebb12bee032f5ec55dff8c3b844625">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <colgroup>
@@ -341,7 +231,7 @@ div.csl-indent {
 <tbody>
 <tr class="odd">
 <td style="text-align: center;">Sep 1994</td>
-<td style="text-align: center;">4.2297</td>
+<td style="text-align: center;">4.2268</td>
 <td style="text-align: center;">3.4527</td>
 <td style="text-align: center;">4.9278</td>
 <td style="text-align: center;">4.842</td>
@@ -349,7 +239,7 @@ div.csl-indent {
 </tr>
 <tr class="even">
 <td style="text-align: center;">Dec 1994</td>
-<td style="text-align: center;">4.2384</td>
+<td style="text-align: center;">4.2356</td>
 <td style="text-align: center;">3.3870</td>
 <td style="text-align: center;">4.9191</td>
 <td style="text-align: center;">5.961</td>
@@ -357,23 +247,23 @@ div.csl-indent {
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Mar 1995</td>
-<td style="text-align: center;">4.2283</td>
+<td style="text-align: center;">4.2254</td>
 <td style="text-align: center;">3.3764</td>
 <td style="text-align: center;">4.9315</td>
 <td style="text-align: center;">5.892</td>
-<td style="text-align: center;">6.0171</td>
+<td style="text-align: center;">6.0170</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Jun 1995</td>
-<td style="text-align: center;">4.2136</td>
+<td style="text-align: center;">4.2121</td>
 <td style="text-align: center;">3.4216</td>
 <td style="text-align: center;">4.9487</td>
 <td style="text-align: center;">6.209</td>
-<td style="text-align: center;">6.0220</td>
+<td style="text-align: center;">6.0218</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Sep 1995</td>
-<td style="text-align: center;">4.2327</td>
+<td style="text-align: center;">4.2297</td>
 <td style="text-align: center;">3.4635</td>
 <td style="text-align: center;">4.9500</td>
 <td style="text-align: center;">6.293</td>
@@ -381,7 +271,7 @@ div.csl-indent {
 </tr>
 <tr class="even">
 <td style="text-align: center;">Dec 1995</td>
-<td style="text-align: center;">4.2297</td>
+<td style="text-align: center;">4.2268</td>
 <td style="text-align: center;">3.4968</td>
 <td style="text-align: center;">4.9610</td>
 <td style="text-align: center;">6.708</td>
@@ -393,7 +283,7 @@ div.csl-indent {
 </div>
 <section id="acf-and-pacf-plot" class="level2">
 <h2 class="anchored" data-anchor-id="acf-and-pacf-plot">ACF and PACF plot</h2>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/fig-acf-plot_76224672e7103429f8616718d48fdcfd">
 <div class="cell-output-display">
 <div id="fig-acf-plot" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
@@ -404,7 +294,7 @@ div.csl-indent {
 </div>
 </div>
 <p>The autocorrelation function (ACF) plot shows all variables have a consistent pattern of autocorrelation, this suggests that the time series are non-stationary. Stationarity is formally tested using the Augmented Dickey-Fuller test in the next section.</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/fig-pacf-plot_b976fb838920907ab243c80e8a469574">
 <div class="cell-output-display">
 <div id="fig-pacf-plot" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
@@ -421,7 +311,7 @@ div.csl-indent {
 <section id="level" class="level3">
 <h3 class="anchored" data-anchor-id="level">Level</h3>
 <p>All five variables are non-stationary at 5% significance level base on the Augmented Dickey-Fuller test.</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-11_f92da49e715be4f42e5f74788b652fc9">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -434,27 +324,27 @@ div.csl-indent {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">0.8372</td>
+<td style="text-align: right;">0.8093</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">0.1728</td>
+<td style="text-align: right;">0.1600</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">0.6167</td>
+<td style="text-align: right;">0.6469</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">0.3705</td>
+<td style="text-align: right;">0.3812</td>
 <td style="text-align: right;">1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">0.0657</td>
+<td style="text-align: right;">0.0520</td>
 <td style="text-align: right;">1</td>
 </tr>
 </tbody>
@@ -465,7 +355,7 @@ div.csl-indent {
 <section id="first-difference" class="level3">
 <h3 class="anchored" data-anchor-id="first-difference">First difference</h3>
 <p>Applying Augmented Dickey-Fuller test to the first difference of the variables, we find that all variables are stationary at 5% significance level. Therefore, all variables are integrated of order one <span class="math inline">\(I(1)\)</span> and it is reasonable to put them in a VAR system without further transformation.</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-12_88dcad40e29531f67d46553c1b0b1191">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -651,14 +541,14 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>However, the set of structural parameters satisfying the zero restrictions is of Lebesgue measure zero in the set of all structural parameters (akin to <span class="math inline">\(\mathbb{P}(X=x)=0\)</span> for continuous <span class="math inline">\(X\)</span>). Luckily, we can sample the set of structural parameters satisfying the sign restrictions conditional on satisfying the zero restrictions.</p>
 <p>Here is a high level outline of the algorithm proposed by <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>:</p>
 <ol type="1">
-<li>Sample reduced-form parameters (<span class="math inline">\(\mathbf{B}\)</span>, <span class="math inline">\(\mathbf{\Sigma}\)</span>, <span class="math inline">\(\mathbf{Q}\)</span>) conditional on the zero restrictions.</li>
-<li>Set <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+) = f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span>.</li>
+<li>Sample reduced-form parameters <span class="math inline">\(\mathbf{B},\mathbf{\Sigma}\sim \mathcal{NIW}(\overline{\mathbf{B}},\overline{\mathbf{V}},\overline{\mathbf{S}},\overline{\mathbf{\nu}})\)</span>.</li>
+<li>Sample <span class="math inline">\(\mathbf{Q}\)</span> conditional on the zero restrictions and set <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+) = f_h^{-1}(\mathbf{B}, \mathbf{\Sigma}, \mathbf{Q})\)</span>.</li>
 <li>If the sign restrictions are satisfied, keep <span class="math inline">\((\mathbf{A}_0, \mathbf{A}_+)\)</span> and compute an importance weight, otherwise discard.</li>
 <li>Repeat steps 1-3 until the desired number of samples is obtained.</li>
 <li>Resample with replacement using the importance weights.</li>
 </ol>
 <p>Where step 5 (importance sampling) is needed to manipulate the density induced by step 1 to the desired Nomral-Generalized-Normal posterior density <span class="math inline">\(\mathcal{NGN}\)</span>.</p>
-<p>To be explicit, starting with a Uniform-Normal-Inverse-Wishart <span class="math inline">\(\mathcal{UNIW}\)</span> prior distribution, the importance weight in step 3 is given by (posterior condition on <span class="math inline">\(\mathbf{Y}\)</span> is dropped for brevity):</p>
+<p>To be explicit, starting with a Uniform-Normal-Inverse-Wishart prior distribution, the importance weight in step 3 is given by (posterior condition on <span class="math inline">\(\mathbf{Y}\)</span> is dropped for brevity):</p>
 <p><span class="math display">\[
 \begin{align*}
 \frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
@@ -734,6 +624,18 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> log_det<span class="op">(</span>DN<span class="op">.</span>t<span class="op">()</span> <span class="op">*</span> DN<span class="op">).</span>real<span class="op">();</span></span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
+<section id="comparison-with-pfa" class="level3">
+<h3 class="anchored" data-anchor-id="comparison-with-pfa">Comparison with PFA</h3>
+<p>The PFA uses a loss function to find a rotation matrix <span class="math inline">\(\mathbf{Q}\)</span> that satisfies the zero restrictions and satisfies or close to satisfying the sign restrictions, thus it is not an exact solution. In comparison, the importance sampler algorithm is an exact solution satisfying all the restrictions.</p>
+<p>Mathematically, the PFA solves the following minimization problem:</p>
+<p><span class="math display">\[
+\begin{aligned}
+q^* &amp;= {\arg\min}_q \Psi(q) \quad s.t. (1)\ q'q=1,\ (2)\ R_{zero}q=0
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(q\)</span> is a column of <span class="math inline">\(\mathbf{Q}\)</span>. This step is analogous to steps 2-3 of the importance sampler algorithm. Intuitively, by minimizing <span class="math inline">\(\Psi(q)\)</span> we can find something close to satisfying the sign restrictions, condition (1) makes sure <span class="math inline">\(\mathbf{Q}\)</span> is orthogonal and condition (2) makes sure <span class="math inline">\(\mathbf{Q}\)</span> satisfies the zero restrictions.</p>
+<p>Detailed definitions of <span class="math inline">\(\Psi\)</span> and <span class="math inline">\(R_{zero}\)</span> is beyond the scope of this project, but it is evident that the minimization problem gives an unique solution and therefore the PFA is not set-identifying <span class="math inline">\(\mathbf{Q}\)</span>.</p>
+</section>
 <section id="extension" class="level3">
 <h3 class="anchored" data-anchor-id="extension">Extension</h3>
 <p>Besides the zero and sign restrictions, another popular identification scheme proposed by <span class="citation" data-cites="antolin2018narrative">Antolı́n-Dı́az and Rubio-Ramı́rez (<a href="#ref-antolin2018narrative" role="doc-biblioref">2018</a>)</span> is to impose narrative restrictions on the structural shocks and historical decomposition. For example, restricting a structural shock to be negative during some period, and we will apply this to restrict the optimism shock during the Covid-19 pandemic.</p>
@@ -742,18 +644,19 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 \frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})} \propto \frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
 \]</span></p>
 <p>To combine these two identifications, we need to calculate the importance weight when <strong>all</strong> of the three restrictions, zero, sign, and narrative, are present. Intuitively, it is the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.</p>
-<!-- $$ -->
-<!-- \begin{align*} -->
-<!-- \frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)} -->
-<!-- =&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
-<!-- =&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)} -->
-<!-- \frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}\\ -->
-<!-- &\times -->
-<!-- \frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
-<!-- \propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
-<!-- \propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)} -->
-<!-- \end{align*} -->
-<!-- $$ -->
+<p>Here is an preliminary proof. The insight is to notice that <span class="math inline">\(\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\propto 1\)</span> since adding zero restrictions does not change the likelihood and only truncates uniform conditional prior <span class="math inline">\(\pi(\mathbf{Q}|\mathbf{B},\mathbf{\Sigma})\)</span>.</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\mathcal{NGN}(\mathbf{A}_0,\mathbf{A}_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+=&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+=&amp;\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}
+\frac{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}|\mathcal S, \mathcal R)}\\
+&amp;\times
+\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+\propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{v_{f_h}(\mathbf{A}_0,\mathbf{A}_+)}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}\\
+\propto&amp;\frac{1}{\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})}\frac{|\text{det}(\mathbf{A}_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\mathbf{A}_0,\mathbf{A}_+)}
+\end{align*}
+\]</span></p>
 <p>The following code calculates <span class="math inline">\(\omega(\mathbf{B},\mathbf{\Sigma},\mathbf{Q})\)</span> for the narrative restrictions</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> weight_narrative<span class="op">(</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">const</span> <span class="dt">int</span><span class="op">&amp;</span>                    T<span class="op">,</span></span>
@@ -778,6 +681,8 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> M <span class="op">/</span> n_success<span class="op">;</span></span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span> provides a sufficient condition for the partial identification of the first <span class="math inline">\(k\)</span> shocks: at least <span class="math inline">\(N-j\)</span> zero restrictions and at least 1 sign restriction on the IRFs to the <span class="math inline">\(j\)</span>-th shock for <span class="math inline">\(1\le j\le k\)</span>. At this stage, there is no theoretical result how to incorporate narrative restrictions in this sufficient condition. Generally, narrative restrictions are used to sharpen the inference (i.e.&nbsp;narrower highest density interval) and does not make the structural shocks exactly identified.</p>
+<p>If given some narrative restrictions there is an uniquely identified <span class="math inline">\(\mathbf{Q}^*\)</span>, step 3 of the importance sampling algorithm would never work, since the probability a randomly sampled <span class="math inline">\(\mathbf{Q}=\mathbf{Q}^*\)</span> is <span class="math inline">\(0\)</span>. In the later empirical work, we show the algorithm can still work with narrative restrictions, therefore at least the narrative restrictions considered here are not binding. But, the advantage of narrative (and sign) restrictions is that they are less controversial and the result can be agreed upon by more researchers.</p>
 </section>
 </section>
 <section id="simulation" class="level2">
@@ -787,7 +692,7 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 <p>To test the validity of our code, we simulate 1,000 observations from a bi-variate Gaussian random walk process with the covariance matrix equal to the identity matrix of order 2.</p>
 <p>Then, we compute 1,000 posterior draws from a SVAR model with a constant term and one lag, using the default identification scheme: positive sign restrictions on the diagonal of <span class="math inline">\(\mathbf{A}_0\)</span>.</p>
 <p>The posterior mean of the <span class="math inline">\(\mathbf{B}\)</span> is</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-14_453e30915e522a144fc4eeb2c9dcb75f">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -818,7 +723,7 @@ p(\mathbf{B},\mathbf{\Sigma}|\mathbf{Y})
 </div>
 </div>
 <p>The posterior mean of <span class="math inline">\(\mathbf{\Sigma}\)</span> is</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-15_ca510bb872386251335384c83d9f4a3c">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -943,10 +848,10 @@ u_{2,t}\\
 \end{bmatrix}
 \]</span></p>
 <p>Posterior mean of 1,000 draws of the structural matrix is</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-17_58c8dc8493be6ac879e937ad38a89257">
 <div class="cell-output cell-output-stdout">
 <pre><code>        [,1]   [,2]
-[1,] -0.9613 1.0448
+[1,] -0.9614 1.0448
 [2,]  0.9614 0.0000</code></pre>
 </div>
 </div>
@@ -1005,13 +910,13 @@ u_{2,t}\\
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
-<section id="us-data" class="level2">
-<h2 class="anchored" data-anchor-id="us-data">US data</h2>
+<section id="united-states" class="level2">
+<h2 class="anchored" data-anchor-id="united-states">United States</h2>
 <p>First, we apply the package to the data from the United States, and replicate the results in <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>.</p>
 <section id="history" class="level3">
 <h3 class="anchored" data-anchor-id="history">History</h3>
 <p>Historical values of the optimism shock is</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/us-shock_d0f4e0310881ea09ecfc4cbca28fa496">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/us-shock-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -1021,7 +926,7 @@ u_{2,t}\\
 <section id="irf-1" class="level3">
 <h3 class="anchored" data-anchor-id="irf-1">IRF</h3>
 <p>The impulse response functions are</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/us-irf_b1aa878677c46d6def1379f000512d3a">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1035,19 +940,8 @@ u_{2,t}\\
 </section>
 <section id="fevd-1" class="level3">
 <h3 class="anchored" data-anchor-id="fevd-1">FEVD</h3>
-<p>The forecast error variance decomposition of consumption and hours worked are</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/us-fevd-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">US FEVD (shock 1 = optimism shock)</figcaption><p></p>
-</figure>
-</div>
-</div>
-</div>
 <p>Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-20_37b27653d47a864fbf77ff6f2715fff0">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -1061,33 +955,33 @@ u_{2,t}\\
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">2.05</td>
-<td style="text-align: right;">7.69</td>
-<td style="text-align: right;">20.72</td>
+<td style="text-align: right;">2.02</td>
+<td style="text-align: right;">7.77</td>
+<td style="text-align: right;">21.11</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">7.52</td>
-<td style="text-align: right;">30.79</td>
-<td style="text-align: right;">62.75</td>
+<td style="text-align: right;">7.26</td>
+<td style="text-align: right;">30.52</td>
+<td style="text-align: right;">62.12</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">2.94</td>
-<td style="text-align: right;">17.85</td>
-<td style="text-align: right;">52.08</td>
+<td style="text-align: right;">2.72</td>
+<td style="text-align: right;">17.17</td>
+<td style="text-align: right;">52.31</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">6.20</td>
-<td style="text-align: right;">17.45</td>
-<td style="text-align: right;">39.18</td>
+<td style="text-align: right;">6.39</td>
+<td style="text-align: right;">17.21</td>
+<td style="text-align: right;">38.98</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">4.20</td>
-<td style="text-align: right;">18.45</td>
-<td style="text-align: right;">49.64</td>
+<td style="text-align: right;">4.33</td>
+<td style="text-align: right;">17.88</td>
+<td style="text-align: right;">48.92</td>
 </tr>
 </tbody>
 </table>
@@ -1096,22 +990,23 @@ u_{2,t}\\
 <p>which is very close to the ones in the original paper. As the median values are relatively small (&lt;20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in the US.</p>
 </section>
 </section>
-<section id="australian-data" class="level2">
-<h2 class="anchored" data-anchor-id="australian-data">Australian data</h2>
+<section id="australia" class="level2">
+<h2 class="anchored" data-anchor-id="australia">Australia</h2>
 <p>All subsequent analysis are performed on the Australian data.</p>
 <section id="history-1" class="level3">
 <h3 class="anchored" data-anchor-id="history-1">History</h3>
 <p>Historical values of the optimism shock is</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/au-shock_7320ab12a2183ecc27f9752271311534">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/au-shock-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>Where the vertical dashed line indicates the period 2020 Q1. Although we have not impose any restriction here, the optimism shock is still significantly negative in 2020 Q1 i.e.&nbsp;the 68% highest density interval does not include zero, this is likely due to the Covid-19 pandemic.</p>
 </section>
 <section id="irf-2" class="level3">
 <h3 class="anchored" data-anchor-id="irf-2">IRF</h3>
 <p>The impulse response functions are</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/au-irf_29072ac48841038a7c5894ab6158af13">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1121,23 +1016,12 @@ u_{2,t}\\
 </div>
 </div>
 </div>
-<p>Comparing to the US, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run. Therefore, base on the same identification strategy, the optimism shock does not drive business cycles in Australia as well.</p>
+<p>Comparing to the US, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run, other variables all have wide and symmetric IRFs around zero. Therefore, base on the same identification strategy, we conclude the optimism shock does not drive business cycles in Australia as well.</p>
 </section>
 <section id="fevd-2" class="level3">
 <h3 class="anchored" data-anchor-id="fevd-2">FEVD</h3>
-<p>The forecast error variance decomposition of consumption and hours worked are</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/au-fevd-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Australian FEVD</figcaption><p></p>
-</figure>
-</div>
-</div>
-</div>
 <p>Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-22_1e389dd6f2bb566da4346cd841a71cc3">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -1151,60 +1035,63 @@ u_{2,t}\\
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">1.30</td>
-<td style="text-align: right;">7.07</td>
-<td style="text-align: right;">24.79</td>
+<td style="text-align: right;">1.33</td>
+<td style="text-align: right;">7.30</td>
+<td style="text-align: right;">25.56</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">3.55</td>
-<td style="text-align: right;">12.85</td>
-<td style="text-align: right;">35.30</td>
+<td style="text-align: right;">3.63</td>
+<td style="text-align: right;">13.17</td>
+<td style="text-align: right;">34.95</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">2.82</td>
-<td style="text-align: right;">8.88</td>
-<td style="text-align: right;">22.08</td>
+<td style="text-align: right;">2.84</td>
+<td style="text-align: right;">9.23</td>
+<td style="text-align: right;">23.12</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">10.96</td>
-<td style="text-align: right;">26.82</td>
-<td style="text-align: right;">47.23</td>
+<td style="text-align: right;">10.48</td>
+<td style="text-align: right;">27.09</td>
+<td style="text-align: right;">47.85</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">4.19</td>
-<td style="text-align: right;">12.16</td>
-<td style="text-align: right;">26.32</td>
+<td style="text-align: right;">4.11</td>
+<td style="text-align: right;">11.54</td>
+<td style="text-align: right;">26.33</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>As the median values are relatively small (&lt;20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia.</p>
+<p>As the median values are relatively small (&lt;20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia, which is a second evidence that the optimism shock does not drive business cycles in Australia.</p>
 </section>
 </section>
 <section id="extension-1" class="level2">
 <h2 class="anchored" data-anchor-id="extension-1">Extension</h2>
-<p>Now we introduce an additional narrative restrictions that</p>
+<p>Now we introduce an additional narrative restriction that</p>
 <blockquote class="blockquote">
 <p>the optimism shock is <strong>negative</strong> when Covid-19 hits Australia in 2020 Q1.</p>
 </blockquote>
+<p>Since no one see the pandemic coming, and when it happens most people feel pessimistic due to many reasons. For example, being locked down in the house, losing jobs, and feeling uncertain about the future. An Australian national survey conducted in April 2020 <span class="citation" data-cites="fisher2020mental">(<a href="#ref-fisher2020mental" role="doc-biblioref">Fisher et al. 2020</a>)</span> finds 27.6% of people have clinically significant symptoms of depression, and 59.2% reported being more irritable. Therefore, it is reasonable to assume that the optimism shock is negative when Covid-19 hits Australia.</p>
 <section id="history-2" class="level3">
 <h3 class="anchored" data-anchor-id="history-2">History</h3>
 <p>Historical values of the optimism shock is</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/au-ext-shock_c1368ae093bf8b76f54bb9d311a01238">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/au-ext-shock-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>Where the vertical dashed line indicates the period 2020 Q1. Now all draws of the optimism shock are negative in 2020 Q1 due to the explicit narrative restriction, if we expand the highest density interval to 100% the interval will still not include zero. Comparing with the historical values of the optimism shock without the narrative restriction, here the highest density intervals are narrower but their overall shape are similar.</p>
+<p>One interesting observation is that we see another two standard deviation pessimism shock around 2008, we did not impose any explicit narrative restriction here, but the model is likely picking up the effect of the global financial crisis.</p>
 </section>
 <section id="irf-3" class="level3">
 <h3 class="anchored" data-anchor-id="irf-3">IRF</h3>
 <p>The impulse response functions are</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/au-ext-irf_12442775e947007ba8bfb72723ba029e">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1214,23 +1101,12 @@ u_{2,t}\\
 </div>
 </div>
 </div>
-<p>After imposing the additional narrative restriction, the optimism shock still has no significant impact of the IRFs. Therefore, the conclusion that optimism shock does not drive business cycles in Australia is robust to the additional assumption.</p>
+<p>Although the median IRFs are slightly different from the previous case, the difference is not significant. After imposing the additional narrative restriction, the optimism shock still has no significant impact of the IRFs. Therefore, the conclusion that optimism shock does not drive business cycles in Australia is robust to the narrative restriction on Covid-19.</p>
 </section>
 <section id="fevd-3" class="level3">
 <h3 class="anchored" data-anchor-id="fevd-3">FEVD</h3>
-<p>Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/au-ext-fevd-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Australian FEVD with narrative restriction</figcaption><p></p>
-</figure>
-</div>
-</div>
-</div>
 <p>Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are</p>
-<div class="cell">
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-24_086a676b72ca2efb892f42523a05c76d">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -1244,46 +1120,65 @@ u_{2,t}\\
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">productivity</td>
-<td style="text-align: right;">1.41</td>
-<td style="text-align: right;">6.81</td>
-<td style="text-align: right;">24.87</td>
+<td style="text-align: right;">1.56</td>
+<td style="text-align: right;">6.89</td>
+<td style="text-align: right;">24.56</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">stock_prices</td>
-<td style="text-align: right;">5.00</td>
-<td style="text-align: right;">16.04</td>
-<td style="text-align: right;">39.50</td>
+<td style="text-align: right;">4.63</td>
+<td style="text-align: right;">15.41</td>
+<td style="text-align: right;">39.38</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">consumption</td>
-<td style="text-align: right;">2.61</td>
-<td style="text-align: right;">8.57</td>
+<td style="text-align: right;">2.70</td>
+<td style="text-align: right;">8.90</td>
 <td style="text-align: right;">22.12</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">real_interest_rate</td>
-<td style="text-align: right;">9.97</td>
-<td style="text-align: right;">27.27</td>
-<td style="text-align: right;">49.86</td>
+<td style="text-align: right;">10.38</td>
+<td style="text-align: right;">27.54</td>
+<td style="text-align: right;">49.22</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">hours_worked</td>
-<td style="text-align: right;">3.89</td>
-<td style="text-align: right;">11.67</td>
-<td style="text-align: right;">25.82</td>
+<td style="text-align: right;">4.13</td>
+<td style="text-align: right;">12.16</td>
+<td style="text-align: right;">24.86</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>As the median values are relatively small (&lt;20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia.</p>
-
-
+<p>As the median values are relatively small (&lt;20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia. This is similar the the previous case without the narrative restriction on Covid-19, and is another evidence that the optimism shock does not drive business cycles in Australia.</p>
+</section>
+</section>
+<section id="additional-narratives" class="level2">
+<h2 class="anchored" data-anchor-id="additional-narratives">Additional narratives</h2>
+<p>Previously, we introduced three identification assumption on the optimism shock.</p>
+<ol type="1">
+<li>It has positive contemporaneous effect on stock prices.</li>
+<li>It has no contemporaneous effect on productivity.</li>
+<li>It is negative in 2020 Q1.</li>
+</ol>
+<p>They give a insignificant result that says the optimism shock does not drive business cycles in Australia. Now we consider additional identification assumptions that may change this interpretation.</p>
+<p>To be specific, we extend the periods that the optimism shock is negative to the whole year of 2020. The economic validity is much harder to justified here, but it is a good exercise to see how the results change with additional (narrative) restrictions.</p>
+<div class="cell" data-hash="index_cache/html/au-sig-irf_b08e4a4bb7db1dc031b547fd047160ac">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/au-sig-irf-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Australian IRF with additional narrative restriction (median and 68% highest density interval)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The result become significant after imposing more narrative restrictions. Although these additional narrative restrictions are difficult to justified, they are still much less controversial than imposing more zero restrictions (see section Model-Algorithm-Extension). To get a similar significant result, one could definitely choose these narrative restrictions more carefully than what we did here. This shows our extension can be useful for researchers, since the original method cannot narrow down the highest density intervals without imposing controversial restrictions.</p>
 
 </section>
 </section>
-</section>
-
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-antolin2018narrative" class="csl-entry" role="listitem">
@@ -1295,18 +1190,17 @@ Arias, Jonas E, Juan F Rubio-Ramı́rez, and Daniel F Waggoner. 2018. <span>“I
 <div id="ref-beaudry2011mood" class="csl-entry" role="listitem">
 Beaudry, Paul, Deokwoo Nam, and Jian Wang. 2011. <span>“Do Mood Swings Drive Business Cycles and Is It Rational?”</span> National Bureau of Economic Research.
 </div>
+<div id="ref-fisher2020mental" class="csl-entry" role="listitem">
+Fisher, Jane RW, Thach D Tran, Karin Hammarberg, Jayagowri Sastry, Hau Nguyen, Heather Rowe, Sally Popplestone, Ruby Stocker, Claire Stubber, and Maggie Kirkman. 2020. <span>“Mental Health of People in Australia in the First Month of COVID-19 Restrictions: A National Survey.”</span> <em>Medical Journal of Australia</em> 213 (10): 458–64.
+</div>
 <div id="ref-kilian2017structural" class="csl-entry" role="listitem">
 Kilian, Lutz, and Helmut Lütkepohl. 2017. <em>Structural Vector Autoregressive Analysis</em>. Cambridge University Press.
 </div>
 <div id="ref-rubio2010structural" class="csl-entry" role="listitem">
 Rubio-Ramirez, Juan F, Daniel F Waggoner, and Tao Zha. 2010. <span>“Structural Vector Autoregressions: Theory of Identification and Algorithms for Inference.”</span> <em>The Review of Economic Studies</em> 77 (2): 665–96.
 </div>
-</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>Intuitively, the PFA uses a loss function to find a rotation matrix <span class="math inline">\(\mathbf{Q}\)</span> that satisfies the zero restrictions and satisfies or close to satisfying the sign restrictions, thus it is not an exact solution. In comparison, the importance sampler algorithm is an exact solution satisfying all the restrictions.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</div></section></div></main>
+<!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

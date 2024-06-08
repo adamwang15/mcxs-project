@@ -1,9 +1,9 @@
 project:
-  type: website
+  # type: website
   output-dir: docs
 
 website:
-  title: "Macroeconometrics Research Report"
+  # title: "Macroeconometrics Research Report"
   navbar:
     background: "light"
 
@@ -13,7 +13,7 @@ format:
   html:
     theme: cosmo
     css: styles.css
-    toc: true
+    # toc: true
 
 
 

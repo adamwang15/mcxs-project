@@ -3,7 +3,10 @@ title: "Sign and Zero Restrictions: Optimism Shock on the Australian Business Cy
 author: "Adam Wang"
 
 execute:
-  echo: false
+  echo:    false
+  # eval:    false
+  warning: false
+  cache:   true
 
 bibliography: references.bib
 ---
@@ -12,12 +15,6 @@ bibliography: references.bib
 
 \def\*#1{\mathbf{#1}}
 \def\e{\boldsymbol{\varepsilon}}
-
-<!-- do not show warnings and run code when testing -->
-
-```{r setup, include=FALSE} 
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-```
 
 > **Abstract.** This article investigates the effects of optimism shocks on the Australian economy using a Bayesian Structural Vector Autoregression (BSVAR) model. We implement the sign and zero restrictions algorithm proposed by @arias2018inference to identify the optimism shock. Impulse response functions (IRF) and forecast error variance decomposition (FEVD) are used to analyse the effects of the optimism shock on five key macroeconomic variables: productivity, stock prices, consumption, real interest rate and hours worked.
 >
@@ -31,9 +28,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 **Question**: Does optimism shocks drive the business cycles in Australian economy?
 
-**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA)[^1], @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States as it creates a simultaneous boom in consumption and hours worked. But, @arias2018inference argue that PFA imposes additional restrictions, and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
-
-[^1]: Intuitively, the PFA uses a loss function to find a rotation matrix $\*Q$ that satisfies the zero restrictions and satisfies or close to satisfying the sign restrictions, thus it is not an exact solution. In comparison, the importance sampler algorithm is an exact solution satisfying all the restrictions.
+**Motivation**: In macroeconomics, there has been a longstanding belief that fluctuations in business cycles can be largely attributed to episodes of optimism and pessimism. An optimism shock is defined as a positive shock to stock prices that does not affect productivity. Using a penalty function approach (PFA), @beaudry2011mood finds significant evidence that optimism shocks are a key driver of business cycles in the United States as it creates a simultaneous boom in consumption and hours worked. But, @arias2018inference argue that PFA imposes additional restrictions, and they find less significant results using an importance sampler algorithm. This research project aims to extend the analysis to the Australian economy by implementing the importance sampler algorithm, and compare the results with United-States data.
 
 # Data
 
@@ -454,15 +449,15 @@ However, the set of structural parameters satisfying the zero restrictions is of
 
 Here is a high level outline of the algorithm proposed by @arias2018inference:
 
-1. Sample reduced-form parameters ($\*B$, $\*\Sigma$, $\*Q$) conditional on the zero restrictions.
-2. Set $(\*A_0, \*A_+) = f_h^{-1}(\*B, \*\Sigma, \*Q)$.
+1. Sample reduced-form parameters $\*B,\*\Sigma\sim \mathcal{NIW}(\overline{\*B},\overline{\*V},\overline{\*S},\overline{\*\nu})$.
+2. Sample $\*Q$ conditional on the zero restrictions and set $(\*A_0, \*A_+) = f_h^{-1}(\*B, \*\Sigma, \*Q)$.
 3. If the sign restrictions are satisfied, keep $(\*A_0, \*A_+)$ and compute an importance weight, otherwise discard.
 4. Repeat steps 1-3 until the desired number of samples is obtained.
 5. Resample with replacement using the importance weights.
 
 Where step 5 (importance sampling) is needed to manipulate the density induced by step 1 to the desired Nomral-Generalized-Normal posterior density $\mathcal{NGN}$.
 
-To be explicit, starting with a Uniform-Normal-Inverse-Wishart $\mathcal{UNIW}$ prior distribution, the importance weight in step 3 is given by (posterior condition on $\*Y$ is dropped for brevity):
+To be explicit, starting with a Uniform-Normal-Inverse-Wishart prior distribution, the importance weight in step 3 is given by (posterior condition on $\*Y$ is dropped for brevity):
 
 $$
 \begin{align*}
@@ -552,6 +547,22 @@ double log_volume_element(
 }
 ```
 
+### Comparison with PFA
+
+The PFA uses a loss function to find a rotation matrix $\*Q$ that satisfies the zero restrictions and satisfies or close to satisfying the sign restrictions, thus it is not an exact solution. In comparison, the importance sampler algorithm is an exact solution satisfying all the restrictions.
+
+Mathematically, the PFA solves the following minimization problem:
+
+$$
+\begin{aligned}
+q^* &= {\arg\min}_q \Psi(q) \quad s.t. (1)\ q'q=1,\ (2)\ R_{zero}q=0
+\end{aligned}
+$$
+
+where $q$ is a column of $\*Q$. This step is analogous to steps 2-3 of the importance sampler algorithm. Intuitively, by minimizing $\Psi(q)$ we can find something close to satisfying the sign restrictions, condition (1) makes sure $\*Q$ is orthogonal and condition (2) makes sure $\*Q$ satisfies the zero restrictions.
+
+Detailed definitions of $\Psi$ and $R_{zero}$ is beyond the scope of this project, but it is evident that the minimization problem gives an unique solution and therefore the PFA is not set-identifying $\*Q$.
+
 ### Extension
 
 Besides the zero and sign restrictions, another popular identification scheme proposed by @antolin2018narrative is to impose narrative restrictions on the structural shocks and historical decomposition. For example, restricting a structural shock to be negative during some period, and we will apply this to restrict the optimism shock during the Covid-19 pandemic.
@@ -564,18 +575,20 @@ $$
 
 To combine these two identifications, we need to calculate the importance weight when **all** of the three restrictions, zero, sign, and narrative, are present. Intuitively, it is the product of the importance weight for the narrative restrictions and the importance weight for the zero and sign restrictions.
 
-<!-- $$ -->
-<!-- \begin{align*} -->
-<!-- \frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)} -->
-<!-- =&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
-<!-- =&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)} -->
-<!-- \frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}\\ -->
-<!-- &\times -->
-<!-- \frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
-<!-- \propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\ -->
-<!-- \propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)} -->
-<!-- \end{align*} -->
-<!-- $$ -->
+Here is an preliminary proof. The insight is to notice that $\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}\propto 1$ since adding zero restrictions does not change the likelihood and only truncates uniform conditional prior $\pi(\*Q|\*B,\*\Sigma)$.
+
+$$
+\begin{align*}
+\frac{\mathcal{NGN}(\*A_0,\*A_+|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
+=&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)v_{f_h}(\*A_0,\*A_+)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
+=&\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q)}
+\frac{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal Z, \mathcal S, \mathcal R)}{\mathcal{UNIW}(\*B,\*\Sigma,\*Q|\mathcal S, \mathcal R)}\\
+&\times
+\frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
+\propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{v_{f_h}(\*A_0,\*A_+)}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}\\
+\propto&\frac{1}{\omega(\*B,\*\Sigma,\*Q)}\frac{|\text{det}(\*A_0)|^{-(2N+K+1)}}{v_{(g\circ f_h)|\mathcal Z}(\*A_0,\*A_+)}
+\end{align*}
+$$
 
 The following code calculates $\omega(\*B,\*\Sigma,\*Q)$ for the narrative restrictions
 
@@ -604,6 +617,10 @@ double weight_narrative(
   return M / n_success;
 }
 ```
+
+@arias2018inference provides a sufficient condition for the partial identification of the first $k$ shocks: at least $N-j$ zero restrictions and at least 1 sign restriction on the IRFs to the $j$-th shock for $1\le j\le k$. At this stage, there is no theoretical result how to incorporate narrative restrictions in this sufficient condition. Generally, narrative restrictions are used to sharpen the inference (i.e. narrower highest density interval) and does not make the structural shocks exactly identified.
+
+If given some narrative restrictions there is an uniquely identified $\*Q^*$, step 3 of the importance sampling algorithm would never work, since the probability a randomly sampled $\*Q=\*Q^*$ is $0$. In the later empirical work, we show the algorithm can still work with narrative restrictions, therefore at least the narrative restrictions considered here are not binding. But, the advantage of narrative (and sign) restrictions is that they are less controversial and the result can be agreed upon by more researchers.
 
 ## Simulation
 
@@ -826,7 +843,7 @@ $$
 
 # Results
 
-## US data
+## United States
 
 ```{r include=FALSE}
 data(optimism)
@@ -934,104 +951,13 @@ compute_fevd = function(irf, horizon = 40) {
   class(fevd) = "fevd"
   fevd
 }
-
-plot.fevd = function(
-    x,
-    n,
-    cols,
-    main,
-    xlab,
-    mar.multi = c(1, 4.6, 0, 4.6),
-    oma.multi = c(6, 0, 5, 0),
-    ...
-) {
-  
-  if ( missing(main) ) main = "Forecast Error Variance Decompositions"
-  if ( missing(xlab) ) xlab = "horizon"
-  
-  N         = dim(x)[1]
-  H         = dim(x)[3] - 1
-  
-  if ( missing(cols) ) {
-    fc          = grDevices::colorRampPalette(c("#ff69b4", "#ffd700"))
-    cols        = fc(N)
-  }
-  
-  fevd      = apply(x, 1:3, mean)
-  FEVD      = list()
-  FEVD_mid  = list()
-  for (j in 1:N) {
-    FEVD[[j]] = rbind(rep(0, H + 1), apply(fevd[j,,], 2, cumsum))
-    FEVD_mid[[j]] = (FEVD[[j]][1:N, H + 1] + FEVD[[j]][2:(N + 1), H + 1]) / 2
-  }
-    
-  graphics::plot(
-    x = 0:H,
-    y = FEVD[[n]][1,],
-    type = "n",
-    ylim = c(0, 100),
-    main = colnames(Y)[n],
-    xlab = "Quarter",
-    ylab = "",
-    bty = "n",
-    axes = FALSE,
-    ...
-  )
-  
-  for (i in 1:N) {
-    graphics::polygon(
-      c(0:H, H:0), 
-      c(FEVD[[n]][i,], rev(FEVD[[n]][i + 1,])), 
-      col = cols[i],
-      border = cols[i]
-    )
-  }
-  
-  # graphics::axis(1, labels = if (n == N) TRUE else FALSE)
-  graphics::axis(1, labels = TRUE)
-  graphics::axis(2, c(0, 50, 100), c(0, 50, 100))
-  graphics::axis(4, FEVD_mid[[n]], 1:N)
-  
-  # graphics::mtext( # RHS "shocks"
-  #   "shocks",
-  #   side = 4,
-  #   line = 3,
-  #   outer = FALSE,
-  #   cex = 0.6
-  # )
-  
-  graphics::mtext( # main title
-    main,
-    side = 3,
-    line = 2,
-    outer = TRUE
-  )
-  
-  graphics::mtext( # x-axis label
-    xlab,
-    side = 1,
-    line = 3,
-    outer = TRUE
-  )
-  
-  invisible(x)
-} # END plot.PosteriorFEVD
-```
-
-The forecast error variance decomposition of consumption and hours worked are
-
-```{r us-fevd}
-#| fig-cap: "US FEVD (shock 1 = optimism shock)"
-fevd = compute_fevd(irf, horizon = 40)
-
-par(mfrow = c(1, 2))
-plot(fevd, n = 3)
-plot(fevd, n = 5)
 ```
 
 Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are
 
 ```{r}
+fevd = compute_fevd(irf, 40)
+
 fevd_40 = 
   fevd[, 1, 40, ] |> 
   apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
@@ -1044,7 +970,7 @@ kable(fevd_40)
 
 which is very close to the ones in the original paper. As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in the US.
 
-## Australian data
+## Australia
 
 All subsequent analysis are performed on the Australian data.
 
@@ -1088,6 +1014,8 @@ axis(1, at = label_index,
      labels = as.yearqtr(index(Y))[label_index + 4 + 1])
 ```
 
+Where the vertical dashed line indicates the period 2020 Q1. Although we have not impose any restriction here, the optimism shock is still significantly negative in 2020 Q1 i.e. the 68% highest density interval does not include zero, this is likely due to the Covid-19 pandemic.
+
 ### IRF
 
 The impulse response functions are
@@ -1099,24 +1027,15 @@ irf = compute_impulse_responses(posterior, horizon = 40)
 plot_irf1(irf)
 ```
 
-Comparing to the US, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run. Therefore, base on the same identification strategy, the optimism shock does not drive business cycles in Australia as well. 
+Comparing to the US, the optimism shock has a much smaller effect on consumption and hours worked in Australia, only stock prices has a significant effect in the short run, other variables all have wide and symmetric IRFs around zero. Therefore, base on the same identification strategy, we conclude the optimism shock does not drive business cycles in Australia as well. 
 
 ### FEVD
-
-The forecast error variance decomposition of consumption and hours worked are
-
-```{r au-fevd}
-#| fig-cap: "Australian FEVD"
-fevd = compute_fevd(irf, horizon = 40)
-
-par(mfrow = c(1, 2))
-plot(fevd, n = 3)
-plot(fevd, n = 5)
-```
 
 Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are
 
 ```{r}
+fevd = compute_fevd(irf, 40)
+
 fevd_40 = 
   fevd[, 1, 40, ] |> 
   apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
@@ -1127,13 +1046,15 @@ rownames(fevd_40) = colnames(Y)
 kable(fevd_40)
 ```
 
-As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia.
+As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia, which is a second evidence that the optimism shock does not drive business cycles in Australia.
 
 ## Extension
 
-Now we introduce an additional narrative restrictions that
+Now we introduce an additional narrative restriction that
 
 > the optimism shock is **negative** when Covid-19 hits Australia in 2020 Q1.
+
+Since no one see the pandemic coming, and when it happens most people feel pessimistic due to many reasons. For example, being locked down in the house, losing jobs, and feeling uncertain about the future. An Australian national survey conducted in April 2020 [@fisher2020mental] finds 27.6% of people have clinically significant symptoms of depression, and 59.2% reported being more irritable. Therefore, it is reasonable to assume that the optimism shock is negative when Covid-19 hits Australia.
 
 ```{r include=FALSE}
 zero_irf          = matrix(0, nrow = 5, ncol = 5)
@@ -1180,6 +1101,9 @@ axis(1, at = label_index,
      labels = as.yearqtr(index(Y))[label_index + 4 + 1])
 ```
 
+Where the vertical dashed line indicates the period 2020 Q1. Now all draws of the optimism shock are negative in 2020 Q1 due to the explicit narrative restriction, if we expand the highest density interval to 100% the interval will still not include zero. Comparing with the historical values of the optimism shock without the narrative restriction, here the highest density intervals are narrower but their overall shape are similar.
+
+One interesting observation is that we see another two standard deviation pessimism shock around 2008, we did not impose any explicit narrative restriction here, but the model is likely picking up the effect of the global financial crisis.
 
 ### IRF
 
@@ -1191,25 +1115,15 @@ The impulse response functions are
 plot_irf1(irf)
 ```
 
-After imposing the additional narrative restriction, the optimism shock still has no significant impact of the IRFs. Therefore, the conclusion that optimism shock does not drive business cycles in Australia is robust to the additional assumption.
+Although the median IRFs are slightly different from the previous case, the difference is not significant. After imposing the additional narrative restriction, the optimism shock still has no significant impact of the IRFs. Therefore, the conclusion that optimism shock does not drive business cycles in Australia is robust to the narrative restriction on Covid-19.
 
 ### FEVD
-
-Share of FEVD attributed to the optimism shock at horizon 40 (median 50%) and its 68% highest probability interval (16% and 84%) are
-
-```{r au-ext-fevd}
-#| fig-cap: "Australian FEVD with narrative restriction"
-
-fevd = compute_fevd(irf, horizon = 40)
-
-par(mfrow = c(1, 2))
-plot(fevd, n = 3)
-plot(fevd, n = 5)
-```
 
 Share of FEVD attributed to the optimism shock at horizon 40 (10 years) are
 
 ```{r}
+fevd = compute_fevd(irf, 40)
+
 fevd_40 = 
   fevd[, 1, 40, ] |> 
   apply(1, quantile, c(0.16, 0.50, 0.84)) |> 
@@ -1220,7 +1134,61 @@ rownames(fevd_40) = colnames(Y)
 kable(fevd_40)
 ```
 
-As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia.
+As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia. This is similar the the previous case without the narrative restriction on Covid-19, and is another evidence that the optimism shock does not drive business cycles in Australia.
+
+## Additional narratives
+
+Previously, we introduced three identification assumption on the optimism shock.
+
+1. It has positive contemporaneous effect on stock prices.
+2. It has no contemporaneous effect on productivity.
+3. It is negative in 2020 Q1.
+
+They give a insignificant result that says the optimism shock does not drive business cycles in Australia. Now we consider additional identification assumptions that may change this interpretation.
+
+```{r include=FALSE}
+zero_irf          = matrix(0, nrow = 5, ncol = 5)
+zero_irf[1, 1]    = 1
+sign_irf          = array(0, dim = c(5, 5, 1))
+sign_irf[2, 1, 1] = 1
+
+# need to subtract the number of lags
+sign_narrative    = matrix(c(1, -1, 1, 1, covid_index - 4, 3), ncol = 6)
+
+specification = specify_bsvarSIGN$new(
+  Y*100,
+  p              = 4,
+  sign_irf       = sign_irf,
+  sign_narrative = sign_narrative,
+  zero_irf       = zero_irf
+)
+
+posterior = estimate(specification, S = 10000)
+irf       = compute_impulse_responses(posterior, horizon = 40)
+```
+
+To be specific, we extend the periods that the optimism shock is negative to the whole year of 2020. The economic validity is much harder to justified here, but it is a good exercise to see how the results change with additional (narrative) restrictions.
+
+```{r au-sig-irf}
+#| fig-cap: "Australian IRF with additional narrative restriction (median and 68% highest density interval)"
+
+plot_irf1(irf)
+```
+
+The result become significant after imposing more narrative restrictions. Although these additional narrative restrictions are difficult to justified, they are still much less controversial than imposing more zero restrictions (see section Model-Algorithm-Extension). To get a similar significant result, one could definitely choose these narrative restrictions more carefully than what we did here. This shows our extension can be useful for researchers, since the original method cannot narrow down the highest density intervals without imposing controversial restrictions.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
