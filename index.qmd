@@ -1048,7 +1048,7 @@ kable(fevd_40)
 
 As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia, which is a second evidence that the optimism shock does not drive business cycles in Australia.
 
-## Extension
+## Extension 1: narrative restriction
 
 Now we introduce an additional narrative restriction that
 
@@ -1136,15 +1136,149 @@ kable(fevd_40)
 
 As the median values are relatively small (<20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia. This is similar the the previous case without the narrative restriction on Covid-19, and is another evidence that the optimism shock does not drive business cycles in Australia.
 
-## Additional narratives
+## Extension 2: hierachical prior $\lambda$
 
-Previously, we introduced three identification assumption on the optimism shock.
+Previous results have been implicitly relied on the choice of the hyperparameter $\lambda$ in the Minnesota prior:
 
-1. It has positive contemporaneous effect on stock prices.
-2. It has no contemporaneous effect on productivity.
-3. It is negative in 2020 Q1.
+$$
+\underline{\*V} = \text{diag}\left[\lambda^2 * \text{rep}(1,p)\otimes\psi \quad 10^6 \right] 
+$$
 
-They give a insignificant result that says the optimism shock does not drive business cycles in Australia. Now we consider additional identification assumptions that may change this interpretation.
+where we set $\lambda = 0.2$ and $\psi$ as the residual variances from independent AR(1) models. Now we impose a Gamma hierachical prior on $\lambda$ such that it peaks at around 0.2, specifically with scale and shape parameters:
+
+$$
+\lambda \sim \Gamma\left(\frac{9 + \sqrt{17}}{8}, \frac{8}{5(1 + \sqrt{17})}\right)
+$$
+
+@giannone2015prior proposed a Metropolis algorithm to sample a vector of hyperparameters $\gamma=(\mu,\delta,\lambda,\psi)$ where $\mu$ and $\delta$ are for dummy observation priors that will not be discussed here. A simplified version of their algorithm to sample $\lambda$ is as follows:
+
+1. Initialize $\lambda$ by maximizing its log posterior, store the numerical Hessian matrix (scalar) $W$.
+2. Sample $\lambda^*\sim\mathcal{N}(\lambda^{(s-1)},W)$.
+3. Accept $\lambda^{(s)}=\lambda^*$ with probability $\alpha = \min\left\{ 1, \frac{p(\lambda^*|\*Y)}{p(\lambda^{(s-1)}|\*Y)} \right\}$.
+
+Given the resulting sample $\left\{ \lambda^{(s)} \right\}$, we can then proceed to sample $\*B,\*\Sigma,\*Q$ by first taking a uniform draw from $\left\{ \lambda^{(s)} \right\}$.
+
+The following `R` code implements the above algorithm.
+
+```{r echo=TRUE}
+niw_prior = function(Y,
+                     p,
+                     non_stationary,
+                     lambda = 0.2) {
+  T = nrow(Y)
+  N = ncol(Y)
+  K = 1 + N * p
+  
+  B           = matrix(0, K, N)
+  B[1:N, 1:N] = diag(non_stationary)
+  
+  sigma2                  = sapply(1:N, \(i) summary(lm(Y[2:T, i] ~ Y[1:(T - 1), i]))$sigma^2)
+  V                       = matrix(0, K, K)
+  V[K, K]                 = 1e+6
+  V[1:(K - 1), 1:(K - 1)] = diag(lambda^2 * kronecker((1:p)^-2, sigma2^-1))
+  
+  S  = diag(sigma2)
+  nu = N + 2
+  
+  list(B = B, V = V, S = S, nu = nu)
+}
+
+
+log_det = function(A) {
+  determinant(A, logarithm = TRUE)$modulus
+}
+
+dlambda = function(lambda, p, Y, X) {
+  
+  N     = ncol(Y)
+  T     = nrow(Y)
+  prior = niw_prior(Y, p, rep(1, N), lambda)
+  
+  b     = prior$B
+  Omega = prior$V
+  Psi   = prior$S
+  d     = prior$nu
+  
+  inv_Omega = solve(Omega)
+  Bhat      = solve(t(X) %*% X + inv_Omega) %*% (t(X) %*% Y + inv_Omega %*% b)
+  ehat      = Y - X %*% Bhat
+  
+  lprior    = dgamma(
+    lambda,
+    shape = (9 + sqrt(17)) / 8,
+    scale = 8 / (5 * (1 + sqrt(17))),
+    log = TRUE
+  )
+  
+  llike     = -N / 2 * log_det(Omega)
+  llike     = llike - N / 2 * log_det(t(X) %*% X + inv_Omega)
+  A         = Psi + t(ehat) %*% ehat + t(Bhat - b) %*% inv_Omega %*% (Bhat - b)
+  llike     = llike - (T + d) / 2 * log_det(A)
+  
+  return(lprior + llike)
+}
+
+
+sample_lambda = function(S, p, Y, X) {
+  init   = 0.2
+  result = optim(
+    init,
+    \(lambda) {
+      nlogp = -dlambda(lambda, p, Y, X)
+      if (!is.finite(nlogp)) {
+        nlogp = 1e+6
+      }
+      return(nlogp)
+    },
+    method  = "L-BFGS-B",
+    lower = init / 100,
+    upper = init * 100,
+    hessian = TRUE,
+    # control = list(trace = 1, maxit = 1e4)
+  )
+  
+  lambda    = numeric(S)
+  lambda[1] = result$par
+  dlambda   = result$value
+  
+  c         = 1
+  W         = c * 1 / result$hessian
+  
+  for (s in 2:S) {
+    new_lambda  = rnorm(1, lambda[s - 1], sqrt(W))
+    new_dlambda = dlambda(new_lambda, p, Y, X)
+    
+    if (runif(1) < exp(new_dlambda - dlambda)) {
+      lambda[s] = new_lambda
+      dlambda   = new_dlambda
+    } else {
+      lambda[s] = lambda[s - 1]
+    }
+  }
+  
+  return(lambda)
+}
+```
+
+### Convergence diagnostics
+
+We sample 12,000 draws of $\lambda$ and discard the first 2,000 draws as burn-in. From the trace plot, we can see that the chain has converged to a stationary distribution.
+
+```{r}
+p      = 4
+data   = bsvars::specify_data_matrices$new(Y, p, NULL)
+lambda = sample_lambda(12000, p, t(data$Y), t(data$X))[2000:12000]
+
+plot(lambda, type = "l")
+```
+
+From the histogram, we can see that the posterior distribution of $\lambda$ is centered around to 0.13, which shows the default choice of 0.2 is reasonable. On the other hand, since 0.13 is smaller than 0.2, the hirechical prior suggests more shrinkage than the default choice.
+
+```{r}
+hist(lambda, breaks = 100)
+```
+
+### IRF
 
 ```{r include=FALSE}
 zero_irf          = matrix(0, nrow = 5, ncol = 5)
@@ -1153,7 +1287,7 @@ sign_irf          = array(0, dim = c(5, 5, 1))
 sign_irf[2, 1, 1] = 1
 
 # need to subtract the number of lags
-sign_narrative    = matrix(c(1, -1, 1, 1, covid_index - 4, 3), ncol = 6)
+sign_narrative    = matrix(c(1, -1, 1, 1, covid_index - 4, 0), ncol = 6)
 
 specification = specify_bsvarSIGN$new(
   Y*100,
@@ -1163,20 +1297,29 @@ specification = specify_bsvarSIGN$new(
   zero_irf       = zero_irf
 )
 
+hyper      = kronecker(t(rep(1, length(lambda))), specification$prior$hyper)
+hyper[3, ] = lambda
+specification$prior$hyper = hyper
+
 posterior = estimate(specification, S = 10000)
 irf       = compute_impulse_responses(posterior, horizon = 40)
 ```
 
-To be specific, we extend the periods that the optimism shock is negative to the whole year of 2020. The economic validity is much harder to justified here, but it is a good exercise to see how the results change with additional (narrative) restrictions.
+The impulse response functions are
 
-```{r au-sig-irf}
-#| fig-cap: "Australian IRF with additional narrative restriction (median and 68% highest density interval)"
+```{r au-ext2-irf}
+#| fig-cap: "Australian IRF with hierachical prior (median and 68% highest density interval)"
 
 plot_irf1(irf)
 ```
 
-The result become significant after imposing more narrative restrictions. Although these additional narrative restrictions are difficult to justified, they are still much less controversial than imposing more zero restrictions (see section Model-Algorithm-Extension). To get a similar significant result, one could definitely choose these narrative restrictions more carefully than what we did here. This shows our extension can be useful for researchers, since the original method cannot narrow down the highest density intervals without imposing controversial restrictions.
+For simplicity, we only report the IRF in this extension. As the IRF is very similar to the previous results, our interpretation remains the same. By imposing the hierarchical prior on $\lambda$, we let the data to choose the level of shrinkage and this shows the conclusion is robust to a more flexible prior.
 
+# Conclusion
+
+In this report, we implement the sign and zero restrictions algorithm from @arias2018inference, extend it with narrative restrictions from @antolin2018narrative and hierarchical priors from @giannone2015prior. We replicate the result in the original paper using the US data, then apply the algorithm to the Australian data and found that the conclusion of optimism shock does not drive business cycles holds in the Australian economy. Furthermore, the conclusion is robust to (1) a narrative restriction on pessimism shock during the Covid-19 pandemic and (2) imposing a hierarchical prior on the shrinkage parameter $\lambda$.
+
+# References
 
 
 

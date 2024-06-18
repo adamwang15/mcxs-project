@@ -8,7 +8,7 @@
 
 <meta name="author" content="Adam Wang">
 
-<title>Sign and Zero Restrictions: Optimism Shock on the Australian Business Cycle</title>
+<title>Macroeconometrics Research Report - Sign and Zero Restrictions: Optimism Shock on the Australian Business Cycle</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -77,16 +77,41 @@ div.csl-indent {
 }</style>
 
 
-<script src="index_files/libs/clipboard/clipboard.min.js"></script>
-<script src="index_files/libs/quarto-html/quarto.js"></script>
-<script src="index_files/libs/quarto-html/popper.min.js"></script>
-<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="index_files/libs/quarto-html/anchor.min.js"></script>
-<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -94,10 +119,102 @@ div.csl-indent {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="fullcontent">
+<body class="nav-fixed">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Macroeconometrics Research Report</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools ms-auto">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
+  <ul class="collapse">
+  <li><a href="#acf-and-pacf-plot" id="toc-acf-and-pacf-plot" class="nav-link" data-scroll-target="#acf-and-pacf-plot">ACF and PACF plot</a></li>
+  <li><a href="#augmented-dickey-fuller-test" id="toc-augmented-dickey-fuller-test" class="nav-link" data-scroll-target="#augmented-dickey-fuller-test">Augmented Dickey-Fuller test</a>
+  <ul class="collapse">
+  <li><a href="#level" id="toc-level" class="nav-link" data-scroll-target="#level">Level</a></li>
+  <li><a href="#first-difference" id="toc-first-difference" class="nav-link" data-scroll-target="#first-difference">First difference</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a>
+  <ul class="collapse">
+  <li><a href="#specification" id="toc-specification" class="nav-link" data-scroll-target="#specification">Specification</a>
+  <ul class="collapse">
+  <li><a href="#structural-form" id="toc-structural-form" class="nav-link" data-scroll-target="#structural-form">Structural form</a></li>
+  <li><a href="#reduced-form" id="toc-reduced-form" class="nav-link" data-scroll-target="#reduced-form">Reduced form</a></li>
+  <li><a href="#orthogonal-reduced-form-parameterization" id="toc-orthogonal-reduced-form-parameterization" class="nav-link" data-scroll-target="#orthogonal-reduced-form-parameterization">Orthogonal reduced-form parameterization</a></li>
+  </ul></li>
+  <li><a href="#algorithm" id="toc-algorithm" class="nav-link" data-scroll-target="#algorithm">Algorithm</a>
+  <ul class="collapse">
+  <li><a href="#reduced-form-1" id="toc-reduced-form-1" class="nav-link" data-scroll-target="#reduced-form-1">Reduced form</a></li>
+  <li><a href="#structural-form-1" id="toc-structural-form-1" class="nav-link" data-scroll-target="#structural-form-1">Structural form</a></li>
+  <li><a href="#implementations" id="toc-implementations" class="nav-link" data-scroll-target="#implementations">Implementations</a></li>
+  <li><a href="#comparison-with-pfa" id="toc-comparison-with-pfa" class="nav-link" data-scroll-target="#comparison-with-pfa">Comparison with PFA</a></li>
+  <li><a href="#extension" id="toc-extension" class="nav-link" data-scroll-target="#extension">Extension</a></li>
+  </ul></li>
+  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation">Simulation</a>
+  <ul class="collapse">
+  <li><a href="#reduced-form-2" id="toc-reduced-form-2" class="nav-link" data-scroll-target="#reduced-form-2">Reduced form</a></li>
+  <li><a href="#structural-form-2" id="toc-structural-form-2" class="nav-link" data-scroll-target="#structural-form-2">Structural form</a></li>
+  </ul></li>
+  <li><a href="#identification" id="toc-identification" class="nav-link" data-scroll-target="#identification">Identification</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a>
+  <ul class="collapse">
+  <li><a href="#irf" id="toc-irf" class="nav-link" data-scroll-target="#irf">IRF</a></li>
+  <li><a href="#fevd" id="toc-fevd" class="nav-link" data-scroll-target="#fevd">FEVD</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#united-states" id="toc-united-states" class="nav-link" data-scroll-target="#united-states">United States</a>
+  <ul class="collapse">
+  <li><a href="#history" id="toc-history" class="nav-link" data-scroll-target="#history">History</a></li>
+  <li><a href="#irf-1" id="toc-irf-1" class="nav-link" data-scroll-target="#irf-1">IRF</a></li>
+  <li><a href="#fevd-1" id="toc-fevd-1" class="nav-link" data-scroll-target="#fevd-1">FEVD</a></li>
+  </ul></li>
+  <li><a href="#australia" id="toc-australia" class="nav-link" data-scroll-target="#australia">Australia</a>
+  <ul class="collapse">
+  <li><a href="#history-1" id="toc-history-1" class="nav-link" data-scroll-target="#history-1">History</a></li>
+  <li><a href="#irf-2" id="toc-irf-2" class="nav-link" data-scroll-target="#irf-2">IRF</a></li>
+  <li><a href="#fevd-2" id="toc-fevd-2" class="nav-link" data-scroll-target="#fevd-2">FEVD</a></li>
+  </ul></li>
+  <li><a href="#extension-1-narrative-restriction" id="toc-extension-1-narrative-restriction" class="nav-link" data-scroll-target="#extension-1-narrative-restriction">Extension 1: narrative restriction</a>
+  <ul class="collapse">
+  <li><a href="#history-2" id="toc-history-2" class="nav-link" data-scroll-target="#history-2">History</a></li>
+  <li><a href="#irf-3" id="toc-irf-3" class="nav-link" data-scroll-target="#irf-3">IRF</a></li>
+  <li><a href="#fevd-3" id="toc-fevd-3" class="nav-link" data-scroll-target="#fevd-3">FEVD</a></li>
+  </ul></li>
+  <li><a href="#extension-2-hierachical-prior-lambda" id="toc-extension-2-hierachical-prior-lambda" class="nav-link" data-scroll-target="#extension-2-hierachical-prior-lambda">Extension 2: hierachical prior <span class="math inline">\(\lambda\)</span></a>
+  <ul class="collapse">
+  <li><a href="#convergence-diagnostics" id="toc-convergence-diagnostics" class="nav-link" data-scroll-target="#convergence-diagnostics">Convergence diagnostics</a></li>
+  <li><a href="#irf-4" id="toc-irf-4" class="nav-link" data-scroll-target="#irf-4">IRF</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -1070,8 +1187,8 @@ u_{2,t}\\
 <p>As the median values are relatively small (&lt;20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia, which is a second evidence that the optimism shock does not drive business cycles in Australia.</p>
 </section>
 </section>
-<section id="extension-1" class="level2">
-<h2 class="anchored" data-anchor-id="extension-1">Extension</h2>
+<section id="extension-1-narrative-restriction" class="level2">
+<h2 class="anchored" data-anchor-id="extension-1-narrative-restriction">Extension 1: narrative restriction</h2>
 <p>Now we introduce an additional narrative restriction that</p>
 <blockquote class="blockquote">
 <p>the optimism shock is <strong>negative</strong> when Covid-19 hits Australia in 2020 Q1.</p>
@@ -1155,29 +1272,164 @@ u_{2,t}\\
 <p>As the median values are relatively small (&lt;20%), the optimism shock does not contribute significantly to the FEVD of consumption and hours worked in Australia. This is similar the the previous case without the narrative restriction on Covid-19, and is another evidence that the optimism shock does not drive business cycles in Australia.</p>
 </section>
 </section>
-<section id="additional-narratives" class="level2">
-<h2 class="anchored" data-anchor-id="additional-narratives">Additional narratives</h2>
-<p>Previously, we introduced three identification assumption on the optimism shock.</p>
+<section id="extension-2-hierachical-prior-lambda" class="level2">
+<h2 class="anchored" data-anchor-id="extension-2-hierachical-prior-lambda">Extension 2: hierachical prior <span class="math inline">\(\lambda\)</span></h2>
+<p>Previous results have been implicitly relied on the choice of the hyperparameter <span class="math inline">\(\lambda\)</span> in the Minnesota prior:</p>
+<p><span class="math display">\[
+\underline{\mathbf{V}} = \text{diag}\left[\lambda^2 * \text{rep}(1,p)\otimes\psi \quad 10^6 \right]
+\]</span></p>
+<p>where we set <span class="math inline">\(\lambda = 0.2\)</span> and <span class="math inline">\(\psi\)</span> as the residual variances from independent AR(1) models. Now we impose a Gamma hierachical prior on <span class="math inline">\(\lambda\)</span> such that it peaks at around 0.2, specifically with scale and shape parameters:</p>
+<p><span class="math display">\[
+\lambda \sim \Gamma\left(\frac{9 + \sqrt{17}}{8}, \frac{8}{5(1 + \sqrt{17})}\right)
+\]</span></p>
+<p><span class="citation" data-cites="giannone2015prior">Giannone, Lenza, and Primiceri (<a href="#ref-giannone2015prior" role="doc-biblioref">2015</a>)</span> proposed a Metropolis algorithm to sample a vector of hyperparameters <span class="math inline">\(\gamma=(\mu,\delta,\lambda,\psi)\)</span> where <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\delta\)</span> are for dummy observation priors that will not be discussed here. A simplified version of their algorithm to sample <span class="math inline">\(\lambda\)</span> is as follows:</p>
 <ol type="1">
-<li>It has positive contemporaneous effect on stock prices.</li>
-<li>It has no contemporaneous effect on productivity.</li>
-<li>It is negative in 2020 Q1.</li>
+<li>Initialize <span class="math inline">\(\lambda\)</span> by maximizing its log posterior, store the numerical Hessian matrix (scalar) <span class="math inline">\(W\)</span>.</li>
+<li>Sample <span class="math inline">\(\lambda^*\sim\mathcal{N}(\lambda^{(s-1)},W)\)</span>.</li>
+<li>Accept <span class="math inline">\(\lambda^{(s)}=\lambda^*\)</span> with probability <span class="math inline">\(\alpha = \min\left\{ 1, \frac{p(\lambda^*|\mathbf{Y})}{p(\lambda^{(s-1)}|\mathbf{Y})} \right\}\)</span>.</li>
 </ol>
-<p>They give a insignificant result that says the optimism shock does not drive business cycles in Australia. Now we consider additional identification assumptions that may change this interpretation.</p>
-<p>To be specific, we extend the periods that the optimism shock is negative to the whole year of 2020. The economic validity is much harder to justified here, but it is a good exercise to see how the results change with additional (narrative) restrictions.</p>
-<div class="cell" data-hash="index_cache/html/au-sig-irf_b08e4a4bb7db1dc031b547fd047160ac">
+<p>Given the resulting sample <span class="math inline">\(\left\{ \lambda^{(s)} \right\}\)</span>, we can then proceed to sample <span class="math inline">\(\mathbf{B},\mathbf{\Sigma},\mathbf{Q}\)</span> by first taking a uniform draw from <span class="math inline">\(\left\{ \lambda^{(s)} \right\}\)</span>.</p>
+<p>The following <code>R</code> code implements the above algorithm.</p>
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-25_1154348a3bad92392440a8ee962ae281">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>niw_prior <span class="ot">=</span> <span class="cf">function</span>(Y,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                     p,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                     non_stationary,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">lambda =</span> <span class="fl">0.2</span>) {</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  T <span class="ot">=</span> <span class="fu">nrow</span>(Y)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">=</span> <span class="fu">ncol</span>(Y)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  K <span class="ot">=</span> <span class="dv">1</span> <span class="sc">+</span> N <span class="sc">*</span> p</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  B           <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">0</span>, K, N)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  B[<span class="dv">1</span><span class="sc">:</span>N, <span class="dv">1</span><span class="sc">:</span>N] <span class="ot">=</span> <span class="fu">diag</span>(non_stationary)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  sigma2                  <span class="ot">=</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>N, \(i) <span class="fu">summary</span>(<span class="fu">lm</span>(Y[<span class="dv">2</span><span class="sc">:</span>T, i] <span class="sc">~</span> Y[<span class="dv">1</span><span class="sc">:</span>(T <span class="sc">-</span> <span class="dv">1</span>), i]))<span class="sc">$</span>sigma<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  V                       <span class="ot">=</span> <span class="fu">matrix</span>(<span class="dv">0</span>, K, K)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  V[K, K]                 <span class="ot">=</span> <span class="fl">1e+6</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  V[<span class="dv">1</span><span class="sc">:</span>(K <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">1</span><span class="sc">:</span>(K <span class="sc">-</span> <span class="dv">1</span>)] <span class="ot">=</span> <span class="fu">diag</span>(lambda<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> <span class="fu">kronecker</span>((<span class="dv">1</span><span class="sc">:</span>p)<span class="sc">^-</span><span class="dv">2</span>, sigma2<span class="sc">^-</span><span class="dv">1</span>))</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  S  <span class="ot">=</span> <span class="fu">diag</span>(sigma2)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  nu <span class="ot">=</span> N <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">B =</span> B, <span class="at">V =</span> V, <span class="at">S =</span> S, <span class="at">nu =</span> nu)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>log_det <span class="ot">=</span> <span class="cf">function</span>(A) {</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">determinant</span>(A, <span class="at">logarithm =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>modulus</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>dlambda <span class="ot">=</span> <span class="cf">function</span>(lambda, p, Y, X) {</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  N     <span class="ot">=</span> <span class="fu">ncol</span>(Y)</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  T     <span class="ot">=</span> <span class="fu">nrow</span>(Y)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  prior <span class="ot">=</span> <span class="fu">niw_prior</span>(Y, p, <span class="fu">rep</span>(<span class="dv">1</span>, N), lambda)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  b     <span class="ot">=</span> prior<span class="sc">$</span>B</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  Omega <span class="ot">=</span> prior<span class="sc">$</span>V</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  Psi   <span class="ot">=</span> prior<span class="sc">$</span>S</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  d     <span class="ot">=</span> prior<span class="sc">$</span>nu</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  inv_Omega <span class="ot">=</span> <span class="fu">solve</span>(Omega)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  Bhat      <span class="ot">=</span> <span class="fu">solve</span>(<span class="fu">t</span>(X) <span class="sc">%*%</span> X <span class="sc">+</span> inv_Omega) <span class="sc">%*%</span> (<span class="fu">t</span>(X) <span class="sc">%*%</span> Y <span class="sc">+</span> inv_Omega <span class="sc">%*%</span> b)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  ehat      <span class="ot">=</span> Y <span class="sc">-</span> X <span class="sc">%*%</span> Bhat</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  lprior    <span class="ot">=</span> <span class="fu">dgamma</span>(</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    lambda,</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> (<span class="dv">9</span> <span class="sc">+</span> <span class="fu">sqrt</span>(<span class="dv">17</span>)) <span class="sc">/</span> <span class="dv">8</span>,</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">scale =</span> <span class="dv">8</span> <span class="sc">/</span> (<span class="dv">5</span> <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">sqrt</span>(<span class="dv">17</span>))),</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">log =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  llike     <span class="ot">=</span> <span class="sc">-</span>N <span class="sc">/</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">log_det</span>(Omega)</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  llike     <span class="ot">=</span> llike <span class="sc">-</span> N <span class="sc">/</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">log_det</span>(<span class="fu">t</span>(X) <span class="sc">%*%</span> X <span class="sc">+</span> inv_Omega)</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  A         <span class="ot">=</span> Psi <span class="sc">+</span> <span class="fu">t</span>(ehat) <span class="sc">%*%</span> ehat <span class="sc">+</span> <span class="fu">t</span>(Bhat <span class="sc">-</span> b) <span class="sc">%*%</span> inv_Omega <span class="sc">%*%</span> (Bhat <span class="sc">-</span> b)</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>  llike     <span class="ot">=</span> llike <span class="sc">-</span> (T <span class="sc">+</span> d) <span class="sc">/</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">log_det</span>(A)</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(lprior <span class="sc">+</span> llike)</span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>sample_lambda <span class="ot">=</span> <span class="cf">function</span>(S, p, Y, X) {</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>  init   <span class="ot">=</span> <span class="fl">0.2</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">=</span> <span class="fu">optim</span>(</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>    init,</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>    \(lambda) {</span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>      nlogp <span class="ot">=</span> <span class="sc">-</span><span class="fu">dlambda</span>(lambda, p, Y, X)</span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.finite</span>(nlogp)) {</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>        nlogp <span class="ot">=</span> <span class="fl">1e+6</span></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(nlogp)</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">method  =</span> <span class="st">"L-BFGS-B"</span>,</span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">lower =</span> init <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">upper =</span> init <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">hessian =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>    <span class="co"># control = list(trace = 1, maxit = 1e4)</span></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>  lambda    <span class="ot">=</span> <span class="fu">numeric</span>(S)</span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>  lambda[<span class="dv">1</span>] <span class="ot">=</span> result<span class="sc">$</span>par</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>  dlambda   <span class="ot">=</span> result<span class="sc">$</span>value</span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>  c         <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>  W         <span class="ot">=</span> c <span class="sc">*</span> <span class="dv">1</span> <span class="sc">/</span> result<span class="sc">$</span>hessian</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (s <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>S) {</span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>    new_lambda  <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, lambda[s <span class="sc">-</span> <span class="dv">1</span>], <span class="fu">sqrt</span>(W))</span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>    new_dlambda <span class="ot">=</span> <span class="fu">dlambda</span>(new_lambda, p, Y, X)</span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> <span class="fu">exp</span>(new_dlambda <span class="sc">-</span> dlambda)) {</span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>      lambda[s] <span class="ot">=</span> new_lambda</span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>      dlambda   <span class="ot">=</span> new_dlambda</span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>      lambda[s] <span class="ot">=</span> lambda[s <span class="sc">-</span> <span class="dv">1</span>]</span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(lambda)</span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="convergence-diagnostics" class="level3">
+<h3 class="anchored" data-anchor-id="convergence-diagnostics">Convergence diagnostics</h3>
+<p>We sample 12,000 draws of <span class="math inline">\(\lambda\)</span> and discard the first 2,000 draws as burn-in. From the trace plot, we can see that the chain has converged to a stationary distribution.</p>
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-26_5a00c3ed328a8d99398e36dc98a29c95">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>From the histogram, we can see that the posterior distribution of <span class="math inline">\(\lambda\)</span> is centered around to 0.13, which shows the default choice of 0.2 is reasonable. On the other hand, since 0.13 is smaller than 0.2, the hirechical prior suggests more shrinkage than the default choice.</p>
+<div class="cell" data-hash="index_cache/html/unnamed-chunk-27_d7ed5a6937cae9158ca17849d84184f5">
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="irf-4" class="level3">
+<h3 class="anchored" data-anchor-id="irf-4">IRF</h3>
+<p>The impulse response functions are</p>
+<div class="cell" data-hash="index_cache/html/au-ext2-irf_5c2bf9551706a7a16907591abd9c08c9">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="index_files/figure-html/au-sig-irf-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption class="figure-caption">Australian IRF with additional narrative restriction (median and 68% highest density interval)</figcaption><p></p>
+<p><img src="index_files/figure-html/au-ext2-irf-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Australian IRF with hierachical prior (median and 68% highest density interval)</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The result become significant after imposing more narrative restrictions. Although these additional narrative restrictions are difficult to justified, they are still much less controversial than imposing more zero restrictions (see section Model-Algorithm-Extension). To get a similar significant result, one could definitely choose these narrative restrictions more carefully than what we did here. This shows our extension can be useful for researchers, since the original method cannot narrow down the highest density intervals without imposing controversial restrictions.</p>
-
+<p>For simplicity, we only report the IRF in this extension. As the IRF is very similar to the previous results, our interpretation remains the same. By imposing the hierarchical prior on <span class="math inline">\(\lambda\)</span>, we let the data to choose the level of shrinkage and this shows the conclusion is robust to a more flexible prior.</p>
 </section>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>In this report, we implement the sign and zero restrictions algorithm from <span class="citation" data-cites="arias2018inference">Arias, Rubio-Ramı́rez, and Waggoner (<a href="#ref-arias2018inference" role="doc-biblioref">2018</a>)</span>, extend it with narrative restrictions from <span class="citation" data-cites="antolin2018narrative">Antolı́n-Dı́az and Rubio-Ramı́rez (<a href="#ref-antolin2018narrative" role="doc-biblioref">2018</a>)</span> and hierarchical priors from <span class="citation" data-cites="giannone2015prior">Giannone, Lenza, and Primiceri (<a href="#ref-giannone2015prior" role="doc-biblioref">2015</a>)</span>. We replicate the result in the original paper using the US data, then apply the algorithm to the Australian data and found that the conclusion of optimism shock does not drive business cycles holds in the Australian economy. Furthermore, the conclusion is robust to (1) a narrative restriction on pessimism shock during the Covid-19 pandemic and (2) imposing a hierarchical prior on the shrinkage parameter <span class="math inline">\(\lambda\)</span>.</p>
+</section>
+<section id="references" class="level1">
+
+
+
+
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
@@ -1193,14 +1445,16 @@ Beaudry, Paul, Deokwoo Nam, and Jian Wang. 2011. <span>“Do Mood Swings Drive B
 <div id="ref-fisher2020mental" class="csl-entry" role="listitem">
 Fisher, Jane RW, Thach D Tran, Karin Hammarberg, Jayagowri Sastry, Hau Nguyen, Heather Rowe, Sally Popplestone, Ruby Stocker, Claire Stubber, and Maggie Kirkman. 2020. <span>“Mental Health of People in Australia in the First Month of COVID-19 Restrictions: A National Survey.”</span> <em>Medical Journal of Australia</em> 213 (10): 458–64.
 </div>
+<div id="ref-giannone2015prior" class="csl-entry" role="listitem">
+Giannone, Domenico, Michele Lenza, and Giorgio E Primiceri. 2015. <span>“Prior Selection for Vector Autoregressions.”</span> <em>Review of Economics and Statistics</em> 97 (2): 436–51.
+</div>
 <div id="ref-kilian2017structural" class="csl-entry" role="listitem">
 Kilian, Lutz, and Helmut Lütkepohl. 2017. <em>Structural Vector Autoregressive Analysis</em>. Cambridge University Press.
 </div>
 <div id="ref-rubio2010structural" class="csl-entry" role="listitem">
 Rubio-Ramirez, Juan F, Daniel F Waggoner, and Tao Zha. 2010. <span>“Structural Vector Autoregressions: Theory of Identification and Algorithms for Inference.”</span> <em>The Review of Economic Studies</em> 77 (2): 665–96.
 </div>
-</div></section></div></main>
-<!-- /main column -->
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
